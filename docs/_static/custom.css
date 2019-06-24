@@ -1,0 +1,134 @@
+font-family: 'Source Code Pro', monospace;
+font-family: 'Open Sans', sans-serif;
+
+.codename{
+   font-variant: small-caps;
+   font-size: 100%;
+   font-variant-numeric: oldstyle-nums;
+}
+
+body{
+/*
+    font-family: 'Roboto', sans-serif;
+*/
+    font-family: 'Source Code Pro', monospace;
+    font-family: 'Open Sans', sans-serif;
+}
+
+code, .rst-content tt, .rst-content code {
+    font-size: 85%;
+    background: #eeeeee;
+    font-family: "Menlo", "Monaco", "Consolas", "Liberation Mono","Courier New",'Courier',monospace;
+    border: 0;
+}
+
+code.ilpy3 {
+    background: #edf0f2;
+    color: #0e84b5;
+    font-family: 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+    padding: 0 5px;
+}
+
+/*
+    white-space: nowrap;
+    max-width: 100%;
+    font-size: 100%;
+*/
+
+.wy-nav-side {
+    color: #9b9b9b;
+/*
+    background: #343131;
+    background: #5c5c5c;
+    background: #bc986a;
+*/
+    background: #3c9a9a;
+/*
+    background: #fbeec1;
+*/
+}
+
+.wy-side-nav-search { background-color: #daad86; }
+
+.wy-menu-vertical { color: #05386b; }
+
+a: visited { 
+ font-weight: bold;
+} 
+
+a { 
+ font-weight: bold;
+} 
+
+.rst-content .qanda {
+    background: #e1bee7';
+/*
+     background: '#f8bbd0';
+*/
+}
+
+qanda { background: '#e1bee7' !important }
+
+
+.qanda { background: '#e1bee7' !important }
+
+
+div.qanda { background: '#e1bee7' !important }
+
+
+
+.rst-content .qanda admonition-title:before {
+    content: "&f059"; 
+}
+
+
+
+.qanda admonition-title:before {
+    content: "&f059" !important
+}
+
+
+
+qanda admonition-title:before {
+    content: "&f059" !important
+}
+
+
+div.qanda admonition-title:before {
+    content: "&f059" !important
+}
+
+.rst-content .centered {
+    text-align: center
+}
+
+.rst-content .fullbar {
+    float: center;
+    width: 90%;
+    display: block;
+    margin: 12px 12px 12px 12px;
+    padding: 12px;
+    background: #f3f6f6;
+    border: solid 1px #e1e4e5
+}
+
+.rst-content .sidebar p,
+.rst-content .sidebar ul,
+.rst-content .sidebar dl {
+    font-size: 90%
+}
+
+.rst-content .sidebar .last {
+    margin-bottom: 0
+}
+
+.rst-content .fullbar .sidebar-title {
+    display: block;
+    font-family: "Roboto Slab", "ff-tisa-web-pro", "Georgia", Arial, sans-serif;
+    font-weight: bold;
+    background: #e1e4e5;
+    padding: 12px 12px;
+    margin: -12px;
+    margin-bottom: 12px;
+    font-size: 100%
+}

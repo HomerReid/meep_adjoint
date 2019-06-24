@@ -1,0 +1,4 @@
+sympy
+meep
+dolfin
+pytest
