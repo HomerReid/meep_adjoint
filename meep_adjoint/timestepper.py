@@ -218,10 +218,12 @@ class TimeStepper(object):
         for cell in cells:
             cell.register(self.sim)
 
-        # update visualization
+######################################################################
+#       # update visualization
 #        if self.visualizer and beta_vector is not None:
 #            self.visualizer.update(self.sim, 'geometry')
-
+#
+######################################################################
 
     def run(self, job='forward', beta_vector=None):
         self.prepare(job, beta_vector=beta_vector)
