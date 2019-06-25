@@ -17,7 +17,7 @@ from .timestepper import TimeStepper
 from .objective import ObjectiveFunction
 
 from .dft_cell import (ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, EH_CPTS,
-                       v3, V3, Subregion, DFTCell, Grid, make_grid
+                       v3, V3, Subregion, DFTCell, Grid, make_grid)
 
 from .basis import Basis
 
@@ -28,17 +28,21 @@ from .visualization import process_visualization_options
 from .util import (OptionSettings, OptionTemplate, log)
 
 ######################################################################
-#
+# options is a module-wide database of configuration options settings.
+# it is initialized on module import, and subsequently re-initialized
+# with different default values if somebody calls set_default_options().
 ######################################################################
-options = None
-custom_defaults = {}
-
-def set_default_options(new_defaults):
-    custom_defaults = dict(new_defaults)
-
 def init_options(custom_defaults={}):
-    """ global options processor for meep_adjoint """
     adj_opts = process_adjoint_options(custom_defaults)
     vis_opts = process_visualization_options(custom_defaults)
     return adj_opts.merge(vis_opts)
 
+
+options = init_options()
+"""module-global database of configuration option settings"""
+
+
+def set_default_options(custom_defaults):
+    from meep_adjoint import options
+    sys.argv = list(options.argv)
+    options = init_options(custom_defaults)
