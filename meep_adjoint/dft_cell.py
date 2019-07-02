@@ -14,6 +14,7 @@
 
 import numpy as np
 import meep as mp
+from collections import namedtuple
 
 ######################################################################
 # general-purpose constants and utility routines

@@ -26,7 +26,6 @@ from datetime import datetime as dt
 OptionTemplate = namedtuple('OptionTemplate', 'name default help')
 OptionTemplate.__doc__ = 'name, default value, and usage for one configurable option'
 
-
 class OptionSettings(object):
     """Set option values from config files, command-line args, and environment
 
@@ -47,7 +46,7 @@ class OptionSettings(object):
 
         templates (list of OptionTemplate): option definitions
 
-        custom_defaults (dict): optional overrides of default option values
+        custom_defaults (dict): optional overrides of default values in templates
 
         section(str): optional section specification; if present, only matching
                       sections of config files are parsed. If absent, all
@@ -55,7 +54,7 @@ class OptionSettings(object):
 
         filename (str): If e.g. filename == 'myconfig.rc', then:
                           1. the global config file is ~/.my_config.rc
-                          2. the local config file is my_config.rc in the current directory.
+                          2. the local config file is ./my_config.rc in the current working directory.
                         If unspecified, no configuration files are processed.
 
         search_env (bool): Whether or not to look for option settings in
@@ -67,17 +66,17 @@ class OptionSettings(object):
 
     def __init__(self, templates, custom_defaults={},
                        section=None, filename=None, search_env=True):
-        self.templates, self.section, self.filename = templates, section, filename
-        self.process(templates, custom_defaults, section, filename)
+        self.templates, self.section, self.filename, self.search_env = templates, section, filename, search_env
+        self.initialize(templates, custom_defaults, section, filename, search_env)
 
 
     def set_defaults(self, custom_defaults={}):
         """re-process options with new default settings"""
-        self.process(self.templates, custom_defaults, self.section, self.filename)
+        self.initialize(self.templates, custom_defaults, self.section, self.filename, self.search_env)
 
 
-    def process(self, templates, custom_defaults, section, filename):
-        """docstring goes here"""
+    def initialize(self, templates, custom_defaults, section, filename, search_env):
+        """(re)determine values for all options """
 
         # initialize options to their template default values
         self.options  = { t.name: t.default for t in templates }
@@ -100,8 +99,9 @@ class OptionSettings(object):
                 self.revise(config.items(s), 'config files')
 
         # update 4: environment variables
-        envopts = { t.name: env[t.name] for t in templates if t.name in env }
-        self.revise(envopts, 'environment variables')
+        if search_env:
+            envopts = { t.name: env[t.name] for t in templates if t.name in env }
+            self.revise(envopts, 'environment variables')
 
         # update 5: command-line arguments
         parser = argparse.ArgumentParser()
@@ -117,7 +117,7 @@ class OptionSettings(object):
         """cautiously apply a proposed set of updated option values
 
         Args:
-            revisions: dict of {key,new_value} pairs OR list of (key,new_value) pairs
+            revisions: dict of {key:new_value} records OR list of (key,new_value) pairs
             context:   optional label like 'global config file' or 'command line'
                        for inclusion in error messages to help trace mishaps
 

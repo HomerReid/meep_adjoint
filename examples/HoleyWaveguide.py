@@ -165,4 +165,4 @@ opt_prob = OptimizationProblem(objective_regions=[east,west], objective="S_east"
 # #         if args.complex_fields:
 # #             sim.force_complex_fields=True
 # #
-# #         return sim
+# #         return simF

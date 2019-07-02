@@ -720,10 +720,11 @@ visualization_option_templates= [
 
 
 def process_visualization_options(custom_defaults={}):
-    options1 = OptionSettings(visualization_option_templates,
-                              custom_defaults=custom_defaults,
-                              filename='meep_adjoint.rc')
+    options = OptionSettings(visualization_option_templates,
+                             custom_defaults=custom_defaults,
+                             filename='meep_adjoint.rc')
     options2 = OptionSettings(visualization_option_templates,
                               custom_defaults=custom_defaults,
                               filename='meep_visualization.rc')
-    return options1.merge(options2)
+    options1.merge(options2)
+    return

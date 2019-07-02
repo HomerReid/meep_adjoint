@@ -251,8 +251,6 @@ adjoint_option_templates= [
     OptionTemplate('dft_timeout',    10.0,   'max runtime in units of last_source_time'),
     OptionTemplate('dft_interval',   0.25,   'meep time between DFT convergence checks in units of last_source_time'),
     OptionTemplate('complex_fields',False,   'use complex fields in forward calculation'),
-    OptionTemplate('verbose',       False,   'produce more verbose output'),
-    OptionTemplate('visualize',     False,   'produce graphical output'),
 
     #--------------------------------------------------
     #- options affecting finite-element basis sets

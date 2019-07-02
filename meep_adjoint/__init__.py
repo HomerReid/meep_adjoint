@@ -10,22 +10,22 @@ import meep as mp
 ######################################################################
 ######################################################################
 ######################################################################
-from .optimization_problem import OptimizationProblem, process_adjoint_options
-
-from .timestepper import TimeStepper
-
-from .objective import ObjectiveFunction
+from .util import (OptionSettings, OptionTemplate, log)
 
 from .dft_cell import (ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, EH_CPTS,
                        v3, V3, Subregion, DFTCell, Grid, make_grid)
+
+from .objective import ObjectiveFunction
 
 from .basis import Basis
 
 from .finite_element_basis import (FiniteElementBasis, parameterized_function2)
 
+from .timestepper import TimeStepper
+
 from .visualization import process_visualization_options
 
-from .util import (OptionSettings, OptionTemplate, log)
+from .optimization_problem import OptimizationProblem, process_adjoint_options
 
 ######################################################################
 # options is a module-wide database of configuration options settings.
