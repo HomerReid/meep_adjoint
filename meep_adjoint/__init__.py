@@ -10,7 +10,9 @@ import meep as mp
 ######################################################################
 ######################################################################
 ######################################################################
-from .util import (OptionSettings, OptionTemplate, log)
+from .util import (OptionTemplate, OptionAlmanac)
+
+from .adjoint_options import get_adjoint_option, set_adjoint_option_defaults
 
 from .dft_cell import (ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, EH_CPTS,
                        v3, V3, Subregion, DFTCell, Grid, make_grid)
@@ -23,26 +25,13 @@ from .finite_element_basis import (FiniteElementBasis, parameterized_function2)
 
 from .timestepper import TimeStepper
 
-from .visualization import process_visualization_options
+from .optimization_problem import OptimizationProblem
 
-from .optimization_problem import OptimizationProblem, process_adjoint_options
+#from .visualization import visualize_sim
 
 ######################################################################
-# options is a module-wide database of configuration options settings.
-# it is initialized on module import, and subsequently re-initialized
-# with different default values if somebody calls set_default_options().
 ######################################################################
-def init_options(custom_defaults={}):
-    adj_opts = process_adjoint_options(custom_defaults)
-    vis_opts = process_visualization_options(custom_defaults)
-    return adj_opts.merge(vis_opts)
-
-
-options = init_options()
-"""module-global database of configuration option settings"""
-
-
-def set_default_options(custom_defaults):
-    from meep_adjoint import options
-    sys.argv = list(options.argv)
-    options = init_options(custom_defaults)
+######################################################################
+def set_option_defaults(custom_defaults={}, search_env=True):
+    set_adjoint_option_defaults(custom_defaults, search_env)
+    #set_visualization_option_defaults(custom_defaults, search_env)

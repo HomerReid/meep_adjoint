@@ -7,17 +7,27 @@ import meep as mp
 from meep_adjoint import ( OptimizationProblem, Subregion,
                            ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, v3, V3)
 
-from meep_adjoint import set_default_options as set_adjoint_defaults
-from meep_adjoint import options as adj_opts
-
+from meep_adjoint import set_option_defaults as set_adjoint_defaults
+from meep_adjoint import get_adjoint_option as adj_opt
 
 ######################################################################
-# set some problem-specific default values for adjoint-module options
+# for some adjoint-related configuration options, the default values
+# set by meep_adjoint are not quite right for our particular problem,
+# so we override those with problem-specific custom defaults.
+# note that these are still just *defaults*, overwritten by values
+# in config files, environment variables, or command-line argumnets
 ######################################################################
 custom_defaults = { 'fcen': 0.5, 'df': 0.2, 'eps_func' : 3.0,
                     'dpml': 0.5, 'dair': 0.5 }
 set_adjoint_defaults(custom_defaults)
 
+
+######################################################################
+######################################################################
+######################################################################
+dpml = adj_opt('dpml')
+dair = adj_opt('dair')
+fcen = adj_opt('fcen')
 
 ##################################################
 # parse problem-specific command-line arguments
@@ -43,9 +53,6 @@ h_wvg      = args.h_wvg
 r_hole     = args.r_hole
 eps_wvg    = args.eps_wvg
 eps_hole   = args.eps_hole
-dpml       = adj_opts('dpml')
-dair       = adj_opts('dair')
-fcen       = adj_opts('fcen')
 L          = max(6.0*dpml + 2.0*r_hole,  3.0/fcen)
 sx         = dpml + L + dpml
 sy         = dpml + dair + w_wvg + dair + dpml

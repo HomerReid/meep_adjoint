@@ -26,12 +26,12 @@ from datetime import datetime as dt
 OptionTemplate = namedtuple('OptionTemplate', 'name default help')
 OptionTemplate.__doc__ = 'name, default value, and usage for one configurable option'
 
-class OptionSettings(object):
-    """Set option values from config files, command-line args, and environment
+class OptionAlmanac(object):
+    """Database of option values read from config files, environment, and command-line args.
 
-       On instantiation (and optional subsequent re-initialization), this class
-       determines settings for a list of named options by considering each
-       of the following sources, in increasing order of priority:
+       On instantiation, this class determines values for each element in a
+       list of named options by consulting each of the following sources
+       in increasing order of priority:
 
        (a) The default value given in the initialization template (see below)
        (b) Dict of customized defaults passed to constructor or set_defaults()
@@ -41,6 +41,11 @@ class OptionSettings(object):
        (f) Command-line arguments. (Processed arguments are removed
            from sys.argv, leaving other arguments unchanged for subsequent
            downstream parsing.)
+
+      After initialization, class instances serve as databases of option values
+      that may be queried via the __call__ method, thus:
+          my_options = OptionAlmanac(...)
+          opt_value  = my_options('option_name')
 
     Constructor arguments:
 
@@ -62,21 +67,15 @@ class OptionSettings(object):
                            you may want to set it to False if you have
                            option whose names overlap with standard
                            environment variables, such as 'HOME'
+
+        prepend_section (bool): If True, the section name (plus an underscore) is
+                                prepended to the names of options for searching
+                                environment variables and command-line arguments.
     """
 
-    def __init__(self, templates, custom_defaults={},
-                       section=None, filename=None, search_env=True):
-        self.templates, self.section, self.filename, self.search_env = templates, section, filename, search_env
-        self.initialize(templates, custom_defaults, section, filename, search_env)
-
-
-    def set_defaults(self, custom_defaults={}):
-        """re-process options with new default settings"""
-        self.initialize(self.templates, custom_defaults, self.section, self.filename, self.search_env)
-
-
-    def initialize(self, templates, custom_defaults, section, filename, search_env):
-        """(re)determine values for all options """
+    def __init__(self, templates, custom_defaults={}, section=None,
+                       filename=None, search_env=True, prepend_section=False):
+        """harvest option values from config files, environment, and command-line args"""
 
         # initialize options to their template default values
         self.options  = { t.name: t.default for t in templates }
@@ -99,14 +98,15 @@ class OptionSettings(object):
                 self.revise(config.items(s), 'config files')
 
         # update 4: environment variables
+        pfx = '{}_'.format(section) if prepend_section and section else ''
         if search_env:
-            envopts = { t.name: env[t.name] for t in templates if t.name in env }
+            envopts = { t.name: env[pfx + t.name] for t in templates if (pfx + t.name) in env }
             self.revise(envopts, 'environment variables')
 
         # update 5: command-line arguments
         parser = argparse.ArgumentParser()
         for n,v,h in [ (t.name, self.options[t.name], t.help) for t in templates ]:
-            parser.add_argument('--{}'.format(n),type=type(v),default=v,help=h)
+            parser.add_argument('--{}{}'.format(pfx,n),type=type(v),default=v,help=h)
         argopts, leftovers = parser.parse_known_args()
         self.revise(argopts.__dict__.items(), 'command-line arguments')
         self.options['original_cmdline'] = ' '.join(sys.argv)
@@ -142,10 +142,13 @@ class OptionSettings(object):
         self.options.update(partner.options)
 
 
-    def __call__(self, name, overrides={}):
-        return overrides.get(name, self.options.get(name, None) )
-
-
+    def __call__(self, name, fallback=None, overrides={}):
+        if name in overrides:
+            try:
+                return (self.opttypes[name])(overrides[name])
+            except ValueError:
+                warn('option {}: ignoring improper override value {}',name,overrides[name])
+        return self.options.get(name,fallback)
 
 
 def uq(s):

@@ -5,6 +5,8 @@ import meep as mp
 from . import (DFTCell, ObjectiveFunction, TimeStepper,
                FiniteElementBasis, parameterized_function2, E_CPTS, v3, V3)
 
+from . import get_adjoint_option as adj_opt
+
 ######################################################################
 ######################################################################
 ######################################################################
@@ -56,7 +58,7 @@ class OptimizationProblem(object):
               may omit basis and set design_region; in this case,
               an appropriate basis for the given design_region is
               automatically created based on the values of various
-              module-wide options such as 'element_type' and
+              module-wide adj_opt such as 'element_type' and
               'element_length'. This convenience convention is
               only available for box-shaped (hyperrectangular)
               design regions.
@@ -82,7 +84,7 @@ class OptimizationProblem(object):
               As an alternative convenience convention, the caller may omit
               sources and instead specify source_region; in this case, a
               source distribution over the given region is automatically
-              created based on the values of module-wide options (such
+              created based on the values of module-wide adj_opt (such
               as fcen, df, source_component, source_mode)
 
 
@@ -97,8 +99,6 @@ class OptimizationProblem(object):
 
         """
 
-        from meep_adjoint import options
-
         #-----------------------------------------------------------------------
         # process convenience arguments:
         #  (a) if no basis was specified, create one using the given design
@@ -108,12 +108,12 @@ class OptimizationProblem(object):
         #-----------------------------------------------------------------------
         if basis is None:
             basis = FiniteElementBasis(region=design_region,
-                                       element_length=options('element_length'),
-                                       element_type=options('element_type'))
+                                       element_length=adj_opt('element_length'),
+                                       element_type=adj_opt('element_type'))
         design_region = basis.domain
 
         if not sources:
-            f, df, m, c = [ options(s) for s in ['fcen', 'df', 'source_mode', 'source_component'] ]
+            f, df, m, c = [ adj_opt(s) for s in ['fcen', 'df', 'source_mode', 'source_component'] ]
             envelope    = mp.GaussianSource(f, fwidth=df)
             kws         = { 'center': V3(source_region.center), 'size': V3(source_region.size),
                             'src': envelope} #, 'eig_band': m, 'component': c }
@@ -141,14 +141,14 @@ class OptimizationProblem(object):
         # object on the rest of the caller's geometry.
         # Note that sources are not added to the simulation at this stage;
         # that is done on a just-in-time basis by internal methods of TimeStepper.
-        beta_vector     = basis.project(options('eps_func'))
+        beta_vector     = basis.project(adj_opt('eps_func'))
 #        eps_func        = basis.parameterized_function(beta_vector)
         eps_func, set_coefficients = parameterized_function2(basis,beta_vector)
         design_object   = mp.Block(center=V3(design_region.center), size=V3(design_region.size),
                                    epsilon_func=eps_func)
         geometry        = background_geometry + [design_object] + foreground_geometry
-        sim             = mp.Simulation(resolution=options['res'],
-                                        boundary_layers=[mp.PML(options['dpml'])],
+        sim             = mp.Simulation(resolution=adj_opt('res'),
+                                        boundary_layers=[mp.PML(adj_opt('dpml'))],
                                         cell_size=V3(cell_size), geometry=geometry)
 
         # TimeStepper
@@ -159,19 +159,19 @@ class OptimizationProblem(object):
         # self.filebase = args.filebase
         # self.stdout = sys.stdout
         # if args.logfile:
-        #     options['log_streams'].append(open(args.logfile,'a'))
+        #     adj_opt('log_streams').append(open(args.logfile,'a'))
         # if args.log_to_console:
-        #     options['log_streams'].append(self.stdout)
+        #     adj_opt('log_streams').append(self.stdout)
         # if args.verbose:
-        #     options['verbosity'] = 'verbose'
+        #     adj_opt('verbosity') = 'verbose'
         # elif args.concise:
-        #     options['verbosity'] = 'concise'
+        #     adj_opt('verbosity') = 'concise'
         #
-        # # options affecting visualization
-        # # options['animate_components'] = args.animate_component
-        #   options['animate_interval'] = args.animate_interval
+        # # adj_opt affecting visualization
+        # # adj_opt('animate_components') = args.animate_component
+        #   adj_opt('animate_interval') = args.animate_interval
         # if args.label_source_regions:
-        #     set_plot_default('fontsize',def_plot_options['fontsize'], 'src')
+        #     set_plot_default('fontsize',def_plot_adj_opt('fontsize'), 'src')
 
 
     #####################################################################
@@ -227,62 +227,3 @@ def adjust_sources(sources):
         envelope, fcen = s.src, s.src.frequency
         if callable(getattr(envelope, "fourier_transform", None)):
             s.amplitude /= envelope.fourier_transform(fcen)
-
-######################################################################
-# Processing of adjoint-related configuration options
-######################################################################
-from .util import OptionTemplate, OptionSettings
-
-adjoint_option_templates= [
-
-    #--------------------------------------------------
-    #- options affecting MEEP calculations
-    #--------------------------------------------------
-    OptionTemplate('res',            20.0,   'Yee grid resolution'),
-    OptionTemplate('fcen',            0.0,   'source center frequency'),
-    OptionTemplate('df',              0.0,   'source frequency width'),
-    OptionTemplate('source_component',  2,   'forward source component'),
-    OptionTemplate('source_mode',       1,   'forward source eigenmode index'),
-    OptionTemplate('nfreq',             1,   'number of DFT frequencies'),
-    OptionTemplate('dpml',           -1.0,   'PML width (-1 --> auto-select)'),
-    OptionTemplate('dair',           -1.0,   'gap width between material bodies and PMLs (-1 --> auto-select)'),
-    OptionTemplate('eps_func',      '1.0',   'function of (x,y,z) giving initial design permittivity'),
-    OptionTemplate('dft_reltol',   1.0e-6,   'convergence tolerance for terminating timestepping'),
-    OptionTemplate('dft_timeout',    10.0,   'max runtime in units of last_source_time'),
-    OptionTemplate('dft_interval',   0.25,   'meep time between DFT convergence checks in units of last_source_time'),
-    OptionTemplate('complex_fields',False,   'use complex fields in forward calculation'),
-
-    #--------------------------------------------------
-    #- options affecting finite-element basis sets
-    #--------------------------------------------------
-    OptionTemplate('element_type',   'CG 1',  'finite-element family and degree'),
-    OptionTemplate('element_length',  0.0,    'finite-element discretization length'),
-
-    #--------------------------------------------------
-    #- options affecting gradient-desscent optimizer
-    #--------------------------------------------------
-    OptionTemplate('alpha',          1.0,     'initial value of gradient relaxation parameter'),
-    OptionTemplate('alpha_min',      1.0e-3,  'minimum value of alpha'),
-    OptionTemplate('alpha_max',      10.0,    'maximum value of alpha'),
-    OptionTemplate('boldness',       1.25,    'sometimes you just gotta live a little (explain me)'),
-    OptionTemplate('timidity',       0.75,    'can\'t be too cautious in this dangerous world (explain me)'),
-    OptionTemplate('max_iters',      100,     'max number of optimization iterations'),
-
-    #--------------------------------------------------
-    # options affecting outputs
-    #--------------------------------------------------
-    OptionTemplate('verbose',      'True',    'produce more output'),
-    OptionTemplate('visualize',    'True',    'produce visualization graphics'),
-    OptionTemplate('silence_meep', 'True',    'suppress MEEP console output')
-]
-
-
-def process_adjoint_options(custom_defaults={}):
-    return OptionSettings(adjoint_option_templates,
-                          custom_defaults=custom_defaults,
-                          filename='meep_adjoint.rc')
-
-
-# reinstate me!
-# OptionTemplate('animate_component', action='append', help='plot time-domain field component')
-# OptionTemplate('animate_interval', type=float, default=1.0, help='meep time between animation frames')]

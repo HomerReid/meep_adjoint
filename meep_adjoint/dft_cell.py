@@ -1,5 +1,4 @@
-""" workarounds for some of the more inconvenient elements of the
-    pymeep API.
+""" convenience wrappers around various objects in core pymeep
 
     v3, V3 convert between mp.Vector3 and simple lists or np.arrays of coordinates
 
@@ -15,6 +14,8 @@
 import numpy as np
 import meep as mp
 from collections import namedtuple
+
+from . import get_adjoint_option as adj_opt
 
 ######################################################################
 # general-purpose constants and utility routines
@@ -176,15 +177,15 @@ class DFTCell(object):
     ######################################################################
     def __init__(self, region, components=None, fcen=None, df=None, nfreq=None):
 
-        from meep.adjoint import options, dft_cell_names
+        from meep.adjoint import dft_cell_names
 
         self.region     = region
         self.normal     = region.normal
         self.celltype   = 'flux' if self.normal is not None else 'fields'
         self.components = components or (EH_TRANSVERSE[self.normal] if self.normal is not None else EH_CPTS)
-        self.fcen       = options['fcen'] if fcen is None else fcen
-        self.df         = options['df'] if df is None else df
-        self.nfreq      = options['nfreq'] if nfreq is None else nfreq
+        self.fcen       = adj_opt('fcen') if fcen is None else fcen
+        self.df         = adj_opt('df') if df is None else df
+        self.nfreq      = adj_opt('nfreq') if nfreq is None else nfreq
         self.freqs      = [self.fcen] if self.nfreq==1 else np.linspace(self.fcen-0.5*self.df, self.fcen+0.5*self.df, self.nfreq)
 
         self.sim        = None  # mp.simulation for current simulation

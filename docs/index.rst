@@ -24,7 +24,7 @@ What does this module do?
 You'll find a longer answer in the :doc:`Overview <Overview/index>`
 (and a more succinct one in the :doc:`API Reference <API/index>`),
 but, in a nutshell: It extends the computational capabilities of the
-core |pymeep| library in a particular way that facilitates interacting
+core |pymeep| library in a particular way that facilitates interaction
 with `numerical optimization algorithms`_, opening the door to
 intelligent design tools that automatically design devices to meet
 given performance specifications.
@@ -48,8 +48,17 @@ given performance specifications.
         performance metric.
         For example, in the :doc:`optical router <Examples/OpticalRouter>`
         example in the :py:mod:`meep.adjoint` :doc:`example gallery <Examples/index>`,
-        the task is to design the central hub to ensure that incident
-        power entering from the **East** input is routed exclusively
+        the 
+        example in the :py:mod:`meep.adjoint` :doc:`example gallery <Examples/index>`,
+        the task is to design the central hub region to steer
+        incoming power arriving via the **East** input waveguide
+        to output 
+       
+        
+        the task is to design the hub region toe steer incident
+        power arriving from the 
+input is routed 
+
         to the **North** output, allowing power to leak out through the 
         **West** or **South** outputs.
 

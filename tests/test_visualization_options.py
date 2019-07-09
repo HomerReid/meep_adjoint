@@ -1,3 +1,8 @@
+""" Test handling of visualization-related options. This is based on the
+    functionality provided by OptionsAlmanac, which is tested elsewhere,
+    but adds the additional complication of section-specific overrides
+    of option values. This test only tests code in visualization_options.py.
+"""
 import sys
 from tempfile import TemporaryDirectory
 import shutil
@@ -7,39 +12,18 @@ import pytest
 
 sys.path.insert(0, os.path.abspath('../meep_adjoint'))
 
-from util import OptionTemplate, OptionSettings
+from visualization_options import set_visualization_option_defaults as set_vis_opt_defaults
+from visualization_options import get_visualization_option as vis_opt
 
-def test_options():
-    """ Test of basic framework for parsing options.
 
-        This is a test of the core functionality of the general-purpose
-        OptionSettings class, using a simple artificial set of
-        configuration options. It only tests code in util.py and
-        does not refer to anything related to adjoint solvers or
-        visualization. (See test_adj_vis_opt for a test of the
-        actual adjoint / visualization configuration.)
-
-        In this test, we have a global config file,
-        a local config file, options specified by environment
-        variables, and command-line arguments. We test
-        that option values set by later entries in this
-        hierarchy override those set by earlier entries.
+def test_vis_opts():
+    """
     """
 
     ######################################################################
-    # data defining the set of options
+    # mimic a user's global and local configuration files
     ######################################################################
-    templates = [
-        OptionTemplate( 'verbose', False,       'generate verbose output' ),
-        OptionTemplate( 'index',   4,           'integer in range [0-12]' ),
-        OptionTemplate( 'mass',    19.2,        'mass of sample'          ),
-        OptionTemplate( 'omega',   3.14,        'angular frequency'       ),
-        OptionTemplate( 'title',   'MyTitle',   'title string'            )]
-    RCFILE = 'test_options.rc'
-
-    ######################################################################
-    # test data mimicking a typical user's environment
-    ######################################################################
+    RCFILE='meep_visualization.py'
     RCGLOBAL_NAME = '~/.{}'.format(RCFILE)
     RCGLOBAL_BODY = """\
 [default]
@@ -68,7 +52,7 @@ title = 'Title one'
     ######################################################################
     with TestEnvironment(TEST_FILES, TEST_ENV, TEST_ARGS) as testenv:
         import ipdb; ipdb.set_trace()
-        testopts = OptionSettings(templates, filename=RCFILE)
+        testopts = OptionAlmanac(templates, filename=RCFILE)
 
     assert testopts('title')    == 'Title three'
     assert testopts('omega')    == 2.22

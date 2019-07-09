@@ -5,55 +5,70 @@ from os.path import expanduser, isfile
 from os import environ as env
 import pytest
 
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../meep_adjoint'))
 
-from meep.adjoint import
+from util import OptionTemplate, OptionAlmanac
 
-def test_adj_vis_opts():
-    """ Test handling of specific adjoint- and visualization-related
-        configuration options in meep.adjoint.
+def test_options():
+    """ Test of basic framework for parsing options.
+
+        This is a test of the core functionality of the general-purpose
+        OptionAlmanac class, using a simple artificial set of
+        configuration options. It only tests code in util.py and
+        does not refer to anything related to adjoint solvers or
+        visualization. (See test_adj_vis_opt for a test of the
+        actual adjoint / visualization configuration.)
+
+        In this test, we have a global config file,
+        a local config file, options specified by environment
+        variables, and command-line arguments. We test
+        that option values set by later entries in this
+        hierarchy override those set by earlier entries.
     """
 
-##################################################
---
-##################################################
-ADJ_GLOBAL_CONFIG:
-[adjoint]
+    ######################################################################
+    # data defining the set of options
+    ######################################################################
+    templates = [
+        OptionTemplate( 'verbose', False,       'generate verbose output' ),
+        OptionTemplate( 'index',   4,           'integer in range [0-12]' ),
+        OptionTemplate( 'mass',    19.2,        'mass of sample'          ),
+        OptionTemplate( 'omega',   3.14,        'angular frequency'       ),
+        OptionTemplate( 'title',   'MyTitle',   'title string'            )]
+    RCFILE = 'test_options.rc'
+
+    ######################################################################
+    # test data mimicking a typical user's environment
+    ######################################################################
+    RCGLOBAL_NAME = '~/.{}'.format(RCFILE)
+    RCGLOBAL_BODY = """\
+[default]
 verbose = True
-source_component = 'Ey'
-dft_timeout = 11.0
-element_type = "Lagrange 1"
+index = 0
+omega = 0.00
+title = 'Title zero'
 """
 
-    ADJ_RC_LOCAL_NAME = 'meep_adjoint.rc'
-    ADJ_RC_LOCAL_BODY = """\
-[adjoint]
-fcen = 0.5
-df = 0.2
-dpml = 0.5
-dair = 0.5
-source_component = 'Hz'
-eps_func = 'cos(x)*sin(2*y)'
-element_type = Lagrange 2"
+    RCLOCAL_NAME = RCFILE
+    RCLOCAL_BODY = """\
+[default]
+index = 1
+omega = 1.11
+title = 'Title one'
 """
 
-    TEST_FILES = [ (
-                  (RCGLOBAL_NAME, RCGLOBAL_BODY),
+    TEST_FILES = [ (RCGLOBAL_NAME, RCGLOBAL_BODY),
                    (RCLOCAL_NAME,  RCLOCAL_BODY)]
 
     TEST_ENV = { 'omega': 2.22, 'title' : 'Title two'  }
     TEST_ARGS = { 'title': 'Title three' }
 
     ######################################################################
-    ######################################################################
-    ######################################################################
-    from meep_adjoint import set_default_options as set_adjoint_defaults
-    from meep_adjoint import get_adjoint_option as adjopt
     # parse options in a temporary context representing test environment
     ######################################################################
     with TestEnvironment(TEST_FILES, TEST_ENV, TEST_ARGS) as testenv:
         import ipdb; ipdb.set_trace()
-        testopts = OptionSettings(templates, filename=RCFILE)
+        testopts = OptionAlmanac(templates, filename=RCFILE)
 
     assert testopts('title')    == 'Title three'
     assert testopts('omega')    == 2.22
@@ -64,10 +79,8 @@ element_type = Lagrange 2"
 
 
 class TestEnvironment(object):
-    """ Context manager for setting up temporary environments
-        for test codes, taking care to preserve any pre-existing
-
-        and6y 6
+    """ Context manager for setting up and tearing down test environment while
+        preserving any pre-existing files that get overwritten.
 
         More specifically, this class sets up:
             (a) input files
@@ -78,7 +91,7 @@ class TestEnvironment(object):
 
         Constructor inputs:
             test_files: list of (filename, filebody) tuples for input files that
-                        should exist, with the given content for the duration of the context.
+                        should exist with the given content for the duration of the context.
             test_env:   dict of { var:value } records that should be present in
                         sys.environ for the duration of the context
             test_args:  dict of { arg:value } records that should be present in
@@ -95,12 +108,11 @@ class TestEnvironment(object):
                           files are stored, or None if there were no
                           pre-existing files
     """
-
     def __init__(self, test_files=[], test_env={}, test_args={}):
- Ensure that all required files exist and have the proper content,
-        # Step 1: Create/edit files to ensure all
-        self.tmpdir, == self.files, self.tmpdir = [], None
-        for nf, (name,) in enumerate( [
+        # Step 1: Ensure that all required files exist and have
+        # the given content, taking care to avoid rewriting existing files.
+        self.files, self.tmpdir = [], None
+        for nf, (name,body) in enumerate(test_files):
             path = expanduser(name)
             if isfile(path):
                 self.tmpdir = self.tmpdir or TemporaryDirectory()
@@ -112,9 +124,7 @@ class TestEnvironment(object):
             with open(path,'w') as f:
                 f.write(body)
 
-        # Steps 2,3: Update environment variables and command-line arguments.
-        #            (
-        #            but
+        # Steps 2,3: Add environment variables and command-line arguments.
         os.environ.update( {k:str(v) for k,v in test_env.items() } )
 
         sys.argv=sys.argv[0:1]
