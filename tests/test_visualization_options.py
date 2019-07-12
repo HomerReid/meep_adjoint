@@ -1,7 +1,7 @@
 """ Test handling of visualization-related options. This is based on the
     functionality provided by OptionsAlmanac, which is tested elsewhere,
     but adds the additional complication of section-specific overrides
-    of option values. This test only tests code in visualization_options.py.
+    of option values.
 """
 import sys
 from tempfile import TemporaryDirectory
@@ -13,6 +13,7 @@ import pytest
 sys.path.insert(0, os.path.abspath('../meep_adjoint'))
 
 from visualization_options import set_visualization_option_defaults as set_vis_opt_defaults
+from visualization_options import get_visualization_options as vis_opts
 from visualization_options import get_visualization_option as vis_opt
 
 
@@ -21,38 +22,49 @@ def test_vis_opts():
     """
 
     ######################################################################
-    # mimic a user's global and local configuration files
+    # mimic a user's local configuration file
     ######################################################################
-    RCFILE='meep_visualization.py'
-    RCGLOBAL_NAME = '~/.{}'.format(RCFILE)
-    RCGLOBAL_BODY = """\
-[default]
-verbose = True
-index = 0
-omega = 0.00
-title = 'Title zero'
-"""
-
-    RCLOCAL_NAME = RCFILE
+    RCLOCAL_NAME = 'meep_visualization.py'
     RCLOCAL_BODY = """\
 [default]
-index = 1
-omega = 1.11
-title = 'Title one'
+cmap = viridis
+linewidth = 0.6
+fcolor = '#123456'
+linecolor = '#ff5673'
+alpha = 0.23
+
+[eps]
+alpha = 0.1
+linewidth = 0.2
+linecolor = '#999900'
+
+[src_region]
+alpha = 0.9
+linewidth = 0.34
+linecolor = '#678123'
+
 """
 
-    TEST_FILES = [ (RCGLOBAL_NAME, RCGLOBAL_BODY),
-                   (RCLOCAL_NAME,  RCLOCAL_BODY)]
+    TEST_FILES = [ (RCLOCAL_NAME,  RCLOCAL_BODY) ]
 
-    TEST_ENV = { 'omega': 2.22, 'title' : 'Title two'  }
-    TEST_ARGS = { 'title': 'Title three' }
+    TEST_ENV = { 'src_cb_pad': 0.11, 'cb_pad': 0.9 }
+
+    TEST_ARGS = { 'alpha': 2.22, 'eps_alpha': 0.75, 'src_alpha': 0.2,
+                  'zmin': 0.5, 'eps_zmin': 0.234, 'src_region_zmin': 0.3,
+                  'zmax': 0.97
+                }
+
 
     ######################################################################
     # parse options in a temporary context representing test environment
     ######################################################################
     with TestEnvironment(TEST_FILES, TEST_ENV, TEST_ARGS) as testenv:
-        import ipdb; ipdb.set_trace()
-        testopts = OptionAlmanac(templates, filename=RCFILE)
+        custom_defaults = { 'method': 'imshow',
+                            'zmin': 0.2, 'eps_zmin': 0.123 }
+
+        set_vis_opt_defaults(custom_defaults)
+        assert vis_opt(
+
 
     assert testopts('title')    == 'Title three'
     assert testopts('omega')    == 2.22

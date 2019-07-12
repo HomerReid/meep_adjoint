@@ -1,80 +1,47 @@
-""" Handling of visualization-related configuration options.
-
-    This file parallels visualization_options.py: it maintains an internal
-    module-wide instance of OptionsSettings that keeps track of
-    user-configurable options for visualization functions, and
-    exports two routines:
-        -- get_visualization_options() to lookup the value of an option
-        -- set_default_visualization_options() to override default option values
-
-    However, visualization options are slightly more complicated than visualization
-    options in that they make use of a notion of general vs. section-specific
-    option settings.
-"""
+""" Handling of visualization-related configuration options."""
 
 from .util import OptionTemplate, OptionAlmanac
 
 
+""" module-wide dict of { section_name : section_almanac } records """
 _visualization_sections = {}
-""" module-wide dict of { section_name : section_almanac } records,
-    where section_name (str) is either 'default' or the name of a
-    visualization sector like 'eps' or 'flux_data', and
-    section_almanac (OptionAlmanac) is the set of section-specific
-    option values.
-"""
 
 
+RCFILE = 'meep_visualization.rc'
+
+######################################################################
+# internal routines
+######################################################################
 def _init_visualization_options(custom_defaults={}, search_env=True):
     """internal routine for just-in-time options processing"""
 
-    # start with _visualization_sections containing just a single entry,
-    # the almanac for general (section-independent) fallback option values
-    general_options = OptionsAlmanac(VISUALIZATION_OPTION_TEMPLATES,
-                                     custom_defaults=custom_defaults,
-                                     section='default', filename='meep_visualization.rc',
-                                     search_env=search_env)
+    def _sectopts(s): return _init_section_options(s, custom_defaults, search_env)
 
     global _visualization_sections
-    _visualization_sections = { 'default' : general_options }
-
-    # now add separate almanacs for each specific section.
-    for sect_name, sect_defaults, in SECTION_DEFAULTS.items():
-        prefix = '{}_'.format(sect_name)
-        section_custom_defaults
-        section_defaults.update(
-        for full_name, custom_value in custom_defaults.items():
-            if full_name.startswith(prefix):
-                section_defaults
-
-{full_name.replace(prefix,''):val for full_name, val in custom_defaults.items() if full_name.startswith(prefix)}
-        for key in [ k.replace(prefix,''),v in custom_defaults.items() if k.startswith(prefix)
-full_name,custom_default in custom_defaults.items():
-            if full_name.startswith('{}_'.format(seection)
+    _visualization_sections = { s : _sectopts(s) for s in VISUALIZATION_SECTIONS }
 
 
-        for opt,value in [ full_opt.full_name in custom_defaults
+def _init_section_options(section, custom_defaults, search_env):
+    custom_section_defaults = dict( VISUALIZATION_SECTIONS.get(section,{}) )
+    custom_section_defaults.update(_subdict(custom_defaults,section))
+    return OptionsAlmanac(VISUALIZATION_OPTION_TEMPLATES,
+                          custom_defaults=custom_section_defaults,
+                          section=section, filename=RCFILE, search_env=search_env,
+                          prepend_section = (section != 'default'))
 
-        _visualization_sections = { section: section_options(section, custom_defaults,
+
+def _subdict(fulldict, section, strip=True):
+    """returns a dict containing all items in fulldict whose key begins with 'section_'.
+       if strip==True, the 'section_' prefix is removed from item keys.
+    """
+        prefix, n = '{}_'.format(section) , (0 if not strip else len(section) + 1)
+        return { k[n:]:v for (k,v) in fulldict.items() if k.startswith(prefix) }
 
 
- , sect_defaults in _visualization_section_defaults.items():
-        updated_sect_defaults = { opt: custom_defaults.get(sect + '_' + opt, val)
-                                   for opt,val in sect_defaults.items() }
-        visualization_sections
-
-    for
-    def section_options(section):
-        return OptionSettings(visualization_option_templates,
-                              custom_defaults=custom_defaults,
-                              section=section, filename='meep_visualization.rc',
-                              search_env=search_env,
-                              prepend_section = (section != 'default') )
-
-    _visualization_options = { s: section_options(s) for s in
 
 
 ######################################################################
-# This routine is intended to be called by meep_visualization API scripts.
+# exported routines
 ######################################################################
 def set_visualization_option_defaults(custom_defaults={}, search_env=True):
     """
@@ -86,46 +53,40 @@ def set_visualization_option_defaults(custom_defaults={}, search_env=True):
     _init_visualization_options(custom_defaults=custom_defaults, search_env=search_env)
 
 
-##################################################
-##################################################
-##################################################
-def get_visualization_option(option, section='default', fallback=None, overrides={}):
-    """Return currently configured value of option.
+def get_visualization_options(options, section='default', overrides={}):
+    """Return currently configured values of options.
 
     Args:
-        option (str):  name of option
+        options (list of str):  names of options
         section (str): name of section
-        fallback:     what to return if option is not found among current settings
         overrides (dict): {option:value} records to override current settings
 
     Returns:
-        Value of option if found, otherwise fallback.
+        List of option values.
     """
     global _visualization_sections
     if _visualization_sections == {}:
         _init_visualization_options()
 
-    if not (section in visualization_sections):
+    almanac = _visualization_sections.get(section, None)
+    if almanac is None:
         warn('unknown options section {} (skipping)'.format(section))
         return None
 
-    almanac, _overrides = _visualization_sections['default'], overrides,
+    _overrides = overrides if section=='default' else _subdict(overrides,section)
 
-    if section != 'default':
-        # if we're in a specific section, the user-supplied dict of overrides
-        # will have the section name prepended to the option names, so we pause
-        # to handle that.
-        override_value = overrides.get('{}_{}'.format(section,option), None)
-        _overrides = { option:override_value } if override_value else {}
+    return [ almanac(opt, section, _overrides) for opt in options ]
 
-    return almanac(option, fallback=fallback, overrides=_overrides)
+
+def get_visualization_option(option, section='default', overrides={}):
+    return get_visualization_options([option],section,overrides)[0]
 
 
 ######################################################################
-# The rest of the file just defines the available options.
-######################################################################
+# Definitions of options and section-specific default values
+#####################################################################
 
-""" definition of general (section-independent) options """
+""" names, default values, descriptions of visualization options """
 VISUALIZATION_OPTION_TEMPLATES= [
     OptionTemplate('cmap',         'plasma',        'default colormap'),
     OptionTemplate('alpha',         1.0,            'default transparency'),
@@ -145,4 +106,12 @@ VISUALIZATION_OPTION_TEMPLATES= [
     OptionTemplate('cb_shrink',    0.60,            'colorbar shrink factor')
  ]
 
-""" definition of general (section-independent) options """
+
+""" sections and section-specific defaults """
+VISUALIZATION_SECTIONS = {
+#
+    'eps': { 'cmap': 'blues', 'linewidth': 0.0 },
+#
+    'src_region': { 'linewidth': 4.0, 'linecolor': '#0000ff', 'fontsize': 0 }
+
+}
