@@ -22,7 +22,8 @@
 import numpy as np
 import meep as mp
 
-from . import (ObjectiveFunction, Basis, log, v3, V3, E_CPTS)
+from . import (ObjectiveFunction, Basis, v3, V3, E_CPTS)
+from . import get_adjoint_option as adj_opt
 
 class TimeStepper(object):
 
@@ -84,17 +85,16 @@ class TimeStepper(object):
 
         """Execute a MEEP timestepping run to compute frequency-domain fields and quantities."""
 
-        from meep.adjoint import options
         last_source_time = self.fwd_sources[0].src.swigobj.last_time()
-        max_time         = options['dft_timeout']*last_source_time
-        check_interval   = options['dft_interval']*last_source_time
-        reltol           = options['dft_reltol']
+        max_time         = adj_opt('dft_timeout')*last_source_time
+        check_interval   = adj_opt('dft_interval')*last_source_time
+        reltol           = adj_opt('dft_reltol')
 
         # configure real-time animations of evolving time-domain fields
         step_funcs = []
-#        clist = adjoint_options['animate_components']
+#        clist = adjoint_adj_opt('animate_components')
 #        if clist is not None:
-#            ivl=adjoint_options['animate_interval']
+#            ivl=adjoint_adj_opt('animate_interval')
 #            ivl=0.5
 #            step_funcs = [ AFEClient(self.sim, clist, interval=ivl) ]
 
@@ -202,7 +202,7 @@ class TimeStepper(object):
         if job=='forward':
             sources = self.fwd_sources
             cells   = self.dft_cells  # all cells needed for forward calculations
-            cmplx   = options['complex_fields']
+            cmplx   = adj_opt('complex_fields')
         elif job=='adjoint' or job in self.obj_func.qnames:
             sources = self.get_adjoint_sources ( qname = job )
             cells   = [self.design_cell]  # only design cell needed for adjoint calculations
@@ -238,3 +238,18 @@ def rel_diff(a,b):
     """ returns value in range [0,2] quantifying error relative to magnitude"""
     diff, scale = np.abs(a-b), np.amax([np.abs(a),np.abs(b)])
     return 2. if np.isinf(scale) else 0. if scale==0. else diff/scale
+
+
+
+######################################################################
+######################################################################
+######################################################################
+def log(msg):
+    from meep import am_master
+    if not am_master(): return
+    from meep.adjoint import options
+    tm = dt.now().strftime("%T ")
+    channel = options.get('logfile',None)
+    if channel is not None:
+        with open(channel,'a') as f:
+            f.write("{} {}\n".format(tm,msg))

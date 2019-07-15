@@ -1,4 +1,4 @@
-""" convenience wrappers around various objects in core pymeep
+""" this file is mostly convenience wrappers around various objects in core pymeep
 
     v3, V3 convert between mp.Vector3 and simple lists or np.arrays of coordinates
 

@@ -156,18 +156,3 @@ def uq(s):
     if s and isinstance(s,str) and s[0]==s[-1] and s[0] in ["'",'"']:
         return s[1:-1]
     return s
-
-
-
-######################################################################
-# Miscellaneous utility routines
-######################################################################
-def log(msg):
-    from meep import am_master
-    if not am_master(): return
-    from meep.adjoint import options
-    tm = dt.now().strftime("%T ")
-    channel = options.get('logfile',None)
-    if channel is not None:
-        with open(channel,'a') as f:
-            f.write("{} {}\n".format(tm,msg))

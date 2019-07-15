@@ -1,5 +1,8 @@
 """ Handling of visualization-related configuration options."""
 
+import warnings
+import numpy as np
+
 from .util import OptionTemplate, OptionAlmanac
 
 
@@ -24,18 +27,18 @@ def _init_visualization_options(custom_defaults={}, search_env=True):
 def _init_section_options(section, custom_defaults, search_env):
     custom_section_defaults = dict( VISUALIZATION_SECTIONS.get(section,{}) )
     custom_section_defaults.update(_subdict(custom_defaults,section))
-    return OptionsAlmanac(VISUALIZATION_OPTION_TEMPLATES,
-                          custom_defaults=custom_section_defaults,
-                          section=section, filename=RCFILE, search_env=search_env,
-                          prepend_section = (section != 'default'))
+    return OptionAlmanac(VISUALIZATION_OPTION_TEMPLATES,
+                         custom_defaults=custom_section_defaults,
+                         section=section, filename=RCFILE, search_env=search_env,
+                         prepend_section = (section != 'default'))
 
 
 def _subdict(fulldict, section, strip=True):
     """returns a dict containing all items in fulldict whose key begins with 'section_'.
-       if strip==True, the 'section_' prefix is removed from item keys.
+       if strip==True, the 'section_' prefix is removed from keys in the returned dict.
     """
-        prefix, n = '{}_'.format(section) , (0 if not strip else len(section) + 1)
-        return { k[n:]:v for (k,v) in fulldict.items() if k.startswith(prefix) }
+    prefix, n = '{}_'.format(section) , (0 if not strip else len(section) + 1)
+    return { k[n:]:v for (k,v) in fulldict.items() if k.startswith(prefix) }
 
 
 
@@ -70,7 +73,7 @@ def get_visualization_options(options, section='default', overrides={}):
 
     almanac = _visualization_sections.get(section, None)
     if almanac is None:
-        warn('unknown options section {} (skipping)'.format(section))
+        warnings.warn('unknown options section {} (skipping)'.format(section))
         return None
 
     _overrides = overrides if section=='default' else _subdict(overrides,section)
@@ -96,7 +99,7 @@ VISUALIZATION_OPTION_TEMPLATES= [
     OptionTemplate('linecolor',    '#ff0000',       'default line color'),
     OptionTemplate('linewidth',    4.0,             'default line width'),
     OptionTemplate('linestyle',    '-',             'default line style'),
-    OptionTemplate('fcolor',       '#ffffff',       'default fill color'),
+    OptionTemplate('fillcolor',    '#ffffff',       'default fill color'),
     OptionTemplate('cmin',         np.inf,          'colormap minimum'),
     OptionTemplate('cmax',         np.inf,          'colormap maximum'),
     OptionTemplate('zmin',         0.6,             ''),
@@ -107,11 +110,45 @@ VISUALIZATION_OPTION_TEMPLATES= [
  ]
 
 
-""" sections and section-specific defaults """
+""" section-specific overrides of default option values """
 VISUALIZATION_SECTIONS = {
-#
-    'eps': { 'cmap': 'blues', 'linewidth': 0.0 },
-#
-    'src_region': { 'linewidth': 4.0, 'linecolor': '#0000ff', 'fontsize': 0 }
 
+    'default': {},
+
+#----------------------------------------------------------------------
+# permittivity: blue-scale colormap, no boundary edges
+#----------------------------------------------------------------------
+    'eps': { 'cmap': 'blues',
+             'linewidth': 0.0
+           },
+
+#----------------------------------------------------------------------
+# pml regions: light grey semitransparent filling, no boundary edges
+#----------------------------------------------------------------------
+    'pml': { 'linewidth':  0.0,
+             'fillcolor': '#CCCCCC',
+             'alpha':      0.25,
+           },
+
+#----------------------------------------------------------------------
+# source regions: cyan lines, no labels
+#----------------------------------------------------------------------
+    'src_region': { 'linecolor': '#00ffff',
+                    'fontsize':  0
+                  },
+
+#----------------------------------------------------------------------
+# flux regions: magenta line, with labels
+#----------------------------------------------------------------------
+    'flux_region': { 'linecolor': '#ff00ff',
+                   },
+
+#----------------------------------------------------------------------
+# field regions: boundaries indicated by semitransparent dashed green
+#                lines, interiors not filled in
+#----------------------------------------------------------------------
+    'field_region': { 'linewidth': 2.0,
+                      'linecolor': '#00ff00',
+                          'alpha': 0.5,
+                   }
 }

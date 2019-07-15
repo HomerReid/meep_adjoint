@@ -1,4 +1,5 @@
 import sys
+
 import os
 import argparse
 import numpy as np
@@ -23,7 +24,16 @@ set_adjoint_defaults(custom_defaults)
 
 
 ######################################################################
-######################################################################
+# Having just set our default option overrides, we now immediately
+# turn around and query the values of some adjoint-module options
+# that we will use in setting up our geometry below. This forces
+# meep_adjoint to execute the lazy initialization of its option
+# databases, whereupon any command-line arguments processed by
+# meep_adjoint will be removed from sys.argv and won't complicate our
+# own argument-parsing below.
+# Of course we could alternatively order things so that meep_adjoint
+# winds up processing sys.argv after we have done so; in this case we
+# would just need to ignore any arguments that we don't understand.
 ######################################################################
 dpml = adj_opt('dpml')
 dair = adj_opt('dair')
