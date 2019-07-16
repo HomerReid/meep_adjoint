@@ -94,19 +94,20 @@ VISUALIZATION_OPTION_TEMPLATES= [
     OptionTemplate('cmap',         'plasma',        'default colormap'),
     OptionTemplate('alpha',         1.0,            'default transparency'),
     OptionTemplate('fontsize',      25,             'font size for labels and titles'),
-    OptionTemplate('method',       'contourf 100',  'contourf NN | imshow |pcolormesh'),
     OptionTemplate('shading',      'gouraud',       'shading style'),
+    OptionTemplate('method',       'contourf',      'contourf | imshow |pcolormesh'),
+    OptionTemplate('contours',     100,             'number of contours'),
     OptionTemplate('linecolor',    '#ff0000',       'default line color'),
     OptionTemplate('linewidth',    4.0,             'default line width'),
     OptionTemplate('linestyle',    '-',             'default line style'),
     OptionTemplate('fillcolor',    '#ffffff',       'default fill color'),
-    OptionTemplate('cmin',         np.inf,          'colormap minimum'),
-    OptionTemplate('cmax',         np.inf,          'colormap maximum'),
+    OptionTemplate('cmin',         np.NINF,         'colormap minimum'),
+    OptionTemplate('cmax',         np.PINF,         'colormap maximum'),
     OptionTemplate('zmin',         0.6,             ''),
     OptionTemplate('zmax',         0.8,             ''),
-    OptionTemplate('latex',        True,            'LaTeX text formatting'),
     OptionTemplate('cb_pad',       0.04,            'colorbar padding'),
-    OptionTemplate('cb_shrink',    0.60,            'colorbar shrink factor')
+    OptionTemplate('cb_shrink',    0.60,            'colorbar shrink factor'),
+    OptionTemplate('latex',        True,            'LaTeX text formatting'),
  ]
 
 
@@ -118,7 +119,7 @@ VISUALIZATION_SECTIONS = {
 #----------------------------------------------------------------------
 # permittivity: blue-scale colormap, no boundary edges
 #----------------------------------------------------------------------
-    'eps': { 'cmap': 'blues',
+    'eps': { 'cmap': 'Blues',
              'linewidth': 0.0
            },
 
