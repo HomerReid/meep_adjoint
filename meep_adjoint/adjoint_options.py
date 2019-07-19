@@ -10,7 +10,7 @@
 
 """
 
-from .util import OptionTemplate, OptionAlmanac
+from .option_almanac import OptionTemplate, OptionAlmanac
 
 _adjoint_options = None
 """ module-wide database of adjoint-related options, referenced only in this file"""

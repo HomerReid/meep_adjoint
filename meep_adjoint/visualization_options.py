@@ -3,7 +3,7 @@
 import warnings
 import numpy as np
 
-from .util import OptionTemplate, OptionAlmanac
+from .option_almanac import OptionTemplate, OptionAlmanac
 
 
 """ module-wide dict of { section_name : section_almanac } records """
@@ -95,6 +95,7 @@ VISUALIZATION_OPTION_TEMPLATES= [
     OptionTemplate('alpha',         1.0,            'default transparency'),
     OptionTemplate('fontsize',      25,             'font size for labels and titles'),
     OptionTemplate('shading',      'gouraud',       'shading style'),
+    OptionTemplate('interp',       'gaussian',      'interpolation method'),
     OptionTemplate('method',       'contourf',      'contourf | imshow |pcolormesh'),
     OptionTemplate('contours',     100,             'number of contours'),
     OptionTemplate('linecolor',    '#ff0000',       'default line color'),

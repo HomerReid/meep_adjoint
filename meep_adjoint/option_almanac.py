@@ -21,6 +21,7 @@ import configparser
 from collections import namedtuple
 from warnings import warn
 from datetime import datetime as dt
+from numbers import Number
 
 
 OptionTemplate = namedtuple('OptionTemplate', 'name default help')
@@ -131,9 +132,10 @@ class OptionAlmanac(object):
         """
         revisions = revisions.items() if hasattr(revisions,'items') else revisions
         for (key,newval) in [ (k,uq(v)) for k,v in revisions if k in self.options ]:
-            try:
-                self.options[key] = (self.opttypes[key])(newval)
-            except ValueError:
+            correctly_typed_newval = enforce_type(newval, self.opttypes[key])
+            if correctly_typed_newval is not None:
+                self.options[key] = correctly_typed_newval
+            else:
                 msg='option {}: ignoring improper value {} from {} (retaining value {})'
                 warn(msg.format(key,newval,context,self.options[key]))
 
@@ -149,6 +151,34 @@ class OptionAlmanac(object):
             except ValueError:
                 warn('option {}: ignoring improper override value {}',name,overrides[name])
         return self.options.get(name,fallback)
+
+
+def enforce_type(value, required_type):
+    """Returns value converted to an instance of required_type, if possible.
+       The conversion is done by a simple typecast unless the return type is
+       boolean, which we process by hand as automatic conversion does not
+       work; for example, bool('False') returns True.
+       Raises ValueError if value cannot be converted to required_Type.
+    """
+    # no conversion necessary?
+    if type(value) == required_type:
+        return value
+
+    # handle string/int to boolean conversion by hand
+    if required_type == type(True):
+        if isinstance(value,str):
+            vl, FF, TT = value.lower(), ['false', 'no', '0'], ['true', 'yes', '1']
+            return False if vl in FF else True if vl in TT else None
+        if isinstance(value,Number):
+            return True if value else False
+        return None
+
+    # otherwise try automatic conversion via typecast
+    try:
+        return (required_type)(value)
+    except e:
+        pass
+    return None
 
 
 def uq(s):

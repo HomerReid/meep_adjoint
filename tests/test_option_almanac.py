@@ -27,7 +27,7 @@ sys.path.insert(0,PWD)
 from helpers import TestEnvironment
 
 sys.path.insert(0,dirname(PWD + '..'))
-from meep_adjoint.util import OptionTemplate, OptionAlmanac
+from meep_adjoint.option_almanac import OptionTemplate, OptionAlmanac
 
 
 ######################################################################
@@ -35,6 +35,7 @@ from meep_adjoint.util import OptionTemplate, OptionAlmanac
 ######################################################################
 templates = [
     OptionTemplate( 'verbose', False,       'generate verbose output' ),
+    OptionTemplate( 'console',  True,       'write to console'        ),
     OptionTemplate( 'index',   4,           'integer in range [0-12]' ),
     OptionTemplate( 'mass',    19.2,        'mass of sample'          ),
     OptionTemplate( 'omega',   3.14,        'angular frequency'       ),
@@ -51,7 +52,7 @@ RCFILE = 'test_option_almanac.rc'
 RCGLOBAL_NAME = '~/.{}'.format(RCFILE)
 RCGLOBAL_BODY = """\
 [default]
-verbose = True
+verbose = 1
 index = 0
 omega = 0.00
 title = 'Title zero'
@@ -60,6 +61,7 @@ title = 'Title zero'
 RCLOCAL_NAME = RCFILE
 RCLOCAL_BODY = """\
 [default]
+console = False
 index = 1
 omega = 1.11
 title = 'Title one'
@@ -86,3 +88,4 @@ def test_option_almanac():
     assert options('index')    == 1
     assert options('mass')     == 19.2
     assert options('verbose')  == True
+    assert options('console')  == False

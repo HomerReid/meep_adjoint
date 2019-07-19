@@ -10,7 +10,7 @@ import meep as mp
 ######################################################################
 ######################################################################
 ######################################################################
-from .util import (OptionTemplate, OptionAlmanac)
+from .option_almanac import (OptionTemplate, OptionAlmanac)
 
 from .visualization_options import (get_visualization_option,
                                     get_visualization_options,

@@ -50,38 +50,43 @@ def texify(expr):
 # visualize epsilon distribution.
 #####################################################################
 def plot_eps(sim, fig=None, plot3D=False, options={}):
-    """
+    """Produce graphical visualization of material geometry.
+       Args:
+             fig: existing matplotlib figure to overwrite
+                  (otherwise a new fig() is created)
+          plot3D: True to plot in 3D axis system (typically used
+                  for geometry--field superposition plots)
+         options: dict of visualization option overrides
+
+       Return value: None
     """
 
     #--------------------------------------------------
     #- fetch values of relevant options ---------------
     #--------------------------------------------------
-    keys = ['cmap', 'alpha', 'fontsize', 'shading',
+    keys = ['cmap', 'alpha', 'shading', 'interp',
             'method', 'contours', 'cb_shrink', 'cb_pad',
-            'cmin', 'cmax', 'zmin', 'zmax', 'latex']
+            'cmin', 'cmax', 'zmin', 'zmax',
+            'fontsize', 'latex', 'linewidth']
     vals = vis_opts(keys, section='eps', overrides=options)
-    cmap, alpha, fontsize, shading        = vals[0:4]
-    method, contours, cb_shrink, cb_pad   = vals[4:8]
-    cmin, cmax, zbar_min, zbar_max, latex = vals[8:13]
-    interp, linewidth = 'gaussian', 0.0
+    cmap, alpha, shading, interp        = vals[0:4]
+    method, contours, cb_shrink, cb_pad = vals[4:8]
+    cmin, cmax, zbar_min, zbar_max      = vals[8:12]
+    fontsize, latex, linewidth          = vals[13:15]
 
     #--------------------------------------------------
     #- fetch epsilon array and clip values if requested
     #--------------------------------------------------
-    eps=np.transpose(sim.get_epsilon())
-    eps_min, eps_max = np.min(eps), np.max(eps)
-    if np.isfinite(cmin) or np.isfinite(cmax):
-       eps = np.clip(eps,cmin,cmax)
-    eps_min, eps_max = np.min(eps), np.max(eps)
-
     (x,y,z,w) = sim.get_array_metadata()
-    extent = (min(x), max(x), min(y), max(y))
+    eps = np.transpose(sim.get_epsilon())
+    vmin = cmin if np.isfinite(cmin) else np.min(eps)
+    vmax = cmax if np.isfinite(cmax) else np.max(eps)
+    if np.isfinite(cmin) or np.isfinite(cmax):
+       eps = np.clip(eps,vmin,vmax)
 
     #--------------------------------------------------
     #- create 2D or 3D plot ---------------------------
     #--------------------------------------------------
-    fig = fig or plt.gcf()
-    fig.clf()
     ax = fig.gca(projection='3d') if plot3D else fig.gca()
     if not plot3D:
        ax.set_aspect('equal')
@@ -93,19 +98,19 @@ def plot_eps(sim, fig=None, plot3D=False, options={}):
        zbar = 0.5*(zbar_min+zbar_max)
        z0   = zmin + zbar*(zmax-zmin)
        img  = ax.contourf(X, Y, eps, contours, zdir='z', offset=z0,
-                          vmin=eps_min, vmax=eps_max, cmap=cmap, alpha=alpha)
+                          vmin=vmin, vmax=vmax, cmap=cmap, alpha=alpha)
        ax.set_zlim3d(zmin, zmax)
        ax.set_zticks([])
        cb = fig.colorbar(img, shrink=cb_shrink, pad=cb_pad)
     elif method=='imshow':
-       img = plt.imshow(np.transpose(eps), extent=extent, cmap=cmap,
-                        interpolation=interpolation, alpha=alpha)
+       img = plt.imshow(np.transpose(eps), extent=(min(x), max(x), min(y), max(y)),
+                        cmap=cmap, interpolation=interp, alpha=alpha)
     elif method=='pcolormesh':
        img = plt.pcolormesh(x, y, np.transpose(eps), cmap=cmap, shading=shading,
                             edgecolors=edgecolors, linewidth=linewidth, alpha=alpha)
     else:
        X, Y = np.meshgrid(x, y)
-       img  = ax.contourf(X, Y, eps, contours, vmin=eps_min, vmax=eps_max,
+       img  = ax.contourf(X, Y, eps, contours, vmin=vmin, vmax=vmax,
                           cmap=cmap, alpha=alpha)
 
     #--------------------------------------------------
@@ -116,7 +121,7 @@ def plot_eps(sim, fig=None, plot3D=False, options={}):
         xlabel, ylabel, epslabel = r'$x$', r'$y$', r'$\epsilon$'
     else:
         plt.rc('text', usetex=False)
-        xlabel, ylabel, epslabel = 'x', 'y', 'epsilon'
+        xlabel, ylabel, epslabel = 'x', 'y', 'hello'
 
     ax.set_xlabel(xlabel, fontsize=fontsize, labelpad=0.50*fontsize)
     ax.set_ylabel(ylabel, fontsize=fontsize, labelpad=fontsize, rotation=0)
@@ -128,10 +133,11 @@ def plot_eps(sim, fig=None, plot3D=False, options={}):
     cb.update_ticks()
 
 
-#####################################################################
+######################################################################
 # plot_subregion() adds polygons representing a subregion of a meep
 # computational cell to the current 2D or 3D plot, with an optional
-# text label. section is a string like 'pml', 'src', 'dft_flux', 'dft_field',
+# text label. section is a string like 'eps', 'pml', 'src_region',
+# 'src_data', 'flux_region', 'flux_data', 'field_region', 'field_data'
 # etc. indicating the significance of the region within the meep geometry.
 #####################################################################
 def plot_subregion(sim, vol=None, center=None, size=None,
@@ -193,6 +199,9 @@ def plot_subregion(sim, vol=None, center=None, size=None,
     # attempt to autodetermine text rotation and alignment
     #####################################################################
     if label and fontsize>0:
+        plt.rc('text', usetex=latex)
+        if latex:
+            label = label.replace('_','\_')
         x0, y0, r, h, v = np.mean(ax.get_xlim()),np.mean(ax.get_ylim()), 0, 'center', 'center'
         if size[1]==0.0:
             v = 'bottom' if center[1]>y0 else 'top'
@@ -223,11 +232,14 @@ def visualize_sim(sim, fig=None, plot3D=None,
     if plot3D is None:
         plot3D = sim.round_time() > sim.fields.last_source_time()
 
+    fig = fig or plt.gcf()
+    fig.clf()
+    title = options
+
     #################################################
     # plot permittivity
     #################################################
     plot_eps(sim, fig=fig, plot3D=plot3D, options=options)
-
 
     ##################################################
     # plot PML regions
@@ -260,11 +272,10 @@ def visualize_sim(sim, fig=None, plot3D=None,
     #####################################################################
     # plot DFT cell regions, with labels for flux cells.
     #####################################################################
-    for nc, c in enumerate(sim.dft_objects):
-        section = 'flux_region' if isinstance(c,mp.simulation.DftFlux) else 'field_region'
-        label = (dft_labels[nc] if dft_labels else 'flux {}'.format(nc)) if section=='flux_region' else None
-        plot_subregion(sim, center=c.regions[0].center, size=c.regions[0].size,
-                       plot3D=plot3D, label=label, section=section, options=options)
+    for n, c in enumerate(sim.dft_objects):
+        cn, sz, data = c.regions[0].center, c.regions[0].size, 'flux' if hasattr(c,'flux') else 'fields'
+        section, label = data + '_region', dft_labels[n] if dft_labels else '{} {}'.format(data,n)
+        plot_subregion(sim, center=cn, size=sz, plot3D=plot3D, label=label, section=section, options=options)
 
 
     plt.show(block = False)

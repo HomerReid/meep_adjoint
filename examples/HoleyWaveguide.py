@@ -52,12 +52,12 @@ args=parser.parse_args()
 
 
 ##################################################
-# set up problem geometry
+# set up optimization problem
 ##################################################
 
-#----------------------------------------
+#----------------------------------------------------------------------
 # size of computational cell
-#----------------------------------------
+#----------------------------------------------------------------------
 w_wvg      = args.w_wvg
 h_wvg      = args.h_wvg
 r_hole     = args.r_hole
@@ -68,6 +68,12 @@ sx         = dpml + L + dpml
 sy         = dpml + dair + w_wvg + dair + dpml
 sz         = 0.0 if h_wvg==0.0 else dpml + dair + h_wvg + dair + dpml
 cell_size  = v3(sx, sy, sz)
+
+#----------------------------------------------------------------------
+#- material bodies, not including the design region
+#----------------------------------------------------------------------
+wvg = mp.Block(center=V3(ORIGIN), material=mp.Medium(epsilon=eps_wvg), size=V3(sx,w_wvg,h_wvg))
+
 
 #----------------------------------------------------------------------
 #- objective regions and objective_function
@@ -94,12 +100,17 @@ source_region = Subregion(center=source_center, size=source_size)
 #----------------------------------------------------------------------
 design_center = ORIGIN
 design_size   = 2.0*r_hole*(XHAT + YHAT) + args.h_wvg*ZHAT
-design_region = Subregion(center=design_center, size=design_size, name='design')
+design_region = Subregion(name='design', center=design_center, size=design_size)
 
+#----------------------------------------------------------------------
+# 'extra' regions not needed for adjoint calculations but added for
+# our own purposes---in this case, to produce field visualizations
+#----------------------------------------------------------------------
 full_region = Subregion(size=cell_size)
 
-wvg = mp.Block(center=V3(ORIGIN), material=mp.Medium(epsilon=eps_wvg), size=V3(sx,w_wvg,h_wvg))
-
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
 opt_prob = OptimizationProblem(objective_regions=[east,west], objective="S_east",
                                design_region=design_region,
                                cell_size=cell_size, background_geometry=[wvg],
