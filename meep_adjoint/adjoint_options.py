@@ -60,6 +60,10 @@ def get_adjoint_option(option, fallback=None, overrides={}):
     return _adjoint_options(option, fallback=fallback, overrides=overrides)
 
 
+def set_adjoint_options(options):
+    _adjoint_options.update(options)
+
+
 ######################################################################
 # The rest of the file just defines the available options.
 ######################################################################
@@ -103,6 +107,7 @@ adjoint_option_templates= [
     #--------------------------------------------------
     # options affecting outputs
     #--------------------------------------------------
+    OptionTemplate('filebase',         '',    'base name of output files (empty string --> autodetermined)'),
     OptionTemplate('verbose',      'True',    'produce more output'),
     OptionTemplate('visualize',    'True',    'produce visualization graphics'),
     OptionTemplate('silence_meep', 'True',    'suppress MEEP console output')

@@ -146,11 +146,13 @@ VISUALIZATION_SECTIONS = {
                    },
 
 #----------------------------------------------------------------------
-# field regions: boundaries indicated by semitransparent dashed green
-#                lines, interiors not filled in
+# 'fields' regions: boundaries indicated by semitransparent dashed
+#                   green lines, interiors not filled in, no labels
 #----------------------------------------------------------------------
-    'field_region': { 'linewidth': 2.0,
-                      'linecolor': '#00ff00',
-                          'alpha': 0.5,
+    'fields_region': { 'linewidth': 2.0,
+                       'linecolor': '#00ff00',
+                       'linestyle': '--',
+                           'alpha': 0.5,
+                        'fontsize':   0
                    }
 }

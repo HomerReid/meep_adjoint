@@ -140,8 +140,12 @@ class OptionAlmanac(object):
                 warn(msg.format(key,newval,context,self.options[key]))
 
 
+    def update(self, options):
+        self.options.update(options)
+
+
     def merge(self, partner):
-        self.options.update(partner.options)
+        self.update(partner.options)
 
 
     def __call__(self, name, fallback=None, overrides={}):

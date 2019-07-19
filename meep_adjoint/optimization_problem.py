@@ -1,5 +1,8 @@
 """OptimizationProblem is the top-level class exported by the meep.adjoint module.
 """
+import os
+import inspect
+
 import meep as mp
 
 from . import (DFTCell, ObjectiveFunction, TimeStepper,
@@ -9,6 +12,7 @@ from . import (DFTCell, ObjectiveFunction, TimeStepper,
 from . import visualize_sim
 
 from . import get_adjoint_option as adj_opt
+from .adjoint_options import set_adjoint_options
 
 ######################################################################
 ######################################################################
@@ -115,6 +119,7 @@ class OptimizationProblem(object):
                                        element_length=adj_opt('element_length'),
                                        element_type=adj_opt('element_type'))
         design_region = basis.domain
+        design_region.name = design_region.name or 'design'
 
         if not sources:
             f, df, m, c = [ adj_opt(s) for s in ['fcen', 'df', 'source_mode', 'source_component'] ]
@@ -125,7 +130,7 @@ class OptimizationProblem(object):
         rescale_sources(sources)
 
         #-----------------------------------------------------------------------
-        #initialize helper classes
+        # initialize lower-level helper classes
         #-----------------------------------------------------------------------
 
         # DFTCells
@@ -158,6 +163,15 @@ class OptimizationProblem(object):
 
         # TimeStepper
         self.stepper    = TimeStepper(obj_func, dft_cells, basis, sim, sources)
+
+        #-----------------------------------------------------------------------
+        # if the 'filebase' configuration option wasn't specified, set it
+        # to the base filename of the caller's script
+        #-----------------------------------------------------------------------
+        if not adj_opt('filebase'):
+            script = inspect.stack()[1][0].f_code.co_filename or 'meep_adjoint'
+            script_base = os.path.basename(script).split('.')[0]
+            set_adjoint_options({'filebase': os.path.basename(script_base)})
 
 
     #####################################################################

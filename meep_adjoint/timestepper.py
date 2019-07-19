@@ -25,10 +25,10 @@ from enum import Enum
 import numpy as np
 import meep as mp
 
+from datetime import datetime as dt2
+
 from . import (ObjectiveFunction, Basis, v3, V3, E_CPTS)
 from . import get_adjoint_option as adj_opt
-
-Cutlery = Enum('Cutlery', ['knife', 'fork', 'spoon'])
 
 class TimeStepper(object):
 
@@ -246,11 +246,6 @@ def rel_diff(a,b):
 ######################################################################
 ######################################################################
 def log(msg):
-    from meep import am_master
-    if not am_master(): return
-    from meep.adjoint import options
-    tm = dt.now().strftime("%T ")
-    channel = options.get('logfile',None)
-    if channel is not None:
-        with open(channel,'a') as f:
-            f.write("{} {}\n".format(tm,msg))
+    if not mp.am_master() or not adj_opt('filebase'): return
+    with open( adj_opt('filebase') + '.log' , 'a') as f:
+        f.write("{} {}\n".format(dt2.now().strftime('%T '),msg))
