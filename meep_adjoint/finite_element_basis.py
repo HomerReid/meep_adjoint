@@ -131,7 +131,7 @@ class FiniteElementBasis(Basis):
 
         Args:
             beta_vector (np.array of dimension self.dim and datatype float):
-                Expansion coefficients
+                expansion coefficients
 
         Returns:
             a class `func` with the following properties: After the statement
@@ -208,7 +208,7 @@ def parameterized_function2(basis, beta_vector):
        def _eval_f(p):
            return offset + f(df.Point(v3(p)))
 
-       return _eval_f,_set_coefficients
+       return _eval_f, _set_coefficients
 
 
 #----------------------------------------------------------------------

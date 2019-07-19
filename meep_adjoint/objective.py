@@ -14,6 +14,7 @@ import meep as mp
 
 QRule = namedtuple('QRule', 'code mode ncell')
 
+from . import dft_cell_names
 
 def make_qrule(qname):
     """Decode objective-quantity name to yield rule for computing it.
@@ -29,7 +30,6 @@ def make_qrule(qname):
        objective variables like 'P2_3' or 'M1_north' or 's_0'.
 
     """
-    from meep.adjoint import dft_cell_names
     tokens = re.sub(r'([A-Za-z]+)([\d]*)_([\w]+)',r'\1 \2 \3',qname).split()
     if len(tokens)==3:
         code, mode, cellstr = tokens
@@ -49,6 +49,28 @@ def make_qrule(qname):
     if ncell < 0 or ncell > len(dft_cell_names):
         raise ValueError('quantity {}: non-existent DFT cell {}'.format(qname,cellstr))
     return QRule(code, mode, ncell)
+
+
+
+# class ObjectiveQuantity(object):
+#
+#     def __init__(self, qname):
+#         tokens = re.sub(r'([A-Za-z]+)([\d]*)_([\w]+)',r'\1 \2 \3',qname).split()
+#         if len(tokens) not in [2,3]:
+#             raise ValueError('quantity {}: syntax error{}'.format(qname))
+#         self.code = tokens[0]
+#         try:
+#             self.mode = 0 if len(tokens)==2 else int(tokens[1])
+#         except:
+#             raise ValueError('quantity {}: invalid mode {}'.format(qname,tokens[1]))
+#         self.cell = DFTCell.get_cell_by_name(tokens[-1])
+#         if self.cell is None:
+#             raise ValueError('quantity {}: non-existent DFT cell {}'.format(qname,tokens[-1]))
+#
+#
+#     def __call__(self, nf=0):
+#         return self.cell(self.code,mode=self.mode, nf=nf)
+
 
 
 

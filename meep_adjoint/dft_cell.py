@@ -100,6 +100,7 @@ class Subregion(object):
            self.xmin, self.xmax   = [self.center + sgn*self.size  for sgn in [-1,1] ]
         self.normal, self.name = (dir if normal is None else normal), name
 
+dft_cell_names=[]
 
 class DFTCell(object):
     """ Simpler data structure for frequency-domain fields in MEEP
@@ -141,15 +142,8 @@ class DFTCell(object):
         and DftObj structures in core pymeep.
     """
 
-#    cell_names=[]
-#
 #    @classmethod
-#    def reset_cell_names(cls):
-#        cls._cell_names=[]
-#        dft_cell_names=[]
-
-#    @classmethod
-#    def get_index(cls, region_name):
+#    def get_cell_by_name(cls, region_name):
 ##################################################
 # i think this should work...
 ##################################################
@@ -177,8 +171,6 @@ class DFTCell(object):
     ######################################################################
     def __init__(self, region, components=None, fcen=None, df=None, nfreq=None):
 
-        from meep.adjoint import dft_cell_names
-
         self.region     = region
         self.normal     = region.normal
         self.celltype   = 'flux' if self.normal is not None else 'fields'
@@ -192,12 +184,15 @@ class DFTCell(object):
         self.dft_obj    = None  # meep DFT object for current simulation
 
         self.EH_cache   = {}    # cache of frequency-domain field data computed in previous simulations
-        self.eigencache = {}    # cache of eigenmode field data to avoid redundant recalculationsq
+        self.eigencache = {}    # cache of eigenmode field data to avoid redundant recalculations
+
+        global dft_cell_names
 
         if region.name is not None:
             self.name = '{}_{}'.format(region.name, self.celltype)
         else:
             self.name = '{}_{}'.format(self.celltype, len(dft_cell_names))
+
         dft_cell_names.append(self.name)
 
         # Although the subgrid covered by the cell is independent of any
@@ -205,14 +200,14 @@ class DFTCell(object):
         # without first instantiating a mp.Simulation, so we have to
         # wait to initialize the 'grid' field of DFTCell. TODO make the
         # grid metadata calculation independent of any mp.Simulation or meep::fields
-        # object; it only depends on the resolution and extent of the Yee grid
+        # object; it only depends on the resolution and extents of the Yee grid
         # and thus logically belongs in `vec.cpp` or another code module that
-        # exists independently of fields, structures, etc,
+        # exists independently of fields, structures, etc.
         self.grid = None
 
     ######################################################################
     # 'register' the cell with a MEEP timestepping simulation to request
-    # computation of frequency-domain ffieldsields
+    # computation of frequency-domain fields
     ######################################################################
     def register(self, sim):
         self.sim = sim

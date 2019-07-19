@@ -145,10 +145,10 @@ def plot_subregion(sim, vol=None, center=None, size=None,
     #- fetch values of relevant options for the specified section
     #--------------------------------------------------------------
     keys = ['linecolor', 'linewidth', 'linestyle', 'fillcolor',
-            'alpha', 'fontsize', 'zmin']
+            'alpha', 'fontsize', 'zmin', 'latex']
     vals = vis_opts(keys, section=section, overrides=options)
-    linecolor, linewidth, linestyle  = vals[0:3]
-    fillcolor, alpha, fontsize, zbar = vals[3:7]
+    linecolor, linewidth, linestyle, fillcolor = vals[0:4]
+    alpha, fontsize, zbar, latex = vals[4:8]
 
     fig = plt.gcf()
     ax = fig.gca(projection='3d') if plot3D else fig.gca()
@@ -252,7 +252,7 @@ def visualize_sim(sim, fig=None, plot3D=None,
     for n,s in enumerate(sim.sources):
         plot_subregion(sim, center=s.center, size=s.size, plot3D=plot3D,
                        label=srclabel(s,n) if not src_labels else src_labels[ns],
-                       section='src', options=options)
+                       section='src_region', options=options)
 
     #if src_options['zrel_min']!=src_options['zrel_max']:
     #    visualize_source_distribution(sim, superpose=plot3D, options=src_options)
@@ -261,11 +261,10 @@ def visualize_sim(sim, fig=None, plot3D=None,
     # plot DFT cell regions, with labels for flux cells.
     #####################################################################
     for nc, c in enumerate(sim.dft_objects):
-        size, center = get_dft_cell_size_center(c)
-        section = 'flux' if isinstance(c,mp.simulation.DftFlux) else 'fields'
-        label = (dft_labels[nc] if dft_labels else 'flux {}'.format(nc)) if section=='flux' else None
-        plot_subregion(sim, center=center, size=size, plot3D=plot3D,
-                            label=label, section=section, options=options)
+        section = 'flux_region' if isinstance(c,mp.simulation.DftFlux) else 'field_region'
+        label = (dft_labels[nc] if dft_labels else 'flux {}'.format(nc)) if section=='flux_region' else None
+        plot_subregion(sim, center=c.regions[0].center, size=c.regions[0].size,
+                       plot3D=plot3D, label=label, section=section, options=options)
 
 
     plt.show(block = False)

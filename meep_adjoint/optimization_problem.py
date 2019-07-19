@@ -3,7 +3,10 @@
 import meep as mp
 
 from . import (DFTCell, ObjectiveFunction, TimeStepper,
-               FiniteElementBasis, parameterized_function2, E_CPTS, v3, V3)
+               FiniteElementBasis, parameterized_function2,
+               E_CPTS, v3, V3)
+
+from . import visualize_sim
 
 from . import get_adjoint_option as adj_opt
 
@@ -17,11 +20,12 @@ class OptimizationProblem(object):
     input arguments specifying the data required to define an adjoint-based
     optimization.
 
-    The class knows how to do one basic thing:
-
-        (a) For a given vector of design variables, compute the objective
-            function value (forward calculation) and optionally its gradient
-            (adjoint calculation). This is done by the __call__ method.
+    The class knows how to do one basic thing: Given an input vector
+    of design variables, compute the objective function value (forward
+    calculation) and optionally its gradient (adjoint calculation).
+    This is done by the __call__ method. The actual computations
+    are delegated to a hierarchy of lower-level classes, of which
+    the uppermost is TimeStepper.
     """
 
     def __init__(self, objective_regions=[], objective=None,
@@ -118,7 +122,7 @@ class OptimizationProblem(object):
             kws         = { 'center': V3(source_region.center), 'size': V3(source_region.size),
                             'src': envelope} #, 'eig_band': m, 'component': c }
             sources     = [ mp.EigenModeSource(eig_band=m,**kws) if m>0 else mp.Source(component=c, **kws) ]
-        adjust_sources(sources)
+        rescale_sources(sources)
 
         #-----------------------------------------------------------------------
         #initialize helper classes
@@ -138,45 +142,27 @@ class OptimizationProblem(object):
         # permittivity function they define (the 'design function'), (c) the
         # GeometricObject describing a material body with this permittivity
         # (the 'design object'), and (d) mp.Simulation superposing the design
-        # object on the rest of the caller's geometry.
-        # Note that sources are not added to the simulation at this stage;
-        # that is done on a just-in-time basis by internal methods of TimeStepper.
+        # object with the rest of the caller's geometry.
+        # Note that sources and DFT cells are not added to the Simulation at
+        # this stage; this is done later by internal methods of TimeStepper
+        # on a just-in-time basis before starting a timestepping run.
         beta_vector     = basis.project(adj_opt('eps_func'))
 #        eps_func        = basis.parameterized_function(beta_vector)
-        eps_func, set_coefficients = parameterized_function2(basis,beta_vector)
+        self.eps_func, self.set_coefficients = parameterized_function2(basis,beta_vector)
         design_object   = mp.Block(center=V3(design_region.center), size=V3(design_region.size),
-                                   epsilon_func=eps_func)
+                                   epsilon_func=self.eps_func)
         geometry        = background_geometry + [design_object] + foreground_geometry
         sim             = mp.Simulation(resolution=adj_opt('res'),
                                         boundary_layers=[mp.PML(adj_opt('dpml'))],
                                         cell_size=V3(cell_size), geometry=geometry)
 
         # TimeStepper
-        self.stepper    = TimeStepper(obj_func, dft_cells, basis, eps_func, set_coefficients,
-                                      sim, fwd_sources=sources)
-
-        # # set up console logging, file output, graphical visualization
-        # self.filebase = args.filebase
-        # self.stdout = sys.stdout
-        # if args.logfile:
-        #     adj_opt('log_streams').append(open(args.logfile,'a'))
-        # if args.log_to_console:
-        #     adj_opt('log_streams').append(self.stdout)
-        # if args.verbose:
-        #     adj_opt('verbosity') = 'verbose'
-        # elif args.concise:
-        #     adj_opt('verbosity') = 'concise'
-        #
-        # # adj_opt affecting visualization
-        # # adj_opt('animate_components') = args.animate_component
-        #   adj_opt('animate_interval') = args.animate_interval
-        # if args.label_source_regions:
-        #     set_plot_default('fontsize',def_plot_adj_opt('fontsize'), 'src')
+        self.stepper    = TimeStepper(obj_func, dft_cells, basis, sim, sources)
 
 
     #####################################################################
-    # Evaluate the objective function value and (optionally) gradient for
-    # a given vector of design-variable values.
+    # The basic task of an OptimizationProblem: Given a vector of design
+    # variables, evaluate the objective function value and (optionally) gradient.
     ######################################################################
     def __call__(self, beta_vector=None, need_gradient=False):
         """Evaluate value and (optionally) gradient of objective function.
@@ -197,16 +183,51 @@ class OptimizationProblem(object):
                     f derivatives w.r.t. each design variable (if need_gradient==True),
                   = None (need_gradient==False)
         """
+        if beta_vector:
+            self.update_design(beta_vector)
 
-        fq    = self.stepper.run('forward', beta_vector=beta_vector)
+        fq    = self.stepper.run('forward')
         gradf = self.stepper.run('adjoint') if need_gradient else None
         return fq, gradf
 
 
+    #####################################################################
+    # ancillary API methods #############################################
+    #####################################################################
+    def update_design(self, beta_vector):
+        """Update the vector of design variables (expansion coefficients)
+           that determine the design function.
+           Args:
+               beta_vector: real-valued numpy array, length self.basis.dim
+           Return value:
+               None
+        """
+        self.set_coefficients(beta_vector)
+        self.stepper.state='reset'
+
+
+    #####################################################################
+    #####################################################################
+    #####################################################################
+    def visualize(self, options={}):
+        """Produce a graphical visualization of the geometry and/or fields
+           as appropriate based on the current state of progress.
+        """
+        if self.stepper.state=='reset':
+            self.stepper.prepare('forward')
+
+        dft_labels = [ cell.name for cell in self.stepper.dft_cells ]
+        if self.stepper.state.endswith('.prepared'):
+            visualize_sim(self.stepper.sim, dft_labels=dft_labels, options=options)
+        elif self.stepper.state == 'forward.complete':
+            visualize_sim(self.stepper.sim, dft_labels=dft_labels, options=options)
+        #else self.stepper.state == 'forward.complete':
+
+
 ######################################################################
 ######################################################################
 ######################################################################
-def adjust_sources(sources):
+def rescale_sources(sources):
     """Scale the overall amplitude of a spatial source distribution to compensate
        for the frequency dependence of its temporal envelope.
 
