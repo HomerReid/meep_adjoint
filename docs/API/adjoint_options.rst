@@ -1,8 +1,8 @@
 ==================================================
-:py:mod:`meep.adjoint.OptimizationProblem` module
+:py:mod:`adjoint_options` module
 ==================================================
 
-.. automodule:: meep.adjoint.OptimizationProblem
+.. automodule:: meep_adjoint.adjoint_options
     :members:
     :private-members:
     :special-members:

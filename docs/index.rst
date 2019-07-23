@@ -2,21 +2,11 @@
 
 
 =====================================================================
-:py:mod:`meep.adjoint`: Adjoint-solver module for :program:`pymeep`
+:py:mod:`meep_adjoint`: Adjoint-solver module for :program:`pymeep`
 =====================================================================
-This is the root of the documentation tree for the :py:mod:`meep.adjoint`
-submodule of the |meep_python_module|. 
+This is the root of the documentation tree for :py:mod:`meep_adjoint.`
 Jump directly to the module-wide :ref:`TableOfContents` below, 
 or read on for a quick-start overview.
-
-
-.. |meep_python_module| raw:: html
-
-   <a href="http://meep.readthedocs.io">
-   <b><font style="font-variant: small-caps; font-size: 120%">meep</font></b>
-   python module</a>
-
-
 
 =========================
 What does this module do?
@@ -43,13 +33,13 @@ given performance specifications.
 .. admonition:: Wait, *what* exactly does the module do again?
 
         If that was a bit vague, we can be more specific about precisely what
-        :py:mod:`meep.adjoint` does. Consider a typical design problem
+        :py:mod:`meep_adjoint` does. Consider a typical design problem
         in which we seek to tune a device geometry to optimize some
         performance metric.
-        For example, in the :doc:`optical router <Examples/OpticalRouter>`
-        example in the :py:mod:`meep.adjoint` :doc:`example gallery <Examples/index>`,
+        For example, in the :doc:`cross router <Examples/cross_router>`
+        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the 
-        example in the :py:mod:`meep.adjoint` :doc:`example gallery <Examples/index>`,
+        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the task is to design the central hub region to steer
         incoming power arriving via the **East** input waveguide
         to output 
@@ -94,30 +84,30 @@ input is routed
         we can use :py:mod:`pymeep` to evaluate 
         we create a ``Simulation``_ with $\epsilon^{\text{trial}}$
 
-        What :py:mod:`meep.adjoint` does is to add a 
+        What :py:mod:`meep_adjoint` does is to add a 
 
 
 
-.. admonition:: The scope of :program:`meep.adjoint`
+.. admonition:: The scope of :program:`meep_adjoint`
 
 
          **Q.** Does this mean that the module *only* computes objective-function gradients? That is, it doesn't actually do any optimization?
 
-         **A.** The *primary* mission of :py:mod:`meep.adjoint` is to compute objective-function gradients. This is the task the module guarantees to execute efficiently and accurately, and it's one that's self-contained, unambiguous, and easily *testable.* [#]_
+         **A.** The *primary* mission of :py:mod:`meep_adjoint` is to compute objective-function gradients. This is the task the module guarantees to execute efficiently and accurately, and it's one that's self-contained, unambiguous, and easily *testable.* [#]_
   
          The larger question of how best to *use* gradient information for
          design automation---which involves questions such as which of the
          `myriad available gradient-based optimization algorithms`_ to use,
          and how to configure its tunable parameters---is officially beyond the
-         purview of :py:mod:`meep.adjoint`, and indeed is much too broad
+         purview of :py:mod:`meep_adjoint`, and indeed is much too broad
          a problem to be treated with anything approaching comprehensiveness
-         by any single module. We hope :py:mod:`meep.adjoint` will be
+         by any single module. We hope :py:mod:`meep_adjoint` will be
          helpful to :py:mod:`meep` users as they navigate this
          vast domain.
 
 
          **With all of that by way of disclaimer,** however, we note that
-         :py:mod:`meep.adjoint` does ship with one (rather simple-minded)
+         :py:mod:`meep_adjoint` does ship with one (rather simple-minded)
          implementation of an optimization algorithm---namely, a 
          :doc:`basic gradient-descent solver.` 
          Per the discussion above, we make
@@ -140,12 +130,12 @@ quick rundown:
 
 
 1) *Initialization and Problem Definition:* 
-You begin by creating an instance of :py:class:`OptimizationProblem`
-This is the top-level python class exported by :py:mod:`meep.adjoint`, 
+You begin by creating an instance of :py:class:`optimization_problem`
+This is the top-level python class exported by :py:mod:`meep_adjoint`, 
 analogous to the `Simulation <Simulation_>`_
 class in the core :py:mod:`meep` module; it stores all data and state
 relevant to the progress of a design optimization, and
-you will access most :py:mod:`meep.adjoint` functionality
+you will access most :py:mod:`meep_adjoint` functionality
 via its class methods.
 
 2) *Interactive single-point calculations*  Before 
@@ -168,7 +158,7 @@ Table of Contents
 
 .. toctree::
    :maxdepth: 2
-   :caption: meep.adjoint Table of Contents
+   :caption: meep_adjoint Table of Contents
 
    self
    Overview <Overview/index>
@@ -194,9 +184,9 @@ Indices and tables
 .. _Simulation:  https://meep.readthedocs.io/en/latest
 
 .. [#] For example, one obvious test of the correctness
-       of :py:mod:`meep.adjoint` is to estimate objective-function
+       of :py:mod:`meep_adjoint` is to estimate objective-function
        derivatives by numerical finite-differencing and compare to 
        components of the adjoint-method gradient. This is the basis
-       of one of the tests in the :py:mod:`meep.adjoint` unit-test suite,
-       and also of the :doc:`holey waveguide <Examples/HoleyWaveguide>`
+       of one of the tests in the :py:mod:`meep_adjoint` unit-test suite,
+       and also of the :doc:`holey waveguide <Examples/holey_waveguide>`
        example in the :doc:`example gallery.<Examples/index>`

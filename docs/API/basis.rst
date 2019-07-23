@@ -1,8 +1,12 @@
+.. include /Shorthand.rst
+
 ==================================================
-:py:mod:`meep.adjoint.TimeStepper` module
+:py:class:`basis`
 ==================================================
 
-.. automodule:: meep.adjoint.TimeStepper
+
+
+.. automodule:: meep_adjoint.basis
     :members:
     :private-members:
     :special-members:

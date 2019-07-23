@@ -1,12 +1,8 @@
-.. include /Shorthand.rst
-
 ==================================================
-:py:class:`Basis`
+:py:mod:`optimization_problem` module
 ==================================================
 
-
-
-.. automodule:: meep.adjoint.Basis
+.. automodule:: meep_adjoint.optimization_problem
     :members:
     :private-members:
     :special-members:

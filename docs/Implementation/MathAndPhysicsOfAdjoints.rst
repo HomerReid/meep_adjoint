@@ -1,4 +1,4 @@
-Implementation notes I: The math and physics behind :py:mod:`meep.adjoint`
+Implementation notes I: The math and physics behind :py:mod:`meep_adjoint`
 ============================================================================
  
 These notes are intended as something of a companion to the

@@ -1,5 +1,5 @@
 ==============================================================
-:py:mod:`meep.adjoint` API Reference
+:py:mod:` API Reference
 ==============================================================
 
 .. toctree::
@@ -7,7 +7,13 @@
     :caption: API Reference
 
     Introduction to the Class Hierarchy <ClassHierarchy>
-    OptimizationProblem
-    TimeStepper
-    Objective
-    Basis
+    optimization_problem
+    timestepper
+    objective
+    dft_cell
+    basis
+    finite_element_basis
+    visualization 
+    option_almanac 
+    adjoint_options 
+    visualization_options 

@@ -22,7 +22,7 @@ import meep as mp
 from meep_adjoint import get_visualization_option as vis_opt
 from meep_adjoint import get_visualization_options as vis_opts
 
-from meep_adjoint import fix_array_metadata
+from . import fix_array_metadata
 
 def abs2(z):
     """squared magnitude of complex number"""

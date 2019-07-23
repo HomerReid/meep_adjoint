@@ -15,8 +15,6 @@ import sys
 
 import numpy as np
 
-#sys.path.insert(0,'/home/homer/work/Simpetus/meep-installation-hrpy37/lib/python3.7/site-packages')
-sys.path.insert(0,'/home/homer/work/Simpetus/meep/lib/python3.7/site-packages')
 import meep as mp
 import meep.adjoint
 
@@ -24,7 +22,7 @@ import meep.adjoint
 # setting this environment variable replicates the build as executed
 # on readthedocs
 ######################################################################
-#on_rtd = os.environ.get('READTHEDOCS') == 'True'
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
 
 # -- Project information -----------------------------------------------------
 

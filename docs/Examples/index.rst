@@ -1,3 +1,3 @@
 =========================================
-:py:mod:`meep.adjoint` example gallery
+:py:mod:`meep_adjoint` example gallery
 =========================================

@@ -1,3 +1,3 @@
 ==========================================================================
-Implementation notes: The math and physics behind :py:mod:`meep.adjoint`
+Implementation notes: The math and physics behind :py:mod:`meep_adjoint`
 ==========================================================================

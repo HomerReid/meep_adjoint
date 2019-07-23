@@ -24,8 +24,6 @@
        (2) *Function instance*: Given a set of expansion coefficients {beta_n}
            return a callable func that inputs a spatial variable x and
            outputs func(x) = \sum beta_n b_n(x).
-
-**Exported Methods**
 """
 
 from numbers import Number
@@ -50,7 +48,6 @@ class GridFunc(object):
     Return value:
         GridFunc (callable) satisfying GridFunc(n)==f(x_n).
     """
-#######################################################################
 
     def __init__(self,f,grid):
         self.p=grid.points
@@ -76,6 +73,7 @@ class GridFunc(object):
 ######################################################################
 from abc import ABCMeta, abstractmethod
 ABC = ABCMeta('ABC', (object,), {'__slots__': ()}) # compatible with Python 2 and 3
+
 
 #----------------------------------------------------------------------
 #----------------------------------------------------------------------
@@ -182,7 +180,6 @@ class Basis(ABC):
     an example of such a situation, see the implementation of `FiniteElementBasis.
     """
 
-
     def __init__(self, dim, region=None, size=None, center=v3(), offset=0.0):
         self.dim, self.offset = dim, offset
         self.region = region if region else Subregion(center=center,size=size)
@@ -235,6 +232,7 @@ class Basis(ABC):
         2. func has a set_coefficients method for updating the expansion coefficients
             func.set_coefficients(new_beta_vector)
         """
+
         class _ParameterizedFunction(object):
             def __init__(self, basis, beta_vector):
                 (self.f0, self.b, self.beta) = (basis.offset, basis.get_bvector, beta_vector)
@@ -244,6 +242,7 @@ class Basis(ABC):
                 return self.f0 + np.dot( self.beta, self.b(p) )
 
         return _ParameterizedFunction(self, beta_vector)
+
 
     #######################################################################
     # inner products of basis functions with an arbitrary function g
@@ -255,6 +254,7 @@ class Basis(ABC):
         for n, (p,w) in enumerate(zip(grid.points,grid.weights)):
             g_dot_b += w * ( gn(n)-self.offset ) * self.get_bvector(p)
         return g_dot_b
+
 
     ##########################################################
     # basis_function overlap matrix, gm_{ij} = <b_i | b_j>.

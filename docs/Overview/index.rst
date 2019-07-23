@@ -1,11 +1,11 @@
-:py:mod:`meep.adjoint`: Overview and Invitation
+:py:mod:`meep_adjoint`: Overview and Invitation
 ======================================================================
 
 This page is designed to offer a first introductory glimpse of the
-theory and practice of :py:mod:`meep.adjoint`,
+theory and practice of :py:mod:`meep_adjoint`,
 beginning with a gentle background discussion aimed at newcomers
 and continuing with a look at some typical design problems
-and a flavor of their description in `meep.adjoint`.
+and a flavor of their description in `meep_adjoint`.
 Adjoint experts will probably want to skip directly to the
 `blow-by-blow walkthrough <Tutorial_>`_ on the following page,
 but are first encouraged at least to glance at the
@@ -116,7 +116,7 @@ optimization becomes entirely feasible.
 Examples of optimization problems
 --------------------------------------------------------------------------------
 
-Throughout the `meep.adjoint` documentation we will refer to a running collection of
+Throughout the `meep_adjoint` documentation we will refer to a running collection of
 simple optimization problems to illustrate the mechanics of optimization,
 among which are the following; click the geometry images to view 
 in higher resolution.   
@@ -136,7 +136,7 @@ permittivity :math:`\epsilon\sup{hole}`.
 
 > :bookmark:{.center}
 >
-> ![zoomify](images/HoleyWaveguideGeometry.png)
+> ![zoomify](images/holey_waveguideGeometry.png)
 
 
  
@@ -335,7 +335,7 @@ specification of an optimization problem:
 .. _Source:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#source
 .. _GeometricObject: 		https://meep.readthedocs.io/en/latest/Python_User_Interface/#geometricobject
 
-.. _HoleyWaveguide:		Overview.md#the-holey-waveguide
+.. _holey_waveguide:		Overview.md#the-holey-waveguide
 .. _CrossRouter:			Overview.md#the-cross-router
 .. _HoleCloak:			Overview.md#the-hole-cloak
 .. _AsymmetricSplitter:		Overview.md#the-asymettric-splitter

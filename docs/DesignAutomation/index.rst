@@ -1,3 +1,3 @@
 =========================================================
-Automated design optimization with :py:mod:`meep.adjoint`
+Automated design optimization with :py:mod:`meep_adjoint`
 =========================================================

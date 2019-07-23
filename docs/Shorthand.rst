@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Code+Pro&display=swap" rel="stylesheet">
 
 
-.. |mpadj| replace:: :py:mod:`meep.adjoint`
+.. |mpadj| replace:: :py:mod:`meep_adjoint`
 
 
 .. |meep_python_module| raw:: html

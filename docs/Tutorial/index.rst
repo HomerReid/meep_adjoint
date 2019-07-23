@@ -1,5 +1,5 @@
 =================================
-:py:mod:`meep.adjoint` tutorial
+:py:mod:`meep_adjoint` tutorial
 =================================
 
 Having sketched

@@ -1,10 +1,8 @@
-.. include /Shorthand.rst
-
 ==================================================
-:py:class:`Objective`
+:py:mod:`visualization` module
 ==================================================
 
-.. automodule:: meep.adjoint.Objective
+.. automodule:: meep_adjoint.visualization
     :members:
     :private-members:
     :special-members:

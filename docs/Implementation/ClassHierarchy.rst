@@ -2,10 +2,10 @@
 
 
 =====================================================================
-Overview of the :py:mod:`meep.adjoint` class hierarchy
+Overview of the :py:mod:`meep_adjoint` class hierarchy
 =====================================================================
 
-The :class:`OptimizationProblem` class exported by the :py:mod:`meep.adjoint`
+The :class:`OptimizationProblem` class exported by the :py:mod:`meep_adjoint`
 is the top-level entity in a hierarchy of python classes that collectively
 implement most of the mechanics of the adjoint solver.
 Before delving into the :doc:`detailed API reference <OptimizationProblem>`,

@@ -1,6 +1,6 @@
 .. include /Shorthand.rst
 
 ========================================================
-:py:mod:`meep.adjoint` examples: The optical router
+:py:mod:`meep_adjoint` examples: The holey waveguide
 ========================================================
 In this example we consider
