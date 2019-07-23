@@ -529,7 +529,7 @@ def happy_cb(img, axes):
 #################################################
 #################################################
 def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
-                         ff_arrays=None, zrels=None, options=None, nf=0):
+                         ff_arrays=None, nf=0, options={}):
 
     if not mp.am_master():
         return
@@ -547,20 +547,20 @@ def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
         superpose=False
 
     if not superpose:
-        return plot_dft_fields(sim, field_cells, field_funcs, ff_arrays, options, nf=nf)
+        return
+#        return plot_dft_fields(sim, field_cells, field_funcs, ff_arrays, options, nf=nf)
 
     # the remainder of this routine is for the superposition case
 
-    options       = options if options else def_field_options
-    cmap          = options['cmap']
-    alpha         = options['alpha']
-    num_contours  = options['num_contours']
-    fontsize      = options['fontsize']
+    keys = ['cmap', 'alpha', 'contours', 'fontsize', 'zmin', 'zmax', 'cb_pad', 'cb_shrink', 'latex']
+    vals = vis_opts(keys, section='fields_data', overrides=options)
+    cmap, alpha, num_contours, fontsize   = vals[0:4]
+    zrel_min, zrel_max, cb_pad, cb_shrink, latex = vals[4:9]
 
     if field_funcs is None:
         field_funcs = ['abs2(E)']
     if zrels is None:
-        zrel_min, zrel_max, nz = options['zrel_min'], options['zrel_max'], len(field_funcs)
+        nz = len(field_funcs)
         zrels=[0.5*(zrel_min+zrel_max)] if nz==1 else np.linspace(zrel_min,zrel_max,nz)
 
     for n, cell in enumerate(field_cells):
@@ -574,15 +574,15 @@ def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
             z0   = zmin + zrel*(zmax-zmin)
             img  = ax.contourf(X, Y, np.transpose(data), num_contours,
                                cmap=cmap, alpha=alpha, zdir='z', offset=z0)
-            pad=options['colorbar_pad']
-            shrink=options['colorbar_shrink']
-            if options['colorbar_cannibalize']:
+            colorbar_cannibalize=False
+            if colorbar_cannibalize:
                 cax=fig.axes[-1]
                 cb=plt.colorbar(img, cax=cax)
             else:
-                cb=plt.colorbar(img, shrink=shrink, pad=pad, panchor=(0.0,0.5))
+                cb=plt.colorbar(img, shrink=cb_shrink, pad=cb_pad, panchor=(0.0,0.5))
             #cb.set_label(ff,fontsize=1.0*fontsize,rotation=0,labelpad=0.5*fontsize)
-            cb.ax.set_xlabel(texify(ff),fontsize=1.5*fontsize,rotation=0,labelpad=0.5*fontsize)
+            label = ff if not latex else texify(ff)
+            cb.ax.set_xlabel(label,fontsize=1.5*fontsize,rotation=0,labelpad=0.5*fontsize)
             cb.ax.tick_params(labelsize=0.75*fontsize)
             cb.locator = ticker.MaxNLocator(nbins=5)
             cb.update_ticks()
