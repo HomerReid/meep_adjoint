@@ -22,7 +22,7 @@ import meep as mp
 from . import get_visualization_option as vis_opt
 from . import get_visualization_options as vis_opts
 
-from . import fix_array_metadata
+from . import fix_array_metadata, v3
 
 def abs2(z):
     """squared magnitude of complex number"""
@@ -339,8 +339,8 @@ def plot_data_curves(sim, center=None, size=None, superpose=True,
         zs = center[1-ii]
         zdir='x' if sx==0 else 'y'
         if draw_baseline:
-            lines=LineCollection([[hstart,hend]], colors=lc,
-                                 linewidths=lw, linestyles=ls)
+            lines=LineCollection([[hstart,hend]], colors='#000000',
+                                 linewidths=1.0, linestyles='--')
             ax.add_collection3d(lines, zs=z0, zdir='z')
 
     kwargs={'color':lc, 'linewidth':lw, 'linestyle':ls}
@@ -656,8 +656,10 @@ def get_dft_array_zp(sim, cell, c, nf=0, w=None):
 
 
 def unpack_dft_cell(sim, cell, nf=0):
-    cn,sz = mp.get_center_and_size(cell.where)
-    (x,y,z,w)=fix_array_metadata(sim.get_dft_array_metadata(dft_cell=cell),v3(cn),v3(sz))
+    xyzw = sim.get_array_metadata(dft_cell=cell)
+    center, size = mp.get_center_and_size(cell.where)
+    fix_array_metadata(xyzw, v3(center), v3(size))
+    x,y,z,w = xyzw
     cEH = dft_cell_components(cell)
     EH = [ get_dft_array_zp(sim, cell, c, nf, w) for c in cEH ]
     return x, y, z, w, cEH, EH
