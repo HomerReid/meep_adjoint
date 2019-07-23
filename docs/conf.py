@@ -16,6 +16,8 @@ import sys
 import numpy as np
 
 import meep as mp
+
+sys.path.append(os.path.abspath('..'))
 import meep.adjoint
 
 ######################################################################
