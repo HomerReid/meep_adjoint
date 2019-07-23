@@ -151,6 +151,10 @@ class FiniteElementBasis(Basis):
                 self.f.vector().set_local(beta_vector)
             def __call__(self, p):
                 return self.offset + self.f(df.Point(v3(p)))
+            def func(self):
+                def _f(p):
+                    return self(p)
+                return _f
 
         return _ParameterizedFunction(self, beta_vector)
 

@@ -13,6 +13,7 @@
 
 import numpy as np
 import meep as mp
+import warnings
 from collections import namedtuple
 
 from . import get_adjoint_option as adj_opt
@@ -41,6 +42,19 @@ def v3(a1=0.0, a2=0.0, a3=0.0):
     if isinstance(a1,mp.Vector3):
         return a1.__array__()
     return np.array([a1,a2,a3])
+
+
+
+######################################################################
+# fix a bug in libmeep
+######################################################################
+def fix_array_metadata(xyzw, center, size):
+    for d in range(0,3):
+        if self.region.size[d]==0.0 and xyzw[d][0]!=self.region.center[d]:
+            warnings.warn('correcting for bug in get_array_metadata: {}={}-->{}'.format('xyz'[d],xyzw[d][0],self.region.center[d]))
+            xyzw[d]=np.array( [ self.region.center[d] ])
+        else:
+            xyzw[d]=np.array(xyzw[d])
 
 
 ######################################################################
@@ -107,8 +121,7 @@ class DFTCell(object):
 
         The instantiating data of a DFTCell are a grid subregion, a set of
         field components, and a list of frequencies. These metadata fields
-        remain constant throughout the lifetime of a DFTCell, which will
-        typically span the lifetime of many meep.Simulations.
+        remain constant throughout the lifetime of a DFTCell.
         In addition to the metadata, instances of DFTCell allocate
         internal arrays of DFT registers in which the specified components of the
         frequency-domain fields at the specified grid points and frequencies
@@ -141,30 +154,6 @@ class DFTCell(object):
         DFTCell replaces the DftFlux, DftFields, DftNear2Far, DftForce, DftLdos,
         and DftObj structures in core pymeep.
     """
-
-#    @classmethod
-#    def get_cell_by_name(cls, region_name):
-##################################################
-# i think this should work...
-##################################################
-#         if region_name + '_flux' in cls.cell_names:
-#             return cls.cell_names.index(region_name + '_flux')
-#         if region_name + '_fields' in cls.cell_names:
-#             return cls.cell_names.index(region_name + '_fields')
-#         raise ValueError("reference to nonexistent DFT cell {}".format(region_name))
-#
-# ##################################################
-# # but in practice only this does
-# ##################################################
-#     @classmethod
-#     def get_index2(cls, region_name):
-#          if region_name + '_flux' in dft_cell_names:
-#              return dft_cell_names.index(region_name + '_flux')
-#          if region_name + '_fields' in dft_cell_names:
-#              return dft_cell_names.index(region_name + '_fields')
-#          raise ValueError("reference to nonexistent DFT cell {}".format(region_name))
-#  ##################################################
-#
 
     ######################################################################
     ######################################################################
@@ -219,7 +208,9 @@ class DFTCell(object):
 
         # take this opportunity to initialize simulation-dependent fields
         if self.grid is None:
-            self.grid = xyzw2grid(sim.get_array_metadata(center=V3(self.region.center), size=V3(self.region.size), collapse=True, snap=True))
+            xyzw=sim.get_array_metadata(center=V3(self.region.center), size=V3(self.region.size), collapse=True, snap=True)
+            fix_array_metadata(xyzw, center, size)
+            self.grid = xyzw2grid(xyzw)
 
     ######################################################################
     # Compute an array of frequency-domain field amplitudes, i.e. a

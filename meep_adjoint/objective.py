@@ -195,6 +195,6 @@ class ObjectiveFunction(object):
     def get_dfdq(self):
         """return vector of partial derivatives \partial f / \partial q
            using the values of the {q_n} that were cached on the
-           most recent invokation of __call__
+           most recent invocation of __call__
         """
         return np.array( [ df.evalf(subs=self.riqvals) for df in self.dfexpr ] )

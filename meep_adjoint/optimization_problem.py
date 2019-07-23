@@ -6,8 +6,7 @@ import inspect
 import meep as mp
 
 from . import (DFTCell, ObjectiveFunction, TimeStepper,
-               FiniteElementBasis, parameterized_function2,
-               E_CPTS, v3, V3)
+               FiniteElementBasis, dft_cell_names, E_CPTS, v3, V3)
 
 from . import visualize_sim
 
@@ -114,11 +113,10 @@ class OptimizationProblem(object):
         #  (b) if no sources were specified, create one using the given source
         #      region plus global option values
         #-----------------------------------------------------------------------
-        if basis is None:
-            basis = FiniteElementBasis(region=design_region,
-                                       element_length=adj_opt('element_length'),
-                                       element_type=adj_opt('element_type'))
-        design_region = basis.domain
+        self.basis = basis or FiniteElementBasis(region=design_region,
+                                                 element_length=adj_opt('element_length'),
+                                                 element_type=adj_opt('element_type'))
+        design_region = self.basis.domain
         design_region.name = design_region.name or 'design'
 
         if not sources:
@@ -134,6 +132,7 @@ class OptimizationProblem(object):
         #-----------------------------------------------------------------------
 
         # DFTCells
+        dft_cell_names  = []
         objective_cells = [ DFTCell(r) for r in objective_regions ]
         extra_cells     = [ DFTCell(r) for r in extra_regions ]
         design_cell     = DFTCell(design_region, E_CPTS)
@@ -151,11 +150,10 @@ class OptimizationProblem(object):
         # Note that sources and DFT cells are not added to the Simulation at
         # this stage; this is done later by internal methods of TimeStepper
         # on a just-in-time basis before starting a timestepping run.
-        beta_vector     = basis.project(adj_opt('eps_func'))
-#        eps_func        = basis.parameterized_function(beta_vector)
-        self.eps_func, self.set_coefficients = parameterized_function2(basis,beta_vector)
+        self.beta_vector     = self.basis.project(adj_opt('eps_func'))
+        self.design_function = self.basis.parameterized_function(self.beta_vector)
         design_object   = mp.Block(center=V3(design_region.center), size=V3(design_region.size),
-                                   epsilon_func=self.eps_func)
+                                   epsilon_func = self.design_function.func())
         geometry        = background_geometry + [design_object] + foreground_geometry
         sim             = mp.Simulation(resolution=adj_opt('res'),
                                         boundary_layers=[mp.PML(adj_opt('dpml'))],
@@ -216,7 +214,8 @@ class OptimizationProblem(object):
            Return value:
                None
         """
-        self.set_coefficients(beta_vector)
+        self.beta_vector = beta_vector
+        self.design_function.set_coefficients(beta_vector)
         self.stepper.state='reset'
 
 

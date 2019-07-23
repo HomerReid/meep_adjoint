@@ -19,30 +19,102 @@ import matplotlib.cm
 
 import meep as mp
 
-from . import get_visualization_option as vis_opt
-from . import get_visualization_options as vis_opts
+from meep_adjoint import get_visualization_option as vis_opt
+from meep_adjoint import get_visualization_options as vis_opts
+
+from meep_adjoint import fix_array_metadata
 
 def abs2(z):
     """squared magnitude of complex number"""
     return np.real(np.conj(z)*z)
 
 
-#################################################
-#################################################
-#################################################
-def texify(expr):
-    """Return expr modified to play well with latex formatting."""
+######################################################################
+######################################################################
+######################################################################
+def visualize_sim(sim, fig=None, plot3D=None,
+                  src_labels=[], dft_labels=[], options={}):
 
-    expr.sub('_',r'\_')
-    expr=re.sub(r'([eEhH])([xyz])',r'\1_\2',expr)
-    expr=re.sub(r'e_','E_',expr)
-    expr=re.sub(r'H_','H_',expr)
-    expr=re.sub(r'abs\((.*)\)',r'|\1|',expr)
-    expr=re.sub(r'abs2\((.*)\)',r'|\1|^2',expr)
-    loglike=['Re','Im']
-    for s in loglike:
-        expr=re.sub(s,'\textrm{'+s+'}',expr)
-    return r'$'+expr+'$'
+    # if plot3D not specified, set it automatically: false
+    # if we are plotting only the geometry (at the beginning
+    # of a timestepping run), true if we are also plotting
+    # fields (at the end of a simulation).
+    if plot3D is None:
+        plot3D = sim.round_time() > sim.fields.last_source_time()
+
+    plot_geometry(sim, fig=fig, plot3D=plot3D, src_labels=src_labels,
+                  dft_labels=dft_labels, options=options)
+
+    ####################################################
+    ####################################################
+    ####################################################
+    if plot3D and sim.round_time() > sim.fields.last_source_time():
+        plot_dft_flux(sim, superpose=True, options=options)
+
+    # if plot_dft_data==True:
+    #     visualize_dft_fields(sim, superpose=True, options=field_options)
+
+    if not plot3D:
+        plt.gcf().tight_layout()
+    plt.show(block = False)
+    plt.draw()
+
+
+######################################################################
+######################################################################
+######################################################################
+def plot_geometry(sim, fig=None, plot3D=False,
+                  src_labels=[], dft_labels=[], options={}):
+    """
+    """
+    if not mp.am_master():
+        return
+
+    fig = fig or plt.gcf()
+    fig.clf()
+    title = options
+
+    #################################################
+    # plot permittivity
+    #################################################
+    plot_eps(sim, fig=fig, plot3D=plot3D, options=options)
+
+    ##################################################
+    # plot PML regions
+    ##################################################
+    if sim.boundary_layers and hasattr(sim.boundary_layers[0],'thickness'):
+        dpml    = sim.boundary_layers[0].thickness
+        sx, sy  = sim.cell_size.x, sim.cell_size.y
+        y0, x0  = mp.Vector3(0.0, 0.5*(sy-dpml)), mp.Vector3(0.5*(sx-dpml), 0.0)
+        ns, ew  = mp.Vector3(sx-2*dpml, dpml),    mp.Vector3(dpml,sy)
+        centers = [ y0, -1*y0, x0, -1*x0 ]   # north, south, east, west
+        sizes   = [ ns,    ns, ew,    ew ]
+        for c,s in zip(centers,sizes):
+            plot_subregion(sim, center=c, size=s, plot3D=plot3D,
+                                section='pml', options=options)
+
+
+    #####################################################################
+    ## plot source regions and optionally source amplitudes
+    #####################################################################
+    def srclabel(s,n):
+        return ('eig ' if hasattr(s,'eig_band') else '') + 'src {}'.format(n)
+    for n,s in enumerate(sim.sources):
+        plot_subregion(sim, center=s.center, size=s.size, plot3D=plot3D,
+                       label=srclabel(s,n) if not src_labels else src_labels[ns],
+                       section='src_region', options=options)
+
+    #if src_options['zrel_min']!=src_options['zrel_max']:
+    #    visualize_source_distribution(sim, superpose=plot3D, options=src_options)
+
+    #####################################################################
+    # plot DFT cell regions, with labels for flux cells.
+    #####################################################################
+    for n, c in enumerate(sim.dft_objects):
+        cn, sz, data = c.regions[0].center, c.regions[0].size, 'flux' if hasattr(c,'flux') else 'fields'
+        section = data + '_region'
+        label = None if plot3D else dft_labels[n] if dft_labels else '{} {}'.format(data,n)
+        plot_subregion(sim, center=cn, size=sz, plot3D=plot3D, label=label, section=section, options=options)
 
 
 
@@ -67,17 +139,17 @@ def plot_eps(sim, fig=None, plot3D=False, options={}):
     keys = ['cmap', 'alpha', 'shading', 'interp',
             'method', 'contours', 'cb_shrink', 'cb_pad',
             'cmin', 'cmax', 'zmin', 'zmax',
-            'fontsize', 'latex', 'linewidth']
+            'fontsize', 'latex', 'linewidth', 'linecolor']
     vals = vis_opts(keys, section='eps', overrides=options)
-    cmap, alpha, shading, interp        = vals[0:4]
-    method, contours, cb_shrink, cb_pad = vals[4:8]
-    cmin, cmax, zbar_min, zbar_max      = vals[8:12]
-    fontsize, latex, linewidth          = vals[12:15]
+    cmap, alpha, shading, interp          = vals[0:4]
+    method, contours, cb_shrink, cb_pad   = vals[4:8]
+    cmin, cmax, zbar_min, zbar_max        = vals[8:12]
+    fontsize, latex, linewidth, linecolor = vals[12:16]
 
     #--------------------------------------------------
     #- fetch epsilon array and clip values if requested
     #--------------------------------------------------
-    (x,y,z,w) = sim.get_array_metadata()
+    (x,y,z,w) = fix_array_metadata(sim.get_array_metadata())
     eps = np.transpose(sim.get_epsilon())
     vmin = cmin if np.isfinite(cmin) else np.min(eps)
     vmax = cmax if np.isfinite(cmax) else np.max(eps)
@@ -95,8 +167,7 @@ def plot_eps(sim, fig=None, plot3D=False, options={}):
     if plot3D:
        X, Y = np.meshgrid(x, y)
        zmin, zmax = 0.0, max(sim.cell_size.x, sim.cell_size.y)
-       zbar = 0.5*(zbar_min+zbar_max)
-       z0   = zmin + zbar*(zmax-zmin)
+       z0   = 0.0
        img  = ax.contourf(X, Y, eps, contours, zdir='z', offset=z0,
                           vmin=vmin, vmax=vmax, cmap=cmap, alpha=alpha)
        ax.set_zlim3d(zmin, zmax)
@@ -107,7 +178,7 @@ def plot_eps(sim, fig=None, plot3D=False, options={}):
                         cmap=cmap, interpolation=interp, alpha=alpha)
     elif method=='pcolormesh':
        img = plt.pcolormesh(x, y, np.transpose(eps), cmap=cmap, shading=shading,
-                            edgecolors=edgecolors, linewidth=linewidth, alpha=alpha)
+                            edgecolors=linecolor, linewidth=linewidth, alpha=alpha)
     else:
        X, Y = np.meshgrid(x, y)
        img  = ax.contourf(X, Y, eps, contours, vmin=vmin, vmax=vmax,
@@ -159,28 +230,35 @@ def plot_subregion(sim, vol=None, center=None, size=None,
     fig = plt.gcf()
     ax = fig.gca(projection='3d') if plot3D else fig.gca()
 
-    #################################################
+    #--------------------------------------------------------------
     # unpack subregion geometry
-    #################################################
+    #--------------------------------------------------------------
     if vol:
        center, size = vol.center, vol.size
     v0 = np.array([center[0], center[1]])
     dx,dy=np.array([0.5*size[0],0.0]), np.array([0.0,0.5*size[1]])
     if plot3D:
         zmin, zmax = ax.get_zlim3d()
-        z0 = zmin + zbar*(zmax-zmin)
+        z0 = 0.0
 
-    #################################################
+    #--------------------------------------------------------------
     # add polygon(s) to the plot to represent the volume
-    #################################################
+    #--------------------------------------------------------------
     def add_to_plot(c):
         ax.add_collection3d(c,zs=z0,zdir='z') if plot3D else ax.add_collection(c)
 
-    if size[0]==0.0 or size[1]==0.0:    # zero thickness, plot as line
+    if size[0]==0.0 or size[1]==0.0:
+       #========================================
+       # region has zero thickness: plot as line
+       #========================================
         polygon = [ v0+dx+dy, v0-dx-dy ]
         add_to_plot( LineCollection( [polygon], colors=linecolor,
                                      linewidths=linewidth, linestyles=linestyle))
     else:
+       #========================================
+       # plot as polygon, with separate passes
+       # for the perimeter and the interior
+       #========================================
         if fillcolor: # first copy: faces, no edges
             polygon = np.array([v0+dx+dy, v0-dx+dy, v0-dx-dy, v0+dx-dy])
             pc=PolyCollection( [polygon], linewidths=0.0)
@@ -195,8 +273,6 @@ def plot_subregion(sim, vol=None, center=None, size=None,
             lc.set_edgecolor(linecolor)
             add_to_plot(lc)
 
-    #####################################################################
-    # attempt to autodetermine text rotation and alignment
     #####################################################################
     if label and fontsize>0:
         plt.rc('text', usetex=latex)
@@ -215,148 +291,67 @@ def plot_subregion(sim, vol=None, center=None, size=None,
                     color=linecolor, horizontalalignment=h, verticalalignment=v)
 
 
+
 ######################################################################
 ######################################################################
 ######################################################################
-def visualize_sim(sim, fig=None, plot3D=None,
-                  src_labels=[], dft_labels=[], options={}):
-    """
-    """
-    if not mp.am_master():
-        return
-
-    # if plot3D not specified, set it automatically: false
-    # if we are plotting only the geometry (at the beginning
-    # of a timestepping run), true if we are also plotting
-    # fields (at the end of a simulation).
-    if plot3D is None:
-        plot3D = sim.round_time() > sim.fields.last_source_time()
-
-    fig = fig or plt.gcf()
-    fig.clf()
-    title = options
-
-    #################################################
-    # plot permittivity
-    #################################################
-    plot_eps(sim, fig=fig, plot3D=plot3D, options=options)
-
-    ##################################################
-    # plot PML regions
-    ##################################################
-    if sim.boundary_layers and hasattr(sim.boundary_layers[0],'thickness'):
-        dpml    = sim.boundary_layers[0].thickness
-        sx, sy  = sim.cell_size.x, sim.cell_size.y
-        y0, x0  = mp.Vector3(0.0, 0.5*(sy-dpml)), mp.Vector3(0.5*(sx-dpml), 0.0)
-        ns, ew  = mp.Vector3(sx-2*dpml, dpml),    mp.Vector3(dpml,sy)
-        centers = [ y0, -1*y0, x0, -1*x0 ]   # north, south, east, west
-        sizes   = [ ns,    ns, ew,    ew ]
-        for c,s in zip(centers,sizes):
-            plot_subregion(sim, center=c, size=s, plot3D=plot3D,
-                                section='pml', options=options)
-
-
-    #####################################################################
-    ## plot source regions and optionally source amplitudes
-    #####################################################################
-    def srclabel(s,n):
-        return ('eig ' if hasattr(s,'eig_band') else '') + 'src {}'.format(n)
-    for n,s in enumerate(sim.sources):
-        plot_subregion(sim, center=s.center, size=s.size, plot3D=plot3D,
-                       label=srclabel(s,n) if not src_labels else src_labels[ns],
-                       section='src_region', options=options)
-
-    #if src_options['zrel_min']!=src_options['zrel_max']:
-    #    visualize_source_distribution(sim, superpose=plot3D, options=src_options)
-
-    #####################################################################
-    # plot DFT cell regions, with labels for flux cells.
-    #####################################################################
-    for n, c in enumerate(sim.dft_objects):
-        cn, sz, data = c.regions[0].center, c.regions[0].size, 'flux' if hasattr(c,'flux') else 'fields'
-        section, label = data + '_region', dft_labels[n] if dft_labels else '{} {}'.format(data,n)
-        plot_subregion(sim, center=cn, size=sz, plot3D=plot3D, label=label, section=section, options=options)
-
-
-    plt.show(block = False)
-    plt.draw()
-
-    # ##################################################
-    # ##################################################
-    # ##################################################
-    # if plot_dft_data is None:
-    #     plot_dft_data=sources_finished
-
-    # if plot_dft_data==True or plot_dft_data=='flux':
-    #     visualize_dft_flux(sim, superpose=True, options=flux_options)
-
-    # if plot_dft_data==True:
-    #     visualize_dft_fields(sim, superpose=True, options=field_options)
-
-
-
 #################################################
 # Plot one or more curves,
 #################################################
-# def plot_data_curves(sim,center=None,size=None,superpose=True,
-#                      data=None, labels=None, dmin=None, dmax=None, opts=None):
-#
-#     if size.x>0 and size.y>0:
-#         msg="plot_data_curves: expected zero-width region, got {}x{} (skipping)"
-#         warnings.warn(msg.format(size.x,size.y),RuntimeWarning)
-#         return
-#     if np.ndim(data[0])!=1:
-#         msg="plot_data_curves: expected 1D data arrays, got {} (skipping)"
-#         warnings.warn(msg.format(np.shape(data[0])),RuntimeWarning)
-#         return
-#
-#     names=['linewidth','linecolor','linestyle','zmin','zmax']
-#     [lw, lc, ls, zbar_min, zbar_max] = getopts[names,'flux',opts]
-#     draw_baseline=(lw>0.0)
-#
-#     kwargs=dict()
-#     if 'line_color' in options:
-#        kwargs['color']=options['line_color']
-#     if 'line_width' in options:
-#        kwargs['linewidth']=options['line_width']
-#     if 'line_style' in options:
-#        kwargs['linestyle']=options['line_style']
-#
-#     # construct horizontal axis
-#     ii=1 if size.x==0 else 0
-#     hstart,hend = (center-0.5*size).__array__()[0:2], (center+0.5*size).__array__()[0:2]
-#     hmin,hmax=hstart[ii],hend[ii]
-#     haxis = np.linspace(hmin, hmax, len(data[0]))
-#
-#     # if we are superposing the curves onto a simulation-geometry
-#     # visualization plot, construct the appropriate mapping that
-#     # squeezes the full vertical extent of the curve into the
-#     # z-axis interval [zmin, zmax]
-#     if superpose:
-#         ax=plt.gcf().gca(projection='3d')
-#         (zfloor,zceil)=ax.get_zlim()
-#         zmin = zfloor + zbar_min*(zceil-zfloor)
-#         zmax = zfloor + zbar_max*(zceil-zfloor)
-#         z0, dz = 0.5*(zmax+zmin), (zmax-zmin)
-#         dmin = dmin if dmin else np.min(data)
-#         dmax = dmax if dmax else np.max(data)
-#         d0, dd = 0.5*(dmax+dmin), (dmax-dmin)
-#         zs = center[1-ii]
-#         zdir='x' if size.x==0 else 'y'
-#         if draw_baseline:
-#             lc=LineCollection( [[hstart,hend]], colors=options['boundary_color'],
-#                                 linewidths=options['boundary_width'],
-#                                 linestyles=options['boundary_style']
-#                              )
-#             ax.add_collection3d(lc,zs=z0,zdir='z')
-#
-#     for n in range(len(data)):
-#         kwargs['label']=None if not labels else labels[n]
-#         if superpose:
-#             ax.plot(haxis,z0+(data[n]-d0)*dz/dd, zs=zs, zdir=zdir, **kwargs)
-#         else:
-#             plt.plot(haxis,data[n],**kwargs)
-#
+def plot_data_curves(sim, center=None, size=None, superpose=True,
+                     data=None, labels=None, dmin=None, dmax=None,
+                     section='', options={}):
+
+    sx, sy = size[0:2]
+    if sx>0 and sy>0:
+        msg="plot_data_curves: expected zero-width region, got {}x{} (skipping)"
+        warnings.warn(msg.format(sx,sy),RuntimeWarning)
+        return
+    if np.ndim(data[0])!=1:
+        msg="plot_data_curves: expected 1D data arrays, got {} (skipping)"
+        warnings.warn(msg.format(np.shape(data[0])),RuntimeWarning)
+        return
+
+    keys = ['linewidth', 'linecolor', 'linestyle', 'zmin', 'zmax']
+    vals = vis_opts(keys, section=section, overrides=options)
+    [lw, lc, ls, zbar_min, zbar_max] = vals
+    draw_baseline = (lw>0.0)
+
+    # construct horizontal axis
+    ii = 1 if sx==0 else 0
+    hstart, hend = (center-0.5*size)[0:2], (center+0.5*size)[0:2]
+    hmin, hmax = hstart[ii], hend[ii]
+    haxis = np.linspace(hmin, hmax, len(data[0]))
+
+    # if we are superposing the curves onto a simulation-geometry
+    # visualization plot, construct the appropriate mapping that
+    # squeezes the full vertical extent of the curve into the
+    # z-axis interval [zmin, zmax]
+    if superpose:
+        ax = plt.gcf().gca(projection='3d')
+        (zfloor,zceil) = ax.get_zlim()
+        zmin = zfloor + zbar_min*(zceil-zfloor)
+        zmax = zfloor + zbar_max*(zceil-zfloor)
+        z0, dz = 0.5*(zmax+zmin), (zmax-zmin)
+        dmin = dmin if dmin else np.min(data)
+        dmax = dmax if dmax else np.max(data)
+        d0, dd = 0.5*(dmax+dmin), (dmax-dmin)
+        zs = center[1-ii]
+        zdir='x' if sx==0 else 'y'
+        if draw_baseline:
+            lines=LineCollection([[hstart,hend]], colors=lc,
+                                 linewidths=lw, linestyles=ls)
+            ax.add_collection3d(lines, zs=z0, zdir='z')
+
+    kwargs={'color':lc, 'linewidth':lw, 'linestyle':ls}
+
+    for n in range(len(data)):
+        kwargs['label'] = None if not labels else labels[n]
+        if superpose:
+            ax.plot(haxis,z0+(data[n]-d0)*dz/dd, zs=zs, zdir=zdir, **kwargs)
+        else:
+            plt.plot(haxis,data[n],**kwargs)
+
 #################################################
 #################################################
 #################################################
@@ -387,75 +382,76 @@ def visualize_sim(sim, fig=None, plot3D=None,
 #################################################
 #################################################
 #################################################
-# def visualize_dft_flux(sim, superpose=True, flux_cells=[], nf=0):
-#
-#     if not mp.am_master():
-#         return
-#
-#     # first pass to get arrays of poynting flux strength for all cells
-#     if len(flux_cells)==0:
-#         flux_cells=[cell for cell in sim.dft_objects if is_flux_cell(cell)]
-#     flux_arrays=[]
-#     for cell in flux_cells:    # first pass to compute flux data
-#         (x,y,z,w,c,EH)=unpack_dft_cell(sim,cell,nf=nf)
-#         flux_arrays.append( 0.25*np.real(w*(np.conj(EH[0])*EH[3] - np.conj(EH[1])*EH[2])) )
-#
-#     # second pass to plot
-#     for n, cell in enumerate(flux_cells):    # second pass to plot
-#         if superpose==False:
-#             if n==0:
-#                 plt.figure()
-#                 plt.title('Poynting flux')
-#             plt.subplot(len(flux_cells),1,n)
-#             plt.gca().set_title('Flux cell {}'.format(n))
-#         cn,sz=mp.get_center_and_size(cell.where)
-#         max_flux=np.amax([np.amax(fa) for fa in flux_arrays])
-#         plot_data_curves(sim, center=cn, size=sz, data=[flux_arrays[n]],
-#                          superpose=superpose, options=options,
-#                          labels=['flux through cell {}'.format(n)],
-#                          dmin=-max_flux,dmax=max_flux)
-#
+def plot_dft_flux(sim, superpose=True, flux_cells=[], nf=0, options={}):
+
+    if not mp.am_master():
+        return
+
+    # first pass to get arrays of poynting flux strength for all cells
+    if len(flux_cells)==0:
+        flux_cells=[cell for cell in sim.dft_objects if hasattr(cell,'flux')]
+    flux_arrays=[]
+    for cell in flux_cells:    # first pass to compute flux data
+        (x,y,z,w,c,EH)=unpack_dft_cell(sim,cell,nf=nf)
+        flux_arrays.append( 0.25*np.real(w*(np.conj(EH[0])*EH[3] - np.conj(EH[1])*EH[2])) )
+
+    # second pass to plot
+    for n, cell in enumerate(flux_cells):    # second pass to plot
+        if superpose==False:
+            if n==0:
+                plt.figure()
+                plt.title('Poynting flux')
+            plt.subplot(len(flux_cells),1,n)
+            plt.gca().set_title('Flux cell {}'.format(n))
+        cn,sz = mp.get_center_and_size(cell.where)
+        max_flux=np.amax([np.amax(fa) for fa in flux_arrays])
+        plot_data_curves(sim, center=cn.__array__(), size=sz.__array__(),
+                         data=[flux_arrays[n]], superpose=superpose,
+                         labels=['flux through cell {}'.format(n)],
+                         dmin=-max_flux, dmax=max_flux,
+                         section='flux_data', options=options)
+
+###############################################
 ################################################
-#################################################
-#################################################
-# def fc_name(c,which):
-#     name=mp.component_name(c)
-#     return name if which=='scattered' else str(name[0].upper())+str(name[1])
-#
-# def field_func_array(fexpr,x,y,z,w,cEH,EH):
-#     if fexpr=='re(Ex)':
-#         return np.real(EH[0])
-#     if fexpr=='im(Ex)':
-#         return np.imag(EH[0])
-#     if fexpr=='re(Ey)':
-#         return np.real(EH[1])
-#     if fexpr=='im(Ey)':
-#         return np.imag(EH[1])
-#     if fexpr=='re(Ez)':
-#         return np.real(EH[2])
-#     if fexpr=='im(Ez)':
-#         return np.imag(EH[2])
-#     if fexpr=='re(Hx)':
-#         return np.real(EH[3])
-#     if fexpr=='im(Hx)':
-#         return np.imag(EH[3])
-#     if fexpr=='re(Hy)':
-#         return np.real(EH[4])
-#     if fexpr=='im(Hy)':
-#         return np.imag(EH[4])
-#     if fexpr=='re(Hz)':
-#         return np.real(EH[5])
-#     if fexpr=='im(Hz)':
-#         return np.imag(EH[5])
-#     if fexpr=='abs2(H)':
-#         return abs2(EH[3]) + abs2(EH[4]) + abs2(EH[5])
-#     if True: # fexpr=='abs2(E)':
-#         return abs2(EH[0]) + abs2(EH[1]) + abs2(EH[2])
-#
-#####################################################################
+################################################
+def fc_name(c,which):
+    name=mp.component_name(c)
+    return name if which=='scattered' else str(name[0].upper())+str(name[1])
+
+def field_func_array(fexpr,x,y,z,w,cEH,EH):
+    if fexpr=='re(Ex)':
+        return np.real(EH[0])
+    if fexpr=='im(Ex)':
+        return np.imag(EH[0])
+    if fexpr=='re(Ey)':
+        return np.real(EH[1])
+    if fexpr=='im(Ey)':
+        return np.imag(EH[1])
+    if fexpr=='re(Ez)':
+        return np.real(EH[2])
+    if fexpr=='im(Ez)':
+        return np.imag(EH[2])
+    if fexpr=='re(Hx)':
+        return np.real(EH[3])
+    if fexpr=='im(Hx)':
+        return np.imag(EH[3])
+    if fexpr=='re(Hy)':
+        return np.real(EH[4])
+    if fexpr=='im(Hy)':
+        return np.imag(EH[4])
+    if fexpr=='re(Hz)':
+        return np.real(EH[5])
+    if fexpr=='im(Hz)':
+        return np.imag(EH[5])
+    if fexpr=='abs2(H)':
+        return abs2(EH[3]) + abs2(EH[4]) + abs2(EH[5])
+    if True: # fexpr=='abs2(E)':
+        return abs2(EH[0]) + abs2(EH[1]) + abs2(EH[2])
+
+# ####################################################################
 # this routine is intended as a helper function called by
 # visualize_dft_fields, not directly by user
-#####################################################################
+# ####################################################################
 # def plot_dft_fields(sim, field_cells=[], field_funcs=None,
 #                          ff_arrays=None, options=None, nf=0):
 #
@@ -518,7 +514,7 @@ def visualize_sim(sim, fig=None, plot3D=None,
 #     plt.draw()
 #     return 0
 #
-#
+
 #####################################################################
 #####################################################################
 #####################################################################
@@ -597,3 +593,70 @@ def happy_cb(img, axes):
 #
 #     plt.show(False)
 #     plt.draw()
+
+
+##################################################
+#################################################
+#################################################
+def texify(expr):
+    """Return expr modified to play well with latex formatting."""
+
+    expr.sub('_',r'\_')
+    expr=re.sub(r'([eEhH])([xyz])',r'\1_\2',expr)
+    expr=re.sub(r'e_','E_',expr)
+    expr=re.sub(r'H_','H_',expr)
+    expr=re.sub(r'abs\((.*)\)',r'|\1|',expr)
+    expr=re.sub(r'abs2\((.*)\)',r'|\1|^2',expr)
+    loglike=['Re','Im']
+    for s in loglike:
+        expr=re.sub(s,'\textrm{'+s+'}',expr)
+    return r'$'+expr+'$'
+
+
+#################################################
+#################################################
+#################################################
+def tangential_components(normal_dir):
+    EH_TRANSVERSE    = [ [mp.Ey, mp.Ez, mp.Hy, mp.Hz],
+                         [mp.Ez, mp.Ex, mp.Hz, mp.Hx],
+                         [mp.Ex, mp.Ey, mp.Hx, mp.Hy] ]
+    if normal_dir in range(mp.X, mp.Z+1):
+        return EH_TRANSVERSE[normal_dir-mp.X]
+    raise ValueError("invalid normal_dir={} in tangential_components".format(normal_dir))
+
+
+#################################################
+# return a list of the field components stored in a DFT cell
+#################################################
+def dft_cell_components(cell):
+    if hasattr(cell,'flux'):
+        return tangential_components(cell.normal_direction)
+    elif cell.num_components==6:
+        return EHxyz
+    elif cell.num_components==3:
+        return Exyz
+    else:
+        raise ValueError("internal error in dft_cell_components")
+
+
+# like get_dft_array, but 'zero-padded:' when the DFT cell
+# does not have data for the requested component (perhaps
+# because it vanishes identically by symmetry), this routine
+# returns an array of the expected dimensions with all zero
+# entries, instead of a rank-0 array that prints out as a
+# single nonsensical floating-point number which is the
+# not-very-user-friendly behavior of core pymeep.
+def get_dft_array_zp(sim, cell, c, nf=0, w=None):
+    array = sim.get_dft_array(cell, c, nf)
+    if len(np.shape(array))==0:
+        if w is None:
+            _,_,_,w = sim.get_dft_array_metadata(dft_cell=cell)
+        array=np.zeros(np.shape(w))
+    return array
+
+
+def unpack_dft_cell(sim, cell, nf=0):
+    (x,y,z,w)=fix_array_metadata(sim.get_dft_array_metadata(dft_cell=cell))
+    cEH = dft_cell_components(cell)
+    EH = [ get_dft_array_zp(sim, cell, c, nf, w) for c in cEH ]
+    return x, y, z, w, cEH, EH

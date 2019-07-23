@@ -8,7 +8,7 @@ import meep as mp
 from meep_adjoint import ( OptimizationProblem, Subregion,
                            ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, v3, V3)
 
-from meep_adjoint import set_option_defaults as set_adjoint_defaults
+from meep_adjoint import set_option_defaults as set_mpadj_defaults
 from meep_adjoint import get_adjoint_option as adj_opt
 
 ######################################################################
@@ -16,25 +16,13 @@ from meep_adjoint import get_adjoint_option as adj_opt
 # set by meep_adjoint are not quite right for our particular problem,
 # so we override those with problem-specific custom defaults.
 # note that these are still just *defaults*, overwritten by values
-# in config files, environment variables, or command-line argumnets
+# in config files, environment variables, or command-line arguments.
 ######################################################################
 custom_defaults = { 'fcen': 0.5, 'df': 0.2, 'eps_func' : 3.0,
                     'dpml': 0.5, 'dair': 0.5 }
-set_adjoint_defaults(custom_defaults)
+set_mpadj_defaults(custom_defaults)
 
-
-######################################################################
-# Having just set our default option overrides, we now immediately
-# turn around and query the values of some adjoint-module options
-# that we will use in setting up our geometry below. This forces
-# meep_adjoint to execute the lazy initialization of its option
-# databases, whereupon any command-line arguments processed by
-# meep_adjoint will be removed from sys.argv and won't complicate our
-# own argument-parsing below.
-# Of course we could alternatively order things so that meep_adjoint
-# winds up processing sys.argv after we have done so; in this case we
-# would just need to ignore any arguments that we don't understand.
-######################################################################
+# query meep_adjoint for some option values we will need below
 dpml = adj_opt('dpml')
 dair = adj_opt('dair')
 fcen = adj_opt('fcen')
@@ -43,11 +31,10 @@ fcen = adj_opt('fcen')
 # parse problem-specific command-line arguments
 ##################################################
 parser = argparse.ArgumentParser()
-parser.add_argument('--eps_wvg',        type=float, default=6.0,          help ='waveguide permittivity')
-parser.add_argument('--eps_hole',       type=float, default=6.0,          help ='hole permittivity')
-parser.add_argument('--w_wvg',          type=float, default=3.0,          help ='waveguide width')
-parser.add_argument('--h_wvg',          type=float, default=0.0,          help ='waveguide thickness in Z direction (0==2D geometry)')
-parser.add_argument('--r_hole',         type=float, default=0.5,          help ='hole radius')
+parser.add_argument('--eps_wvg',        type=float, default=6.0,  help ='waveguide permittivity')
+parser.add_argument('--w_wvg',          type=float, default=3.0,  help ='waveguide width')
+parser.add_argument('--h_wvg',          type=float, default=0.0,  help ='waveguide thickness in Z direction (0==2D geometry)')
+parser.add_argument('--w_hole',         type=float, default=0.5,  help ='width of hole')
 args=parser.parse_args()
 
 
@@ -60,7 +47,7 @@ args=parser.parse_args()
 #----------------------------------------------------------------------
 w_wvg      = args.w_wvg
 h_wvg      = args.h_wvg
-r_hole     = args.r_hole
+w_hole     = args.w_hole
 eps_wvg    = args.eps_wvg
 eps_hole   = args.eps_hole
 L          = max(6.0*dpml + 2.0*r_hole,  3.0/fcen)
@@ -70,13 +57,12 @@ sz         = 0.0 if h_wvg==0.0 else dpml + dair + h_wvg + dair + dpml
 cell_size  = v3(sx, sy, sz)
 
 #----------------------------------------------------------------------
-#- material bodies, not including the design region
+# geometric objects (material bodies), not including the design object
 #----------------------------------------------------------------------
 wvg = mp.Block(center=V3(ORIGIN), material=mp.Medium(epsilon=eps_wvg), size=V3(sx,w_wvg,h_wvg))
 
-
 #----------------------------------------------------------------------
-#- objective regions and objective_function
+#- objective regions, objective quantities, objective function
 #----------------------------------------------------------------------
 w_flux = (0.5*dair + w_wvg + 0.5*dair)
 h_flux = 0.0 if h_wvg==0.0 else (0.5*dair + h_wvg + 0.5*dair)
@@ -85,15 +71,15 @@ x0   = r_hole+dpml     # distance from origin to center of flux cell
 east = Subregion(name='east', center=v3(+x0,0,0), size=flux_size, dir=mp.X)
 west = Subregion(name='west', center=v3(-x0,0,0), size=flux_size, dir=mp.X)
 
-objective = "Abs(P1_east)**2"
-extra_quantities=["S_east", "S_west", "P1_east", "M1_east", "P2_east", "M2_east"]
+objective = 'Abs(P1_east)**2'
+extra_quantities=['S_east', 'S_west', 'P1_east', 'M1_east', 'P2_east', 'M2_east']
 
 #----------------------------------------------------------------------
 # source region
 #----------------------------------------------------------------------
 source_center = west.center - dpml*XHAT
 source_size   = flux_size
-source_region = Subregion(center=source_center, size=source_size)
+source_region = Subregion(center=source_center, size=source_size, dir=mp.X)
 
 #----------------------------------------------------------------------
 # design region and expansion basis
@@ -106,17 +92,18 @@ design_region = Subregion(name='design', center=design_center, size=design_size)
 # 'extra' regions not needed for adjoint calculations but added for
 # our own purposes---in this case, to produce field visualizations
 #----------------------------------------------------------------------
-full_region = Subregion(size=cell_size)
+full_region = Subregion(name='full', center=ORIGIN, size=cell_size)
 
 #----------------------------------------------------------------------
 #----------------------------------------------------------------------
 #----------------------------------------------------------------------
-opt_prob = OptimizationProblem(objective_regions=[east,west], objective="S_east",
+opt_prob = OptimizationProblem(objective_regions=[east,west], objective='S_east',
                                design_region=design_region,
                                cell_size=cell_size, background_geometry=[wvg],
                                source_region=source_region,
                                extra_quantities=extra_quantities, extra_regions=[full_region]
                               )
+opt_prob.visualize()
 
 # #         #----------------------------------------
 # #         # finite-element mesh and basis
@@ -175,7 +162,7 @@ opt_prob = OptimizationProblem(objective_regions=[east,west], objective="S_east"
 # #         geometry = [wvg] if vacuum else [wvg, disc]
 # #
 # #         envelope, amp = mp.GaussianSource(args.fcen,fwidth=args.df), 1.0
-# #         if callable(getattr(envelope, "fourier_transform", None)):
+# #         if callable(getattr(envelope, 'fourier_transform', None)):
 # #             amp /= envelope.fourier_transform(args.fcen)
 # #         sources=[mp.EigenModeSource(src=envelope, amplitude=amp,
 # #                                     center=self.source_center,

@@ -1,6 +1,7 @@
 """ Handling of visualization-related configuration options."""
 
 import warnings
+from warnings import warn
 import numpy as np
 
 from .option_almanac import OptionTemplate, OptionAlmanac
@@ -33,6 +34,7 @@ def _init_section_options(section, custom_defaults, search_env):
                          prepend_section = (section != 'default'))
 
 
+
 def _subdict(fulldict, section, strip=True):
     """returns a dict containing all items in fulldict whose key begins with 'section_'.
        if strip==True, the 'section_' prefix is removed from keys in the returned dict.
@@ -56,11 +58,11 @@ def set_visualization_option_defaults(custom_defaults={}, search_env=True):
     _init_visualization_options(custom_defaults=custom_defaults, search_env=search_env)
 
 
-def get_visualization_options(options, section='default', overrides={}):
+def get_visualization_options(opts, section='default', overrides={}):
     """Return currently configured values of options.
 
     Args:
-        options (list of str):  names of options
+        opts (list of str):  names of options for which we want values
         section (str): name of section
         overrides (dict): {option:value} records to override current settings
 
@@ -73,22 +75,41 @@ def get_visualization_options(options, section='default', overrides={}):
 
     almanac = _visualization_sections.get(section, None)
     if almanac is None:
-        warnings.warn('unknown options section {} (skipping)'.format(section))
+        warn('unknown options section {} (skipping)'.format(section))
         return None
+
+    for opt in [o.lower() for o in opts if o.lower() not in VISUALIZATION_OPTIONS]:
+        if np.any( [ opt.startswith(sect + '_') for sect in VISUALIZATION_SECTIONS] ):
+            warnings.warn('Option \'{}\': section-prefix semantics not available in get_visualization_options;'.format(opt))
+            warnings.warn('use the \'section\' parameter instead')
+        else:
+            warnings.warn("unrecognized option {}; something has probably gone wrong".format(opt))
 
     _overrides = overrides if section=='default' else _subdict(overrides,section)
 
-    return [ almanac(opt, section, _overrides) for opt in options ]
+    return [ almanac(opt, overrides=_overrides) for opt in opts ]
 
 
 def get_visualization_option(option, section='default', overrides={}):
+    """ Singleton version of the above routine that also allows an
+        alternative calling convention for convenience: the section
+        label may be prepended to the name of the option instead of
+        specified separately. Thus, the following two sets of
+        parameter values are equivalent:
+            option='linewidth',     section='pml'
+            option='pml_linewidth'  section='default'  (or section left unspecified)
+    """
+    if section=='default' and '_' in option:
+        prefix = option.split('_')[0].lower()
+        if prefix in VISUALIZATION_SECTIONS:
+            section, option = prefix, option[1+len(prefix) : ]
+
     return get_visualization_options([option],section,overrides)[0]
 
 
 ######################################################################
 # Definitions of options and section-specific default values
 #####################################################################
-
 """ names, default values, descriptions of visualization options """
 VISUALIZATION_OPTION_TEMPLATES= [
     OptionTemplate('cmap',         'plasma',        'default colormap'),
@@ -110,6 +131,9 @@ VISUALIZATION_OPTION_TEMPLATES= [
     OptionTemplate('cb_shrink',    0.60,            'colorbar shrink factor'),
     OptionTemplate('latex',        True,            'LaTeX text formatting'),
  ]
+
+"""base option names, to which we prepend a prefix like 'eps_' to get section-specific options"""
+VISUALIZATION_OPTIONS = [ t.name for t in VISUALIZATION_OPTION_TEMPLATES ]
 
 
 """ section-specific overrides of default option values """
@@ -152,7 +176,22 @@ VISUALIZATION_SECTIONS = {
     'fields_region': { 'linewidth': 2.0,
                        'linecolor': '#00ff00',
                        'linestyle': '--',
+                       'fillcolor': 'None',
                            'alpha': 0.5,
                         'fontsize':   0
+                   },
+
+#----------------------------------------------------------------------
+# flux data:
+#----------------------------------------------------------------------
+    'flux_data': { 'linecolor': '#ff00ff', 'linewidth':4.0
+                 },
+
+#----------------------------------------------------------------------
+# 'fields' data
+#----------------------------------------------------------------------
+    'fields_data': { 'linewidth': 0.0, 'alpha': 0.5,
+                     'method': 'contourf',
+                     'zmin': 0.4, 'zmax': 0.6
                    }
 }

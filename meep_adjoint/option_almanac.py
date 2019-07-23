@@ -13,6 +13,7 @@
    (2) math utility routines
 
 """
+import os
 from os import environ as env
 from os.path import expanduser
 import sys
@@ -106,38 +107,34 @@ class OptionAlmanac(object):
 
         # update 5: command-line arguments
         parser = argparse.ArgumentParser()
-        for n,v,h in [ (t.name, self.options[t.name], t.help) for t in templates ]:
-            parser.add_argument('--{}{}'.format(pfx,n),type=type(v),default=v,help=h)
+        for opt, opttype, help in [ (t.name, self.opttypes[t.name], t.help) for t in templates ]:
+            parser.add_argument('--' + pfx + opt, type=opttype, help=help)
         argopts, leftovers = parser.parse_known_args()
-        self.revise(argopts.__dict__.items(), 'command-line arguments')
-        self.options['original_cmdline'] = ' '.join(sys.argv)
-        sys.argv = [sys.argv[0]] + leftovers
+        self.options['original_cmdline'], sys.argv = ' '.join(sys.argv), [sys.argv[0]] + leftovers
+        revisions = { k[len(pfx):]:v for k,v in vars(argopts).items() if v is not None }
+        self.revise(revisions, 'command-line arguments')
 
 
     def revise(self, revisions, context):
-        """cautiously apply a proposed set of updated option values
-
+        """Cautiously apply a proposed set of candidates for updated option values.
         Args:
             revisions: dict of {key:new_value} records OR list of (key,new_value) pairs
-            context:   optional label like 'global config file' or 'command line'
+            context:   optional str like 'global config file' or 'command line'
                        for inclusion in error messages to help trace mishaps
 
-        The result is similar to that of self.options.update( {k:v for (k,v) in revisions } ),
-        but (a) ignores 'updates' to options that weren't previously configured
-            (b) removes non-escaped single and double quotes surrounding strings,
-            (c) attempts type conversions as necessary to preserve the type of the
-                value associated with each key.
+            The result is similar to that of self.options.update( {k:v for (k,v) in revisions } ),
+            but (a) ignores 'updates' to options that weren't previously configured
+                (b) removes non-escaped single and double quotes surrounding strings,
+                (c) attempts type conversions as necessary to preserve the type of the
+                    value associated with each key.
 
-        Returns: none (vals is updated in place)
+        Return value: None (the class-internal dict of option settings is updated in-place)
         """
         revisions = revisions.items() if hasattr(revisions,'items') else revisions
-        for (key,newval) in [ (k,uq(v)) for k,v in revisions if k in self.options ]:
-            correctly_typed_newval = enforce_type(newval, self.opttypes[key])
-            if correctly_typed_newval is not None:
-                self.options[key] = correctly_typed_newval
-            else:
-                msg='option {}: ignoring improper value {} from {} (retaining value {})'
-                warn(msg.format(key,newval,context,self.options[key]))
+        for (name,newval) in [ (k,uq(v)) for k,v in revisions if k in self.options ]:
+            newval = self.enforce_type(name, newval)
+            if newval is not None:
+                self.options[name] = newval
 
 
     def update(self, options):
@@ -148,41 +145,49 @@ class OptionAlmanac(object):
         self.update(partner.options)
 
 
-    def __call__(self, name, fallback=None, overrides={}):
-        if name in overrides:
+    def __call__(self, name, overrides={}):
+        """Return the almanac's current value for the option
+           with the given name, or None if the almanac has no such option,
+           unless overrides has a value of the proper type,
+           in which case that wins.
+           Note: The first line here sets override to None if
+           overrides has no value for name OR has a value
+           but of an incompatible type.
+        """
+        override = self.enforce_type(name, overrides.get(name))
+        return override or self.options.get(name)
+
+
+    def enforce_type(self, name, value):
+        """Typechecking/conversion for option update candidates
+        Args:
+            name   (str): name of an option
+            value    (?): a value somebody has proposed to assign the option
+        Returns: value converted to the type of the given option, or None
+            if this is not possible. The conversion is attempted by a simple
+            typecast unless the return type is boolean, which we process by
+            hand as automatic conversion does not work [i.e. bool('False') == True].
+        """
+        # no conversion necessary?
+        if value is None or type(value) == self.opttypes[name]:
+            return value
+
+        # handle string/int to boolean conversion by hand
+        if self.opttypes[name] == type(True):
+            if isinstance(value,str):
+                vl, FF, TT = value.lower(), ['false', 'no', '0'], ['true', 'yes', '1']
+                return False if vl in FF else True if vl in TT else None
+            if isinstance(value,Number):
+                return True if value else False
+        # otherwise try automatic conversion via typecast
+        else:
             try:
-                return (self.opttypes[name])(overrides[name])
+                return (self.opttypes[name])(value)
             except ValueError:
-                warn('option {}: ignoring improper override value {}',name,overrides[name])
-        return self.options.get(name,fallback)
+                pass
 
-
-def enforce_type(value, required_type):
-    """Returns value converted to an instance of required_type, if possible.
-       The conversion is done by a simple typecast unless the return type is
-       boolean, which we process by hand as automatic conversion does not
-       work; for example, bool('False') returns True.
-       Raises ValueError if value cannot be converted to required_Type.
-    """
-    # no conversion necessary?
-    if type(value) == required_type:
-        return value
-
-    # handle string/int to boolean conversion by hand
-    if required_type == type(True):
-        if isinstance(value,str):
-            vl, FF, TT = value.lower(), ['false', 'no', '0'], ['true', 'yes', '1']
-            return False if vl in FF else True if vl in TT else None
-        if isinstance(value,Number):
-            return True if value else False
+        warn('Option {}: proposed update value ({}) has incompatible type (ignoring)'.format(name,value))
         return None
-
-    # otherwise try automatic conversion via typecast
-    try:
-        return (required_type)(value)
-    except e:
-        pass
-    return None
 
 
 def uq(s):

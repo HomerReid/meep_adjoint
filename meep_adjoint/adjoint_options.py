@@ -27,6 +27,7 @@ def _init_adjoint_options(custom_defaults={}, search_env=True):
 
 ######################################################################
 ######################################################################
+######################################################################
 def set_adjoint_option_defaults(custom_defaults={}, search_env=True):
     """
     Routine intended to be called by meep_adjoint API scripts to set
@@ -42,22 +43,21 @@ def set_adjoint_option_defaults(custom_defaults={}, search_env=True):
 ##################################################
 ##################################################
 ##################################################
-def get_adjoint_option(option, fallback=None, overrides={}):
+def get_adjoint_option(option, overrides={}):
     """Return currently configured value of option.
 
     Args:
         option (str): name of option
-        fallback:     what to return if option is not found among current settings
         overrides (dict): {option:value} records to override current settings
 
     Returns:
-        Value of option if found, otherwise fallback.
+        Value of option if found in database, or None otherwise
     """
     global _adjoint_options
     if _adjoint_options is None:
         _init_adjoint_options()
 
-    return _adjoint_options(option, fallback=fallback, overrides=overrides)
+    return _adjoint_options(option, overrides=overrides)
 
 
 def set_adjoint_options(options):

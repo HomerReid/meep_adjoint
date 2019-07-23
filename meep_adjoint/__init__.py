@@ -21,13 +21,14 @@ from .visualization import visualize_sim
 from .adjoint_options import get_adjoint_option, set_adjoint_option_defaults
 
 from .dft_cell import (ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, EH_CPTS,
-                       v3, V3, Subregion, DFTCell, Grid, make_grid, dft_cell_names)
+                       v3, V3, Subregion, DFTCell, Grid, fix_array_metadata,
+                       make_grid, dft_cell_names)
 
-from .objective import ObjectiveFunction
+from .objective import ObjectiveFunctio
 
 from .basis import Basis
 
-from .finite_element_basis import (FiniteElementBasis, parameterized_function2)
+from .finite_element_basis import FiniteElementBasis
 
 from .timestepper import TimeStepper
 
@@ -38,4 +39,4 @@ from .optimization_problem import OptimizationProblem
 ######################################################################
 def set_option_defaults(custom_defaults={}, search_env=True):
     set_adjoint_option_defaults(custom_defaults, search_env)
-    #set_visualization_option_defaults(custom_defaults, search_env)
+    set_visualization_option_defaults(custom_defaults, search_env)

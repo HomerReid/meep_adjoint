@@ -1,168 +1,142 @@
+import sys
+import os
+import argparse
+
 import numpy as np
 import meep as mp
 
-from meep.adjoint import (OptimizationProblem, FluxLine,
-                          xHat, yHat, zHat, origin,
-                          FiniteElementBasis)
+import meep_adjoint
 
-##################################################
-##################################################
-##################################################
-class CrossRouter(OptimizationProblem):
+from meep_adjoint import get_adjoint_option as adj_opt
+from meep_adjoint import get_visualization_option as vis_opt
 
-    ##################################################
-    # add problem-specific command-line arguments
-    ##################################################
-    def add_args(self, parser):
+from meep_adjoint import ( OptimizationProblem, Subregion,
+                           ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, v3, V3)
 
-        # geometry options
-        parser.add_argument('--wh',       type=float, default=1.5,  help='width of horizontal waveguide')
-        parser.add_argument('--wv',       type=float, default=1.5,  help='width of vertical waveguide')
-        parser.add_argument('--l_stub',   type=float, default=3.0,  help='waveguide input/output stub length')
-        parser.add_argument('--eps',      type=float, default=6.0,  help='waveguide permittivity')
-        parser.add_argument('--r_design', type=float, default=0.0,  help='design region radius')
-        parser.add_argument('--l_design', type=float, default=4.0,  help='design region side length')
-
-        # basis-set options
-        parser.add_argument('--element_length',  type=float,  default=0.25,       help='finite-element length scale')
-        parser.add_argument('--element_type',    type=str,    default='Lagrange', help='finite-element type')
-        parser.add_argument('--element_order',   type=int,    default=1,          help='finite-element order')
-
-        # the following three quantities are weighting prefactors assigned to
-        # the north, south, and east power fluxes in the objective function
-        parser.add_argument('--n_weight', type=float, default=1.00, help='')
-        parser.add_argument('--s_weight', type=float, default=0.00, help='')
-        parser.add_argument('--e_weight', type=float, default=0.00, help='')
-
-        # set problem-specific defaults for existing (general) arguments
-        parser.set_defaults(fcen=0.5)
-        parser.set_defaults(df=0.2)
-        parser.set_defaults(dpml=1.0)
-        parser.set_defaults(epsilon_design=6.0)
-
-    ##################################################
-    ##################################################
-    ##################################################
-    def init_problem(self, args):
-
-        #----------------------------------------
-        # size of computational cell
-        #----------------------------------------
-        lcen          = 1.0/args.fcen
-        dpml          = 0.5*lcen if args.dpml == -1.0 else args.dpml
-        design_length = 2.0*args.r_design if args.r_design > 0.0 else args.l_design
-        sx = sy       = dpml + args.l_stub + design_length + args.l_stub + dpml
-        cell_size     = mp.Vector3(sx, sy, 0.0)
-
-        #----------------------------------------
-        #- design region bounding box
-        #----------------------------------------
-        design_center = origin
-        design_size   = mp.Vector3(design_length, design_length)
-        design_region = mp.Volume(center=design_center, size=design_size)
-
-        #----------------------------------------
-        #- objective and source regions
-        #----------------------------------------
-        gap            =  args.l_stub/6.0                    # gap between source region and flux monitor
-        d_flux         =  0.5*(design_length + args.l_stub)  # distance from origin to NSEW flux monitors
-        d_source       =  d_flux + gap                       # distance from origin to source
-        d_flx2         =  d_flux + 2.0*gap
-        l_flux_NS      =  2.0*args.wv
-        l_flux_EW      =  2.0*args.wh
-        north          =  FluxLine(0.0, +d_flux, l_flux_NS, mp.Y, 'north')
-        south          =  FluxLine(0.0, -d_flux, l_flux_NS, mp.Y, 'south')
-        east           =  FluxLine(+d_flux, 0.0, l_flux_EW, mp.X, 'east')
-        west1          =  FluxLine(-d_flux, 0.0, l_flux_EW, mp.X, 'west1')
-        west2          =  FluxLine(-d_flx2, 0.0, l_flux_EW, mp.X, 'west2')
-
-        objective_regions  = [north, south, east, west1, west2]
-
-        source_center  =  mp.Vector3(-d_source, 0.0)
-        source_size    =  mp.Vector3(0.0,l_flux_EW)
-
-        #----------------------------------------
-        #- optional extra regions for visualization
-        #----------------------------------------
-        extra_regions  = [mp.Volume(center=origin, size=cell_size)] if args.full_dfts else []
-
-        #----------------------------------------
-        # basis set
-        #----------------------------------------
-        basis = FiniteElementBasis(size=design_size, center=design_center,
-                                   element_length=args.element_length,
-                                   element_type=args.element_type,
-                                   element_order=args.element_order)
-
-        #----------------------------------------
-        #- objective function
-        #----------------------------------------
-        fstr=(   '   {:s}*Abs(P1_north)**2'.format('0.0' if args.n_weight==0.0 else '{}'.format(args.n_weight))
-               + ' + {:s}*Abs(M1_south)**2'.format('0.0' if args.s_weight==0.0 else '{}'.format(args.s_weight))
-               + ' + {:s}*Abs(P1_east)**2'.format('0.0'  if args.e_weight==0.0 else '{}'.format(args.e_weight))
-               + ' + 0.0*(P1_north + M1_south + P1_east + P1_west1 + P1_west2)'
-               + ' + 0.0*(M1_north + M1_south + M1_east + M1_west1 + M1_west2)'
-               + ' + 0.0*(S_north + S_south + S_east + S_west1 + S_west2)'
-             )
-
-        #----------------------------------------
-        #- internal storage for variables needed later
-        #----------------------------------------
-        self.args            = args
-        self.dpml            = dpml
-        self.cell_size       = cell_size
-        self.basis           = basis
-        self.design_center   = design_center
-        self.design_size     = design_size
-        self.source_center   = source_center
-        self.source_size     = source_size
-
-        if args.eps_design is None:
-            args.eps_design = args.eps
-
-        return fstr, objective_regions, extra_regions, design_region, basis
-
-    ##############################################################
-    ##############################################################
-    ##############################################################
-    def create_sim(self, beta_vector, vacuum=False):
-
-        args=self.args
-
-        hwvg=mp.Block(center=origin, material=mp.Medium(epsilon=args.eps),
-                      size=mp.Vector3(self.cell_size.x,args.wh))
-        vwvg=mp.Block(center=origin, material=mp.Medium(epsilon=args.eps),
-                      size=mp.Vector3(args.wv,self.cell_size.y))
-        router=mp.Block(center=self.design_center, size=self.design_size,
-                        epsilon_func=self.basis.parameterized_function(beta_vector))
-        geometry=[hwvg, vwvg, router]
-
-        envelope = mp.GaussianSource(args.fcen,fwidth=args.df)
-        amp=1.0
-        if callable(getattr(envelope, "fourier_transform", None)):
-            amp /= envelope.fourier_transform(args.fcen)
-        sources=[mp.EigenModeSource(src=envelope,
-                                    center=self.source_center,
-                                    size=self.source_size,
-                                    eig_band=args.source_mode,
-                                    amplitude=amp
-                                   )
-                ]
-
-        sim=mp.Simulation(resolution=args.res, cell_size=self.cell_size,
-                          boundary_layers=[mp.PML(self.dpml)], geometry=geometry,
-                          sources=sources)
-
-        if args.complex_fields:
-            sim.force_complex_fields=True
-
-        return sim
 
 ######################################################################
-# if executed as a script, we look at our own filename to figure out
-# the name of the class above, create an instance of this class called
-# op, and call its run() method.
+# override meep_adjoint's default settings for some configuration opts
 ######################################################################
-if __name__ == '__main__':
-    op=globals()[__file__.split('/')[-1].split('.')[0]]()
-    op.run()
+meep_adjoint.set_option_defaults( { 'fcen': 0.5, 'df': 0.2,
+                                    'dpml': 1.0, 'dair': 0.5,
+                                    'eps_func': 6.0 })
+
+
+# fetch values of meep_adjoint options that we will use below
+fcen = adj_opt('fcen')
+dpml = adj_opt('dpml')
+dair = adj_opt('dair')
+
+
+######################################################################
+# handle problem-specific command-line arguments
+######################################################################
+parser = argparse.ArgumentParser()
+
+# options affecting the geometry of the cross-router
+parser.add_argument('--wh',       type=float, default=1.5,  help='width of horizontal waveguide')
+parser.add_argument('--wv',       type=float, default=1.5,  help='width of vertical waveguide')
+parser.add_argument('--h',        type=float, default=0.0,  help='height of waveguide in z-direction')
+parser.add_argument('--l_stub',   type=float, default=3.0,  help='waveguide input/output stub length')
+parser.add_argument('--l_design', type=float, default=4.0,  help='design region side length')
+parser.add_argument('--eps_wvg',  type=float, default=6.0,  help='waveguide permittivity')
+
+# basis-set options
+parser.add_argument('--element_length',  type=float,  default=0.25,       help='finite-element length scale')
+parser.add_argument('--element_type',    type=str,    default='Lagrange', help='finite-element type')
+parser.add_argument('--element_order',   type=int,    default=1,          help='finite-element order')
+
+# configurable weighting prefactors for the north, south, and east power fluxes
+# to allow the objective function to be redefined via command-line options
+parser.add_argument('--n_weight', type=float, default=1.00, help='')
+parser.add_argument('--s_weight', type=float, default=0.00, help='')
+parser.add_argument('--e_weight', type=float, default=0.00, help='')
+
+args = parser.parse_args()
+
+
+##################################################
+# set up optimization problem
+##################################################
+
+
+#----------------------------------------
+# size of computational cell
+#----------------------------------------
+lcen          = 1.0/fcen
+dpml          = 0.5*lcen if dpml == -1.0 else dpml
+design_length = args.l_design
+sx = sy       = dpml + args.l_stub + design_length + args.l_stub + dpml
+sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
+cell_size     = [sx, sy, sz]
+
+#----------------------------------------------------------------------
+#- geometric objects (material bodies), not including the design object
+#----------------------------------------------------------------------
+wvg_mat = mp.Medium(epsilon=args.eps_wvg)
+hwvg = mp.Block(center=V3(ORIGIN), material=wvg_mat, size=V3(sx, args.wh, sz) )
+vwvg = mp.Block(center=V3(ORIGIN), material=wvg_mat, size=V3(args.wv, sy, sz) )
+
+#----------------------------------------------------------------------
+#- objective regions
+#----------------------------------------------------------------------
+d_flux     = 0.5*(design_length + args.l_stub)  # distance from origin to NSEW flux monitors
+gap        = args.l_stub/6.0                    # gap between source region and flux monitor
+d_source   = d_flux + gap                       # distance from origin to source
+d_flx2     = d_flux + 2.0*gap
+
+n_center   = ORIGIN + d_flux*YHAT
+s_center   = ORIGIN - d_flux*YHAT
+e_center   = ORIGIN + d_flux*XHAT
+w1_center  = ORIGIN - d_flux*XHAT
+w2_center  = w1_center - 2.0*gap*XHAT
+
+ns_size    = [2.0*args.wh, 0.0, sz]
+ew_size    = [0.0, 2.0*args.wv, sz]
+
+north      = Subregion(center=n_center, size=ns_size, dir=mp.Y,  name='north')
+south      = Subregion(center=s_center, size=ns_size, dir=mp.Y,  name='south')
+east       = Subregion(center=e_center, size=ew_size, dir=mp.X,  name='east')
+west1      = Subregion(center=w1_center, size=ew_size, dir=mp.X, name='west1')
+west2      = Subregion(center=w2_center, size=ew_size, dir=mp.X, name='west2')
+
+#----------------------------------------------------------------------
+# objective function and extra objective quantities -------------------
+#----------------------------------------------------------------------
+n_term = '{}*Abs(P1_north)**2'.format(args.n_weight) if args.n_weight else ''
+s_term = '{}*Abs(S1_south)**2'.format(args.s_weight) if args.s_weight else ''
+e_term = '{}*Abs(P1_east)**2'.format(args.e_weight) if args.e_weight else ''
+
+objective = n_term + s_term + e_term
+extra_quantities = ['S_north', 'S_south', 'S_east', 'S_west1', 'S_west2']
+
+#----------------------------------------------------------------------
+# source region
+#----------------------------------------------------------------------
+source_center  = ORIGIN - d_source*XHAT
+source_size    = ew_size
+source_region  = Subregion(center=source_center, size=source_size, name=mp.X)
+
+#----------------------------------------------------------------------
+#- design region, expansion basis
+#----------------------------------------------------------------------
+design_center = ORIGIN
+design_size   = [design_length, design_length, sz]
+design_region = Subregion(name='design', center=design_center, size=design_size)
+
+#----------------------------------------
+#- optional extra regions for visualization
+#----------------------------------------
+full_region = Subregion(name='full', center=ORIGIN, size=cell_size)
+
+
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
+opt_prob = OptimizationProblem(objective_regions=[north, south, east, west1, west2],
+                               objective=objective,
+                               design_region=design_region,
+                               cell_size=cell_size, background_geometry=[hwvg, vwvg],
+                               source_region=source_region,
+                               extra_quantities=extra_quantities, extra_regions=[full_region])
+opt_prob.visualize()
