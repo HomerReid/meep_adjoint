@@ -525,74 +525,71 @@ def happy_cb(img, axes):
     cax = divider.append_axes("right", size="5%", pad=0.05)
     return axes.figure.colorbar(img, cax=cax)
 
-
-
-
 #################################################
 #################################################
 #################################################
-# def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
-#                          ff_arrays=None, zrels=None, options=None, nf=0):
-#
-#     if not mp.am_master():
-#         return
-#
-#     if len(field_cells)==0:
-#         field_cells=[cl for cl in sim.dft_objects if dft_cell_type(cl)=='fields']
-#         full_cells=[cell for cell in field_cells if cell.regions[0].size==sim.cell_size]
-#         field_cells=full_cells if full_cells else field_cells
-#
-#     if len(field_cells)==0:
-#         return
-#
-#     if superpose and not isinstance(plt.gcf().gca(),axes3d.Axes3D):
-#         warnings.warn("visualize_dft_fields: non-3D plot, can't superpose.")
-#         superpose=False
-#
-#     if not superpose:
-#         return plot_dft_fields(sim, field_cells, field_funcs, ff_arrays, options, nf=nf)
-#
-#     # the remainder of this routine is for the superposition case
-#
-#     options       = options if options else def_field_options
-#     cmap          = options['cmap']
-#     alpha         = options['alpha']
-#     num_contours  = options['num_contours']
-#     fontsize      = options['fontsize']
-#
-#     if field_funcs is None:
-#         field_funcs = ['abs2(E)']
-#     if zrels is None:
-#         zrel_min, zrel_max, nz = options['zrel_min'], options['zrel_max'], len(field_funcs)
-#         zrels=[0.5*(zrel_min+zrel_max)] if nz==1 else np.linspace(zrel_min,zrel_max,nz)
-#
-#     for n, cell in enumerate(field_cells):
-#         (x,y,z,w,cEH,EH)=unpack_dft_cell(sim,cell,nf=nf)
-#         X, Y = np.meshgrid(x, y)
-#         fig = plt.gcf()
-#         ax  = fig.gca(projection='3d')
-#         (zmin,zmax)=ax.get_zlim()
-#         for n,(ff,zrel) in enumerate(zip(field_funcs,zrels)):
-#             data = ff_arrays[n] if ff_arrays else field_func_array(ff,x,y,z,w,cEH,EH)
-#             z0   = zmin + zrel*(zmax-zmin)
-#             img  = ax.contourf(X, Y, np.transpose(data), num_contours,
-#                                cmap=cmap, alpha=alpha, zdir='z', offset=z0)
-#             pad=options['colorbar_pad']
-#             shrink=options['colorbar_shrink']
-#             if options['colorbar_cannibalize']:
-#                 cax=fig.axes[-1]
-#                 cb=plt.colorbar(img, cax=cax)
-#             else:
-#                 cb=plt.colorbar(img, shrink=shrink, pad=pad, panchor=(0.0,0.5))
-#             #cb.set_label(ff,fontsize=1.0*fontsize,rotation=0,labelpad=0.5*fontsize)
-#             cb.ax.set_xlabel(texify(ff),fontsize=1.5*fontsize,rotation=0,labelpad=0.5*fontsize)
-#             cb.ax.tick_params(labelsize=0.75*fontsize)
-#             cb.locator = ticker.MaxNLocator(nbins=5)
-#             cb.update_ticks()
-#             cb.draw_all()
-#
-#     plt.show(False)
-#     plt.draw()
+def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
+                         ff_arrays=None, zrels=None, options=None, nf=0):
+
+    if not mp.am_master():
+        return
+
+    if len(field_cells)==0:
+        field_cells=[cl for cl in sim.dft_objects if dft_cell_type(cl)=='fields']
+        full_cells=[cell for cell in field_cells if cell.regions[0].size==sim.cell_size]
+        field_cells=full_cells if full_cells else field_cells
+
+    if len(field_cells)==0:
+        return
+
+    if superpose and not isinstance(plt.gcf().gca(),axes3d.Axes3D):
+        warnings.warn("visualize_dft_fields: non-3D plot, can't superpose.")
+        superpose=False
+
+    if not superpose:
+        return plot_dft_fields(sim, field_cells, field_funcs, ff_arrays, options, nf=nf)
+
+    # the remainder of this routine is for the superposition case
+
+    options       = options if options else def_field_options
+    cmap          = options['cmap']
+    alpha         = options['alpha']
+    num_contours  = options['num_contours']
+    fontsize      = options['fontsize']
+
+    if field_funcs is None:
+        field_funcs = ['abs2(E)']
+    if zrels is None:
+        zrel_min, zrel_max, nz = options['zrel_min'], options['zrel_max'], len(field_funcs)
+        zrels=[0.5*(zrel_min+zrel_max)] if nz==1 else np.linspace(zrel_min,zrel_max,nz)
+
+    for n, cell in enumerate(field_cells):
+        (x,y,z,w,cEH,EH)=unpack_dft_cell(sim,cell,nf=nf)
+        X, Y = np.meshgrid(x, y)
+        fig = plt.gcf()
+        ax  = fig.gca(projection='3d')
+        (zmin,zmax)=ax.get_zlim()
+        for n,(ff,zrel) in enumerate(zip(field_funcs,zrels)):
+            data = ff_arrays[n] if ff_arrays else field_func_array(ff,x,y,z,w,cEH,EH)
+            z0   = zmin + zrel*(zmax-zmin)
+            img  = ax.contourf(X, Y, np.transpose(data), num_contours,
+                               cmap=cmap, alpha=alpha, zdir='z', offset=z0)
+            pad=options['colorbar_pad']
+            shrink=options['colorbar_shrink']
+            if options['colorbar_cannibalize']:
+                cax=fig.axes[-1]
+                cb=plt.colorbar(img, cax=cax)
+            else:
+                cb=plt.colorbar(img, shrink=shrink, pad=pad, panchor=(0.0,0.5))
+            #cb.set_label(ff,fontsize=1.0*fontsize,rotation=0,labelpad=0.5*fontsize)
+            cb.ax.set_xlabel(texify(ff),fontsize=1.5*fontsize,rotation=0,labelpad=0.5*fontsize)
+            cb.ax.tick_params(labelsize=0.75*fontsize)
+            cb.locator = ticker.MaxNLocator(nbins=5)
+            cb.update_ticks()
+            cb.draw_all()
+
+    plt.show(False)
+    plt.draw()
 
 
 ##################################################
