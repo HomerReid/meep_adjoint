@@ -16,9 +16,11 @@ import sys
 import numpy as np
 
 import meep as mp
-
-sys.path.append(os.path.abspath('..'))
-import meep.adjoint
+print('os.path.abspath(.)={}'.format(os.path.abspath('.')))
+print('os.path.abspath(..)={}'.format(os.path.abspath('..')))
+#sys.path.insert(0,os.path.abspath('..'))
+#sys.path.insert(0,os.path.abspath('.'))
+import meep_adjoint
 
 ######################################################################
 # setting this environment variable replicates the build as executed

@@ -51,11 +51,12 @@ def visualize_sim(sim, fig=None, plot3D=None,
     if plot3D and sim.round_time() > sim.fields.last_source_time():
         plot_dft_flux(sim, superpose=True, options=options)
 
-    # if plot_dft_data==True:
-    #     visualize_dft_fields(sim, superpose=True, options=field_options)
+    if plot_dft_data==True:
+        visualize_dft_fields(sim, superpose=True, options=options)
 
     if not plot3D:
         plt.gcf().tight_layout()
+
     plt.show(block = False)
     plt.draw()
 
@@ -535,7 +536,7 @@ def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
         return
 
     if len(field_cells)==0:
-        field_cells=[cl for cl in sim.dft_objects if dft_cell_type(cl)=='fields']
+        field_cells=[cl for cl in sim.dft_objects if not hasattr(cl,'flux')]
         full_cells=[cell for cell in field_cells if cell.regions[0].size==sim.cell_size]
         field_cells=full_cells if full_cells else field_cells
 
