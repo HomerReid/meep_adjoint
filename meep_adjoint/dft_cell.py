@@ -50,9 +50,9 @@ def v3(a1=0.0, a2=0.0, a3=0.0):
 ######################################################################
 def fix_array_metadata(xyzw, center, size):
     for d in range(0,3):
-        if self.region.size[d]==0.0 and xyzw[d][0]!=self.region.center[d]:
-            warnings.warn('correcting for bug in get_array_metadata: {}={}-->{}'.format('xyz'[d],xyzw[d][0],self.region.center[d]))
-            xyzw[d]=np.array( [ self.region.center[d] ])
+        if size[d]==0.0 and xyzw[d][0]!=center[d]:
+            warnings.warn('correcting for bug in get_array_metadata: {}={}-->{}'.format('xyz'[d],xyzw[d][0],center[d]))
+            xyzw[d]=np.array([center[d]])
         else:
             xyzw[d]=np.array(xyzw[d])
 
@@ -209,7 +209,7 @@ class DFTCell(object):
         # take this opportunity to initialize simulation-dependent fields
         if self.grid is None:
             xyzw=sim.get_array_metadata(center=V3(self.region.center), size=V3(self.region.size), collapse=True, snap=True)
-            fix_array_metadata(xyzw, center, size)
+            fix_array_metadata(xyzw, self.region.center, self.region.size)
             self.grid = xyzw2grid(xyzw)
 
     ######################################################################

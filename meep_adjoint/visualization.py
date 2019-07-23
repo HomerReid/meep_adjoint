@@ -19,8 +19,8 @@ import matplotlib.cm
 
 import meep as mp
 
-from meep_adjoint import get_visualization_option as vis_opt
-from meep_adjoint import get_visualization_options as vis_opts
+from . import get_visualization_option as vis_opt
+from . import get_visualization_options as vis_opts
 
 from . import fix_array_metadata
 
@@ -149,7 +149,7 @@ def plot_eps(sim, fig=None, plot3D=False, options={}):
     #--------------------------------------------------
     #- fetch epsilon array and clip values if requested
     #--------------------------------------------------
-    (x,y,z,w) = fix_array_metadata(sim.get_array_metadata())
+    (x,y,z,w) = sim.get_array_metadata()
     eps = np.transpose(sim.get_epsilon())
     vmin = cmin if np.isfinite(cmin) else np.min(eps)
     vmax = cmax if np.isfinite(cmax) else np.max(eps)
@@ -656,7 +656,8 @@ def get_dft_array_zp(sim, cell, c, nf=0, w=None):
 
 
 def unpack_dft_cell(sim, cell, nf=0):
-    (x,y,z,w)=fix_array_metadata(sim.get_dft_array_metadata(dft_cell=cell))
+    cn,sz = mp.get_center_and_size(cell.where)
+    (x,y,z,w)=fix_array_metadata(sim.get_dft_array_metadata(dft_cell=cell),v3(cn),v3(sz))
     cEH = dft_cell_components(cell)
     EH = [ get_dft_array_zp(sim, cell, c, nf, w) for c in cEH ]
     return x, y, z, w, cEH, EH

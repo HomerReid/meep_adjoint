@@ -1,2 +1,0 @@
-numpy
-git+git://github.com/NanoComp/meep.git
