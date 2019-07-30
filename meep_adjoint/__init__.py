@@ -24,13 +24,16 @@ from .basis import Basis
 
 from .finite_element_basis import FiniteElementBasis
 
-from .timestepper import TimeStepper
+from .timestepper import TimeStepper, log
 
 from .visualization_options import (get_visualization_option,
                                     get_visualization_options,
                                     set_visualization_option_defaults)
 
 from .visualization import visualize_sim
+
+from .console import (launch_dashboard, close_dashboard, update_dashboard,
+                      ConsoleManager)
 
 from .optimization_problem import OptimizationProblem
 

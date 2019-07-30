@@ -83,8 +83,9 @@ class TimeStepper(object):
         else: # job=='adjoint'
             EH_fwd = self.design_cell.get_EH_slices(label='forward')
             EH_adj = self.design_cell.get_EH_slices()
-            ncs = [n for (n,c) in enumerate(self.design_cell.components) if c in E_CPTS]
-            self.dfdEps = np.real(np.sum( [ EH_fwd[nc]*EH_adj[nc] for nc in ncs ] ) )
+            self.dfdEps = np.zeros(self.design_cell.grid.shape)
+            for n in [ n for (n,c) in enumerate(self.design_cell.components) if c in E_CPTS]:
+                self.dfdEps += np.real( EH_fwd[n]*EH_adj[n] )
             retvals = self.basis.project(self.dfdEps, grid=self.design_cell.grid)
         return retvals
 
@@ -246,6 +247,8 @@ def rel_diff(a,b):
 ######################################################################
 ######################################################################
 def log(msg):
-    if not mp.am_master() or not adj_opt('filebase'): return
-    with open( adj_opt('filebase') + '.log' , 'a') as f:
+    if not mp.am_master() or np.all([adj_opt(s) is None for s in ['filebase','logfile']]):
+        return
+    logfile = adj_opt('logfile') or (adj_opt('filebase') + '.log' )
+    with open(logfile,'a') as f:
         f.write("{} {}\n".format(dt2.now().strftime('%T '),msg))

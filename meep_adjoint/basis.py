@@ -240,6 +240,10 @@ class Basis(ABC):
                 self.beta = beta_vector
             def __call__(self, p):
                 return self.f0 + np.dot( self.beta, self.b(p) )
+            def func(self):
+                def _f(p):
+                    return self(p)
+                return _f
 
         return _ParameterizedFunction(self, beta_vector)
 

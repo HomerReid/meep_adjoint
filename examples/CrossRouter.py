@@ -13,13 +13,15 @@ from meep_adjoint import get_visualization_option as vis_opt
 from meep_adjoint import ( OptimizationProblem, Subregion,
                            ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, v3, V3)
 
-
 ######################################################################
 # override meep_adjoint's default settings for some configuration opts
 ######################################################################
 meep_adjoint.set_option_defaults( { 'fcen': 0.5, 'df': 0.2,
                                     'dpml': 1.0, 'dair': 0.5,
-                                    'eps_func': 6.0 })
+                                    'eps_func': 6.0,
+                                    'flux_region_fontsize': 15,
+                                    'latex': True,
+                                   })
 
 
 # fetch values of meep_adjoint options that we will use below
@@ -60,7 +62,6 @@ args = parser.parse_args()
 ##################################################
 
 
-#----------------------------------------
 # size of computational cell
 #----------------------------------------
 lcen          = 1.0/fcen

@@ -24,16 +24,11 @@ from . import get_visualization_options as vis_opts
 
 from . import fix_array_metadata, v3
 
-def abs2(z):
-    """squared magnitude of complex number"""
-    return np.real(np.conj(z)*z)
-
-
 ######################################################################
 ######################################################################
 ######################################################################
-def visualize_sim(sim, fig=None, plot3D=None,
-                  src_labels=[], dft_labels=[], options={}):
+def visualize_sim(sim, dft_cells, mesh=None, fig=None, plot3D=None,
+                  src_labels=[], options={}):
 
     # if plot3D not specified, set it automatically: false
     # if we are plotting only the geometry (at the beginning
@@ -42,17 +37,18 @@ def visualize_sim(sim, fig=None, plot3D=None,
     if plot3D is None:
         plot3D = sim.round_time() > sim.fields.last_source_time()
 
-    plot_geometry(sim, fig=fig, plot3D=plot3D, src_labels=src_labels,
-                  dft_labels=dft_labels, options=options)
+    plot_geometry(sim, dft_cells, fig=fig, plot3D=plot3D,
+                  src_labels=src_labels, options=options)
+
+    if mesh is not None:
+        plot_mesh(mesh, options)
 
     ####################################################
     ####################################################
     ####################################################
     if plot3D and sim.round_time() > sim.fields.last_source_time():
-        plot_dft_flux(sim, superpose=True, options=options)
-
-    if plot_dft_data==True:
-        visualize_dft_fields(sim, superpose=True, options=options)
+        plot_dft_fields(sim, dft_cells, superpose=True, options=options)
+        plot_dft_flux(sim, dft_cells, superpose=True, options=options)
 
     if not plot3D:
         plt.gcf().tight_layout()
@@ -64,8 +60,8 @@ def visualize_sim(sim, fig=None, plot3D=None,
 ######################################################################
 ######################################################################
 ######################################################################
-def plot_geometry(sim, fig=None, plot3D=False,
-                  src_labels=[], dft_labels=[], options={}):
+def plot_geometry(sim, dft_cells, fig=None, plot3D=False,
+                  src_labels=[], options={}):
     """
     """
     if not mp.am_master():
@@ -111,11 +107,10 @@ def plot_geometry(sim, fig=None, plot3D=False,
     #####################################################################
     # plot DFT cell regions, with labels for flux cells.
     #####################################################################
-    for n, c in enumerate(sim.dft_objects):
-        cn, sz, data = c.regions[0].center, c.regions[0].size, 'flux' if hasattr(c,'flux') else 'fields'
-        section = data + '_region'
-        label = None if plot3D else dft_labels[n] if dft_labels else '{} {}'.format(data,n)
-        plot_subregion(sim, center=cn, size=sz, plot3D=plot3D, label=label, section=section, options=options)
+    for n, c in enumerate(dft_cells):
+        section = c.celltype + '_region'
+        label = None if plot3D else c.name
+        plot_subregion(sim, vol=c.region, plot3D=plot3D, label=label, section=section, options=options)
 
 
 
@@ -292,10 +287,23 @@ def plot_subregion(sim, vol=None, center=None, size=None,
                     color=linecolor, horizontalalignment=h, verticalalignment=v)
 
 
+#################################################
+#################################################
+#################################################
+def plot_mesh(mesh, options):
+    """Invoke FENICS/dolfin plotting routine to plot FEM mesh"""
 
-######################################################################
-######################################################################
-######################################################################
+    keys = ['linecolor', 'linewidth']
+    lc, lw = vis_opts(keys, section='mesh', overrides=options)
+    if lw==0.0:
+        return
+    try:
+        import dolfin as df
+        df.plot(mesh, color=lc, linewidth=lw)
+    except ImportError:
+        warnings.warn('failed to import dolfin module; omitting FEM mesh plot')
+
+
 #################################################
 # Plot one or more curves,
 #################################################
@@ -344,14 +352,14 @@ def plot_data_curves(sim, center=None, size=None, superpose=True,
                                  linewidths=1.0, linestyles='--')
             ax.add_collection3d(lines, zs=z0, zdir='z')
 
-    kwargs={'color':lc, 'linewidth':lw, 'linestyle':ls}
-
+    kwargs = {'color':lc, 'linewidth':lw, 'linestyle':ls}
     for n in range(len(data)):
         kwargs['label'] = None if not labels else labels[n]
         if superpose:
             ax.plot(haxis,z0+(data[n]-d0)*dz/dd, zs=zs, zdir=zdir, **kwargs)
         else:
             plt.plot(haxis,data[n],**kwargs)
+
 
 #################################################
 #################################################
@@ -383,17 +391,19 @@ def plot_data_curves(sim, center=None, size=None, superpose=True,
 #################################################
 #################################################
 #################################################
-def plot_dft_flux(sim, superpose=True, flux_cells=[], nf=0, options={}):
+def plot_dft_flux(sim, dft_cells, superpose=True, nf=0, options={}):
 
     if not mp.am_master():
         return
 
+    method = vis_opt('method',section='flux_data',overrides=options)
+    if method.lower() in ['omit','none']:
+        return
+
     # first pass to get arrays of poynting flux strength for all cells
-    if len(flux_cells)==0:
-        flux_cells=[cell for cell in sim.dft_objects if hasattr(cell,'flux')]
-    flux_arrays=[]
-    for cell in flux_cells:    # first pass to compute flux data
-        (x,y,z,w,c,EH)=unpack_dft_cell(sim,cell,nf=nf)
+    flux_cells, flux_arrays = [c for c in dft_cells if c.celltype=='flux'], []
+    for cell in flux_cells:
+        w, EH = cell.grid.weights, cell.get_EH_slices(nf=nf)
         flux_arrays.append( 0.25*np.real(w*(np.conj(EH[0])*EH[3] - np.conj(EH[1])*EH[2])) )
 
     # second pass to plot
@@ -404,9 +414,9 @@ def plot_dft_flux(sim, superpose=True, flux_cells=[], nf=0, options={}):
                 plt.title('Poynting flux')
             plt.subplot(len(flux_cells),1,n)
             plt.gca().set_title('Flux cell {}'.format(n))
-        cn,sz = mp.get_center_and_size(cell.where)
+        cn, sz = cell.region.center, cell.region.size
         max_flux=np.amax([np.amax(fa) for fa in flux_arrays])
-        plot_data_curves(sim, center=cn.__array__(), size=sz.__array__(),
+        plot_data_curves(sim, center=cell.region.center, size=cell.region.size,
                          data=[flux_arrays[n]], superpose=superpose,
                          labels=['flux through cell {}'.format(n)],
                          dmin=-max_flux, dmax=max_flux,
@@ -418,6 +428,11 @@ def plot_dft_flux(sim, superpose=True, flux_cells=[], nf=0, options={}):
 def fc_name(c,which):
     name=mp.component_name(c)
     return name if which=='scattered' else str(name[0].upper())+str(name[1])
+
+def abs2(z):
+    """squared magnitude of complex number"""
+    return np.real(np.conj(z)*z)
+
 
 def field_func_array(fexpr,x,y,z,w,cEH,EH):
     if fexpr=='re(Ex)':
@@ -523,28 +538,27 @@ def field_func_array(fexpr,x,y,z,w,cEH,EH):
 def happy_cb(img, axes):
     """nice colorbars for subplots, from https://joseph-long.com/writing/colorbars"""
     divider = make_axes_locatable(axes)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
+    cax = divider.append_axes("left", size="5%", pad=0.05)
     return axes.figure.colorbar(img, cax=cax)
 
 #################################################
 #################################################
 #################################################
-def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
-                         ff_arrays=None, nf=0, options={}):
+def plot_dft_fields(sim, dft_cells, superpose=True, field_funcs=None,
+                    ff_arrays=None, nf=0, options={}):
 
     if not mp.am_master():
         return
 
-    if len(field_cells)==0:
-        field_cells=[cl for cl in sim.dft_objects if not hasattr(cl,'flux')]
-        full_cells=[cell for cell in field_cells if cell.regions[0].size==sim.cell_size]
-        field_cells=full_cells if full_cells else field_cells
+    field_cells=[c for c in dft_cells if c.celltype=='fields']
+    full_cells=[c for c in field_cells if np.all(c.region.size==sim.cell_size) ]
+    field_cells=full_cells if full_cells else field_cells
 
     if len(field_cells)==0:
         return
 
     if superpose and not isinstance(plt.gcf().gca(),axes3d.Axes3D):
-        warnings.warn("visualize_dft_fields: non-3D plot, can't superpose.")
+        warnings.warn("plot_dft_fields: non-3D plot, can't superpose.")
         superpose=False
 
     if not superpose:
@@ -552,20 +566,24 @@ def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
 #        return plot_dft_fields(sim, field_cells, field_funcs, ff_arrays, options, nf=nf)
 
     # the remainder of this routine is for the superposition case
-
-    keys = ['cmap', 'alpha', 'contours', 'fontsize', 'zmin', 'zmax', 'cb_pad', 'cb_shrink', 'latex']
+    keys = ['cmap', 'alpha', 'contours', 'fontsize', 'zmin', 'zmax',
+            'cb_pad', 'cb_shrink', 'latex', 'method']
     vals = vis_opts(keys, section='fields_data', overrides=options)
     cmap, alpha, num_contours, fontsize   = vals[0:4]
-    zrel_min, zrel_max, cb_pad, cb_shrink, latex = vals[4:9]
+    zrel_min, zrel_max, cb_pad, cb_shrink = vals[4:8]
+    latex, method                         = vals[8:10]
+
+    if method.lower() in ['omit','none']:
+        return
 
     if field_funcs is None:
         field_funcs = ['abs2(E)']
-    if zrels is None:
-        nz = len(field_funcs)
-        zrels=[0.5*(zrel_min+zrel_max)] if nz==1 else np.linspace(zrel_min,zrel_max,nz)
+    nz = len(field_funcs)
+    zrels=[0.5*(zrel_min+zrel_max)] if nz==1 else np.linspace(zrel_min,zrel_max,nz)
 
     for n, cell in enumerate(field_cells):
-        (x,y,z,w,cEH,EH)=unpack_dft_cell(sim,cell,nf=nf)
+        x, y, z, w = cell.grid.xtics, cell.grid.ytics, cell.grid.ztics, cell.grid.weights
+        cEH, EH = cell.components, cell.get_EH_slices(nf=nf)
         X, Y = np.meshgrid(x, y)
         fig = plt.gcf()
         ax  = fig.gca(projection='3d')
@@ -575,7 +593,7 @@ def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
             z0   = zmin + zrel*(zmax-zmin)
             img  = ax.contourf(X, Y, np.transpose(data), num_contours,
                                cmap=cmap, alpha=alpha, zdir='z', offset=z0)
-            colorbar_cannibalize=False
+            colorbar_cannibalize=True
             if colorbar_cannibalize:
                 cax=fig.axes[-1]
                 cb=plt.colorbar(img, cax=cax)
@@ -583,14 +601,11 @@ def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
                 cb=plt.colorbar(img, shrink=cb_shrink, pad=cb_pad, panchor=(0.0,0.5))
             #cb.set_label(ff,fontsize=1.0*fontsize,rotation=0,labelpad=0.5*fontsize)
             label = ff if not latex else texify(ff)
-            cb.ax.set_xlabel(label,fontsize=1.5*fontsize,rotation=0,labelpad=0.5*fontsize)
+            cb.ax.set_xlabel(label,fontsize=fontsize,rotation=0,labelpad=0.75*fontsize)
             cb.ax.tick_params(labelsize=0.75*fontsize)
             cb.locator = ticker.MaxNLocator(nbins=5)
             cb.update_ticks()
             cb.draw_all()
-
-    plt.show(False)
-    plt.draw()
 
 
 ##################################################
@@ -599,7 +614,7 @@ def visualize_dft_fields(sim, superpose=True, field_cells=[], field_funcs=None,
 def texify(expr):
     """Return expr modified to play well with latex formatting."""
 
-    expr.sub('_',r'\_')
+    expr.replace('_',r'\_')
     expr=re.sub(r'([eEhH])([xyz])',r'\1_\2',expr)
     expr=re.sub(r'e_','E_',expr)
     expr=re.sub(r'H_','H_',expr)
@@ -609,55 +624,3 @@ def texify(expr):
     for s in loglike:
         expr=re.sub(s,'\textrm{'+s+'}',expr)
     return r'$'+expr+'$'
-
-
-#################################################
-#################################################
-#################################################
-def tangential_components(normal_dir):
-    EH_TRANSVERSE    = [ [mp.Ey, mp.Ez, mp.Hy, mp.Hz],
-                         [mp.Ez, mp.Ex, mp.Hz, mp.Hx],
-                         [mp.Ex, mp.Ey, mp.Hx, mp.Hy] ]
-    if normal_dir in range(mp.X, mp.Z+1):
-        return EH_TRANSVERSE[normal_dir-mp.X]
-    raise ValueError("invalid normal_dir={} in tangential_components".format(normal_dir))
-
-
-#################################################
-# return a list of the field components stored in a DFT cell
-#################################################
-def dft_cell_components(cell):
-    if hasattr(cell,'flux'):
-        return tangential_components(cell.normal_direction)
-    elif cell.num_components==6:
-        return EHxyz
-    elif cell.num_components==3:
-        return Exyz
-    else:
-        raise ValueError("internal error in dft_cell_components")
-
-
-# like get_dft_array, but 'zero-padded:' when the DFT cell
-# does not have data for the requested component (perhaps
-# because it vanishes identically by symmetry), this routine
-# returns an array of the expected dimensions with all zero
-# entries, instead of a rank-0 array that prints out as a
-# single nonsensical floating-point number which is the
-# not-very-user-friendly behavior of core pymeep.
-def get_dft_array_zp(sim, cell, c, nf=0, w=None):
-    array = sim.get_dft_array(cell, c, nf)
-    if len(np.shape(array))==0:
-        if w is None:
-            _,_,_,w = sim.get_dft_array_metadata(dft_cell=cell)
-        array=np.zeros(np.shape(w))
-    return array
-
-
-def unpack_dft_cell(sim, cell, nf=0):
-    xyzw = sim.get_array_metadata(dft_cell=cell)
-    center, size = mp.get_center_and_size(cell.where)
-    fix_array_metadata(xyzw, v3(center), v3(size))
-    x,y,z,w = xyzw
-    cEH = dft_cell_components(cell)
-    EH = [ get_dft_array_zp(sim, cell, c, nf, w) for c in cEH ]
-    return x, y, z, w, cEH, EH

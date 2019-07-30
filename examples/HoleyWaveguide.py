@@ -5,6 +5,9 @@ import argparse
 import numpy as np
 import meep as mp
 
+
+import meep_adjoint
+
 from meep_adjoint import ( OptimizationProblem, Subregion,
                            ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, v3, V3)
 
@@ -32,6 +35,7 @@ fcen = adj_opt('fcen')
 ##################################################
 parser = argparse.ArgumentParser()
 parser.add_argument('--eps_wvg',        type=float, default=6.0,  help ='waveguide permittivity')
+parser.add_argument('--eps_hole',       type=float, default=3.0,  help ='hole permittivity')
 parser.add_argument('--w_wvg',          type=float, default=3.0,  help ='waveguide width')
 parser.add_argument('--h_wvg',          type=float, default=0.0,  help ='waveguide thickness in Z direction (0==2D geometry)')
 parser.add_argument('--w_hole',         type=float, default=0.5,  help ='width of hole')
@@ -50,7 +54,7 @@ h_wvg      = args.h_wvg
 w_hole     = args.w_hole
 eps_wvg    = args.eps_wvg
 eps_hole   = args.eps_hole
-L          = max(6.0*dpml + 2.0*r_hole,  3.0/fcen)
+L          = max(6.0*dpml + 2.0*w_hole,  3.0/fcen)
 sx         = dpml + L + dpml
 sy         = dpml + dair + w_wvg + dair + dpml
 sz         = 0.0 if h_wvg==0.0 else dpml + dair + h_wvg + dair + dpml
@@ -67,7 +71,7 @@ wvg = mp.Block(center=V3(ORIGIN), material=mp.Medium(epsilon=eps_wvg), size=V3(s
 w_flux = (0.5*dair + w_wvg + 0.5*dair)
 h_flux = 0.0 if h_wvg==0.0 else (0.5*dair + h_wvg + 0.5*dair)
 flux_size = v3(0, w_flux, h_flux)
-x0   = r_hole+dpml     # distance from origin to center of flux cell
+x0   = w_hole+dpml     # distance from origin to center of flux cell
 east = Subregion(name='east', center=v3(+x0,0,0), size=flux_size, dir=mp.X)
 west = Subregion(name='west', center=v3(-x0,0,0), size=flux_size, dir=mp.X)
 
@@ -85,8 +89,9 @@ source_region = Subregion(center=source_center, size=source_size, dir=mp.X)
 # design region and expansion basis
 #----------------------------------------------------------------------
 design_center = ORIGIN
-design_size   = 2.0*r_hole*(XHAT + YHAT) + args.h_wvg*ZHAT
+design_size   = 2.0*w_hole*(XHAT + YHAT) + args.h_wvg*ZHAT
 design_region = Subregion(name='design', center=design_center, size=design_size)
+
 
 #----------------------------------------------------------------------
 # 'extra' regions not needed for adjoint calculations but added for
@@ -104,6 +109,8 @@ opt_prob = OptimizationProblem(objective_regions=[east,west], objective='S_east'
                                extra_quantities=extra_quantities, extra_regions=[full_region]
                               )
 opt_prob.visualize()
+meep_adjoint.launch_dashboard()
+fq = opt_prob()
 
 # #         #----------------------------------------
 # #         # finite-element mesh and basis

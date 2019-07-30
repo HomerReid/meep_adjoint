@@ -105,10 +105,14 @@ adjoint_option_templates= [
     OptionTemplate('max_iters',      100,     'max number of optimization iterations'),
 
     #--------------------------------------------------
-    # options affecting outputs
+    # options affecting visualization and file output
     #--------------------------------------------------
-    OptionTemplate('filebase',         '',    'base name of output files (empty string --> autodetermined)'),
-    OptionTemplate('verbose',      'True',    'produce more output'),
-    OptionTemplate('visualize',    'True',    'produce visualization graphics'),
-    OptionTemplate('silence_meep', 'True',    'suppress MEEP console output')
+    OptionTemplate('filebase',              '',     'base name of output files (empty string --> autodetermined)'),
+    OptionTemplate('verbose',               'True', 'produce more output'),
+    OptionTemplate('visualize',             'True', 'produce visualization graphics'),
+    OptionTemplate('dashboard_width',        0.5,   'GUI dashboard screen width fraction'),
+    OptionTemplate('dashboard_x0',           0.5,   'GUI dashboard abscissa'),
+    OptionTemplate('dashboard_y0',           0.0,   'GUI dashboard ordinate'),
+    OptionTemplate('dashboard_cpu_interval', 2000,  'GUI dashboard ordinate')
+
 ]

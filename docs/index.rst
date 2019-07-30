@@ -166,6 +166,7 @@ Table of Contents
    Example Gallery <Examples/index>
    Visualization Module <Visualization/index>
    Configuration and customization <Config/index>
+   Test suite <TestSuite/index>
    Implementation I: Physics and math  <Implementation/MathAndPhysicsOfAdjoints>
    Implementation II: Class hierarchy <Implementation/ClassHierarchy>
    API Reference <API/index>

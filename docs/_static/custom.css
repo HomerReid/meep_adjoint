@@ -131,3 +131,8 @@ div.qanda admonition-title:before {
     margin: -12px;
     margin-bottom: 12px;
     font-size: 100% }
+
+
+.wy-menu-vertical-header, .wy-menu-vertical p.caption {
+ color: #441199;
+}

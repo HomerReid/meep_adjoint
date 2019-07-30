@@ -11,7 +11,6 @@ import meep as mp
 
 from . import Basis, v3, V3
 
-
 ######################################################################
 # try to load dolfin (FENICS) module, but hold off on complaining if
 # unsuccessful until someone actually tries to do something that requires it
@@ -111,17 +110,20 @@ class FiniteElementBasis(Basis):
         super().__init__(self.fs.dim(), size=size, center=center, offset=offset )
 
 
-    def project(self, g, grid=None):
+    def project(self, g, grid=None, retain_offset=True):
         """
         Given an arbitrary function g(x), invoke the performance-optimized routines
-        in FENICS to compute the projection g^p(x) == \sum_n g^p_n b_n(x).
+        in FENICS to compute the coefficients {g^p_0, g^p_1, ..., } in the expansion
+        g^p(x) == {offset} + \sum_n g^p_n b_n(x).
 
         Parameters:
             g, grid: function specification as in make_dolfin_callable
+            retain_offset: True or False to retain or omit the constant offset.
         Return value:
             Projection coefficients as numpy array of dimension self.dim
         """
-        g = make_dolfin_callable(g, grid=grid, fs=self.fs, offset=-1.0*self.offset)
+        ofs = -1.0*self.offset if retain_offset else 0.0
+        g = make_dolfin_callable(g, grid=grid, fs=self.fs, offset=ofs)
         return df.project(g, self.fs).vector().vec().array
 
 
@@ -130,17 +132,25 @@ class FiniteElementBasis(Basis):
         Construct and return a callable, updatable element of the function space.
 
         Args:
-            beta_vector (np.array of dimension self.dim and datatype float):
-                expansion coefficients
+            beta_vector (numpy array of dimension self.dim, datatype float):
+               initial expansion coefficients
 
         Returns:
-            a class `func` with the following properties: After the statement
-                func = basis.parameterized_function(beta_vector)
-            we have:
-            1. func is a callable scalar function of one spatial variable:
-               func(p) = f_0 + \sum_n beta_n * b_n(p)
-            2. func has a set_coefficients method that updates an internal cache, i.e.
-                func.set_coefficients(new_beta_vector)
+             The return value is an instance of a class that provides (at minimum)
+             two methods:
+                 (a) __call__(p) to evaluate the function at a point p
+                 (b) set_coefficients(beta_vector) to update the expansion coefficients.
+
+             NOTE: The original plan was to pass this class instance directly
+                   as the `epsilon_func` parameter when constructing a `GeometricObject`
+                   in a mp.Simulation. However, as of MEEP version 1.10 (c. July 2019)
+                   this seems not to work, i.e. it seems class instances can't
+                   be used as `epsilon_funcs` even if they have a __call__ method
+                   with the proper calling convention. This would probably be easy
+                   to address by a tweak to pymeep. For the time being, we adopt
+                   the slightly unwieldy but perfectly functional approach
+                   of adding a class method 'func' that returns a standalone callable
+                   interface to __call__() that mp.Simulation accepts as an epsilon_func.
         """
         class _ParameterizedFunction(object):
             def __init__(self, basis, beta_vector):
@@ -193,26 +203,6 @@ class FiniteElementBasis(Basis):
         g = make_dolfin_callable(g, grid=grid, fs=self.fs, offset=-1.0*self.offset)
         v = df.TestFunction(self.fs)
         return df.assemble( g*v*dx ).get_local()
-
-# --------------------------------------------------------------------
-# --------------------------------------------------------------------
-# --------------------------------------------------------------------
-def parameterized_function2(basis, beta_vector):
-
-       ###################################################
-       #
-       ###################################################
-       offset, f = basis.offset, df.Function(basis.fs)
-       f.set_allow_extrapolation(True)
-       f.vector().set_local(beta_vector)
-
-       def _set_coefficients(beta_vector):
-           f.vector().set_local(beta_vector)
-
-       def _eval_f(p):
-           return offset + f(df.Point(v3(p)))
-
-       return _eval_f, _set_coefficients
 
 
 #----------------------------------------------------------------------

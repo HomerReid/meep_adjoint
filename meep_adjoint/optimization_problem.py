@@ -5,7 +5,7 @@ import inspect
 
 import meep as mp
 
-from . import (DFTCell, ObjectiveFunction, TimeStepper,
+from . import (DFTCell, ObjectiveFunction, TimeStepper, ConsoleManager,
                FiniteElementBasis, dft_cell_names, E_CPTS, v3, V3)
 
 from . import visualize_sim
@@ -160,7 +160,7 @@ class OptimizationProblem(object):
                                         cell_size=V3(cell_size), geometry=geometry)
 
         # TimeStepper
-        self.stepper    = TimeStepper(obj_func, dft_cells, basis, sim, sources)
+        self.stepper    = TimeStepper(obj_func, dft_cells, self.basis, sim, sources)
 
         #-----------------------------------------------------------------------
         # if the 'filebase' configuration option wasn't specified, set it
@@ -198,8 +198,10 @@ class OptimizationProblem(object):
         if beta_vector:
             self.update_design(beta_vector)
 
-        fq    = self.stepper.run('forward')
-        gradf = self.stepper.run('adjoint') if need_gradient else None
+        with ConsoleManager() as manager:
+            fq    = self.stepper.run('forward')
+            gradf = self.stepper.run('adjoint') if need_gradient else None
+
         return fq, gradf
 
 
@@ -229,11 +231,13 @@ class OptimizationProblem(object):
         if self.stepper.state=='reset':
             self.stepper.prepare('forward')
 
-        dft_labels = [ cell.name for cell in self.stepper.dft_cells ]
+        bs = self.basis
+        mesh = bs.fs.mesh() if (hasattr(bs,'fs') and hasattr(bs.fs,'mesh')) else None
+
         if self.stepper.state.endswith('.prepared'):
-            visualize_sim(self.stepper.sim, dft_labels=dft_labels, options=options)
+            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, options=options)
         elif self.stepper.state == 'forward.complete':
-            visualize_sim(self.stepper.sim, dft_labels=dft_labels, options=options)
+            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, options=options)
         #else self.stepper.state == 'forward.complete':
 
 

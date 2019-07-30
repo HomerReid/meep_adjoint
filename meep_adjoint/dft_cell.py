@@ -24,19 +24,12 @@ from . import get_adjoint_option as adj_opt
 ######################################################################
 ORIGIN           = np.zeros(3)
 XHAT, YHAT, ZHAT = [ np.array(a) for a in [[1.,0,0], [0,1.,0], [0,0,1.]] ]
-#E_CPTS           = [mp.Ex, mp.Ey, mp.Ez]
-#H_CPTS           = [mp.Hx, mp.Hy, mp.Hz]
-mp_Ex, mp_Ey, mp_Ez = [0,1,4]
-mp_Hx, mp_Hy, mp_Hz = [5,6,9]
-E_CPTS = [mp_Ex, mp_Ey, mp_Ez]
-H_CPTS = [mp_Hx, mp_Hy, mp_Hz]
+E_CPTS           = [mp.Ex, mp.Ey, mp.Ez]
+H_CPTS           = [mp.Hx, mp.Hy, mp.Hz]
 EH_CPTS          = E_CPTS + H_CPTS
-#EH_TRANSVERSE    = [ [mp.Ey, mp.Ez, mp.Hy, mp.Hz],
-#                     [mp.Ez, mp.Ex, mp.Hz, mp.Hx],
-#                     [mp.Ex, mp.Ey, mp.Hx, mp.Hy] ]
-EH_TRANSVERSE    = [ [mp_Ey, mp_Ez, mp_Hy, mp_Hz],
-                     [mp_Ez, mp_Ex, mp_Hz, mp_Hx],
-                     [mp_Ex, mp_Ey, mp_Hx, mp_Hy] ]
+EH_TRANSVERSE    = [ [mp.Ey, mp.Ez, mp.Hy, mp.Hz],
+                     [mp.Ez, mp.Ex, mp.Hz, mp.Hx],
+                     [mp.Ex, mp.Ey, mp.Hx, mp.Hy] ]
 
 
 def V3(a1=0.0, a2=0.0, a3=0.0):
@@ -50,8 +43,6 @@ def v3(a1=0.0, a2=0.0, a3=0.0):
     if isinstance(a1,mp.Vector3):
         return a1.__array__()
     return np.array([a1,a2,a3])
-
-
 
 ######################################################################
 # fix a bug in libmeep

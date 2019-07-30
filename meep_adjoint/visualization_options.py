@@ -193,5 +193,11 @@ VISUALIZATION_SECTIONS = {
     'fields_data': { 'linewidth': 0.0, 'alpha': 0.5,
                      'method': 'contourf',
                      'zmin': 0.4, 'zmax': 0.6
-                   }
+                   },
+
+#----------------------------------------------------------------------
+# finite-element meshes: red lines, thickness 1.0 (set linewidth=0 to
+# disable mesh plot)
+#---------------------------------------------------------------------
+    'mesh': { 'linecolor': '#ff0000', 'linewidth': 1.0 }
 }
