@@ -332,3 +332,29 @@ class DFTCell(object):
            return q
         else: # TODO: support other types of objectives quantities?
             ValueError('DFTCell {}: unsupported quantity type {}'.format(self.name,qcode))
+
+
+######################################################################
+######################################################################
+######################################################################
+def rescale_sources(sources):
+    """Scale the overall amplitude of a spatial source distribution to compensate
+       for the frequency dependence of its temporal envelope.
+
+       In a MEEP calculation driven by sources with a pulsed temporal envelope T(t),
+       the amplitudes of all frequency-f DFT fields will be proportional to
+       T^tilde (f), the Fourier transform of the envelope. Here we divide
+       the overall amplitude of the source by T^tilde(f_c) (where f_c = center
+       frequency), which exactly cancels the extra scale factor for DFT
+       fields at f_c.
+
+       Args:
+           sources: list of mp.Sources
+
+       Returns:
+           none (the rescaling is done in-place)
+    """
+    for s in sources:
+        envelope, fcen = s.src, s.src.frequency
+        if callable(getattr(envelope, "fourier_transform", None)):
+            s.amplitude /= envelope.fourier_transform(fcen)

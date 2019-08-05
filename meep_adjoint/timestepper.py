@@ -241,14 +241,3 @@ def rel_diff(a,b):
     """ returns value in range [0,2] quantifying error relative to magnitude"""
     diff, scale = np.abs(a-b), np.amax([np.abs(a),np.abs(b)])
     return 2. if np.isinf(scale) else 0. if scale==0. else diff/scale
-
-
-######################################################################
-######################################################################
-######################################################################
-def log(msg):
-    if not mp.am_master() or np.all([adj_opt(s) is None for s in ['filebase','logfile']]):
-        return
-    logfile = adj_opt('logfile') or (adj_opt('filebase') + '.log' )
-    with open(logfile,'a') as f:
-        f.write("{} {}\n".format(dt2.now().strftime('%T '),msg))

@@ -108,9 +108,11 @@ opt_prob = OptimizationProblem(objective_regions=[east,west], objective='S_east'
                                source_region=source_region,
                                extra_quantities=extra_quantities, extra_regions=[full_region]
                               )
-opt_prob.visualize()
+
 meep_adjoint.launch_dashboard()
 fq = opt_prob()
+opt_prob.visualize()
+#meep_adjoint.launch_dashboard()
 
 # #         #----------------------------------------
 # #         # finite-element mesh and basis

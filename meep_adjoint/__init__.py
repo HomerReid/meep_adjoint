@@ -10,13 +10,15 @@ import meep as mp
 ######################################################################
 ######################################################################
 ######################################################################
+from .util import (init_log, log, warn, get_exception_info)
+
 from .option_almanac import (OptionTemplate, OptionAlmanac)
 
 from .adjoint_options import get_adjoint_option, set_adjoint_option_defaults
 
 from .dft_cell import (ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, EH_CPTS,
                        v3, V3, Subregion, DFTCell, Grid, fix_array_metadata,
-                       make_grid, dft_cell_names)
+                       make_grid, dft_cell_names, rescale_sources)
 
 from .objective import ObjectiveFunction
 
@@ -24,7 +26,7 @@ from .basis import Basis
 
 from .finite_element_basis import FiniteElementBasis
 
-from .timestepper import TimeStepper, log
+from .timestepper import TimeStepper
 
 from .visualization_options import (get_visualization_option,
                                     get_visualization_options,
@@ -32,8 +34,7 @@ from .visualization_options import (get_visualization_option,
 
 from .visualization import visualize_sim
 
-from .console import (launch_dashboard, close_dashboard, update_dashboard,
-                      ConsoleManager)
+from .dashboard_client import launch_dashboard, close_dashboard, update_dashboard
 
 from .optimization_problem import OptimizationProblem
 

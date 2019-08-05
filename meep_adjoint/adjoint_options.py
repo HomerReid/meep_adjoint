@@ -1,7 +1,7 @@
 """ Handling of adjoint-related configuration options.
 
     This file exports two routines:
-        -- get_adjoint_options() to lookup the value of an option
+        -- get_adjoint_option() to lookup the value of an option
         -- set_default_adjoint_options() to override default option values
 
     Internally, option settings are maintained by a module-wide instance of
@@ -105,14 +105,15 @@ adjoint_option_templates= [
     OptionTemplate('max_iters',      100,     'max number of optimization iterations'),
 
     #--------------------------------------------------
-    # options affecting visualization and file output
+    # visualization, console/dashboard, file output
     #--------------------------------------------------
-    OptionTemplate('filebase',              '',     'base name of output files (empty string --> autodetermined)'),
-    OptionTemplate('verbose',               'True', 'produce more output'),
-    OptionTemplate('visualize',             'True', 'produce visualization graphics'),
-    OptionTemplate('dashboard_width',        0.5,   'GUI dashboard screen width fraction'),
-    OptionTemplate('dashboard_x0',           0.5,   'GUI dashboard abscissa'),
-    OptionTemplate('dashboard_y0',           0.0,   'GUI dashboard ordinate'),
-    OptionTemplate('dashboard_cpu_interval', 2000,  'GUI dashboard ordinate')
-
+    OptionTemplate('filebase',                '',         'base name of output files'),
+    OptionTemplate('verbose',                True,        'produce more output'),
+    OptionTemplate('visualize',              True,        'produce visualization graphics'),
+    OptionTemplate('dashboard_size',         0.5,         'GUI dashboard size relative to screen size'),
+    OptionTemplate('dashboard_position',     'top left',  'GUI dashboard position'),
+    OptionTemplate('dashboard_on_top',       True,        'GUI dashboard stays on top of other windows'),
+    OptionTemplate('dashboard_cpu_interval', 2000,        'GUI dashboard CPU usage update interval (ms)'),
+    OptionTemplate('dashboard_host',         'localhost', 'GUI dashboard server hostname'),
+    OptionTemplate('dashboard_port',         37673,       'GUI dashboard server port')
 ]

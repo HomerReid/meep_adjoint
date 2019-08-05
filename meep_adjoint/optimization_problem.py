@@ -6,7 +6,8 @@ import inspect
 import meep as mp
 
 from . import (DFTCell, ObjectiveFunction, TimeStepper, ConsoleManager,
-               FiniteElementBasis, dft_cell_names, E_CPTS, v3, V3)
+               FiniteElementBasis, rescale_sources, E_CPTS, v3, V3,
+               init_log, log, dft_cell_names)
 
 from . import visualize_sim
 
@@ -127,10 +128,10 @@ class OptimizationProblem(object):
             sources     = [ mp.EigenModeSource(eig_band=m,**kws) if m>0 else mp.Source(component=c, **kws) ]
         rescale_sources(sources)
 
+
         #-----------------------------------------------------------------------
         # initialize lower-level helper classes
         #-----------------------------------------------------------------------
-
         # DFTCells
         dft_cell_names  = []
         objective_cells = [ DFTCell(r) for r in objective_regions ]
@@ -155,9 +156,9 @@ class OptimizationProblem(object):
         design_object   = mp.Block(center=V3(design_region.center), size=V3(design_region.size),
                                    epsilon_func = self.design_function.func())
         geometry        = background_geometry + [design_object] + foreground_geometry
-        sim             = mp.Simulation(resolution=adj_opt('res'),
+        sim             = mp.Simulation(resolution=adj_opt('res'), cell_size=V3(cell_size),
                                         boundary_layers=[mp.PML(adj_opt('dpml'))],
-                                        cell_size=V3(cell_size), geometry=geometry)
+                                        geometry=geometry)
 
         # TimeStepper
         self.stepper    = TimeStepper(obj_func, dft_cells, self.basis, sim, sources)
@@ -170,6 +171,9 @@ class OptimizationProblem(object):
             script = inspect.stack()[1][0].f_code.co_filename or 'meep_adjoint'
             script_base = os.path.basename(script).split('.')[0]
             set_adjoint_options({'filebase': os.path.basename(script_base)})
+
+        if mp.am_master():
+            init_log(filename=adj_opt('logfile') or adj_opt('filebase') + '.log', usecs=True)
 
 
     #####################################################################
@@ -198,9 +202,8 @@ class OptimizationProblem(object):
         if beta_vector:
             self.update_design(beta_vector)
 
-        with ConsoleManager() as manager:
-            fq    = self.stepper.run('forward')
-            gradf = self.stepper.run('adjoint') if need_gradient else None
+        fq    = self.stepper.run('forward')
+        gradf = self.stepper.run('adjoint') if need_gradient else None
 
         return fq, gradf
 
@@ -211,9 +214,11 @@ class OptimizationProblem(object):
     def update_design(self, beta_vector):
         """Update the vector of design variables (expansion coefficients)
            that determine the design function.
-           Args:
-               beta_vector: real-valued numpy array, length self.basis.dim
-           Return value:
+
+        Args:
+            beta_vector: real-valued numpy array, length self.basis.dim
+
+        Returns:
                None
         """
         self.beta_vector = beta_vector
@@ -239,29 +244,3 @@ class OptimizationProblem(object):
         elif self.stepper.state == 'forward.complete':
             visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, options=options)
         #else self.stepper.state == 'forward.complete':
-
-
-######################################################################
-######################################################################
-######################################################################
-def rescale_sources(sources):
-    """Scale the overall amplitude of a spatial source distribution to compensate
-       for the frequency dependence of its temporal envelope.
-
-       In a MEEP calculation driven by sources with a pulsed temporal envelope T(t),
-       the amplitudes of all frequency-f DFT fields will be proportional to
-       T^tilde (f), the Fourier transform of the envelope. Here we divide
-       the overall amplitude of the source by T^tilde(f_c) (where f_c = center
-       frequency), which exactly cancels the extra scale factor for DFT
-       fields at f_c.
-
-       Args:
-           sources: list of mp.Sources
-
-       Returns:
-           none (the rescaling is done in-place)
-    """
-    for s in sources:
-        envelope, fcen = s.src, s.src.frequency
-        if callable(getattr(envelope, "fourier_transform", None)):
-            s.amplitude /= envelope.fourier_transform(fcen)
