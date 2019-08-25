@@ -38,13 +38,12 @@ given performance specifications.
         performance metric.
         For example, in the :doc:`cross router <Examples/cross_router>`
         example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
-        the 
+        the
         example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the task is to design the central hub region to steer
         incoming power arriving via the **East** input waveguide
         to output 
        
-        
         the task is to design the hub region toe steer incident
         power arriving from the 
 input is routed 

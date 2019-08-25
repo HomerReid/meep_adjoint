@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/ui">
+        <file>FantasqueSansMono-Regular.ttf</file>
+    </qresource>
+</RCC>

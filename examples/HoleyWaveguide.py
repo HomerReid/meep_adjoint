@@ -1,10 +1,8 @@
 import sys
-
 import os
 import argparse
 import numpy as np
 import meep as mp
-
 
 import meep_adjoint
 
@@ -13,6 +11,7 @@ from meep_adjoint import ( OptimizationProblem, Subregion,
 
 from meep_adjoint import set_option_defaults as set_mpadj_defaults
 from meep_adjoint import get_adjoint_option as adj_opt
+
 
 ######################################################################
 # for some adjoint-related configuration options, the default values
@@ -25,26 +24,34 @@ custom_defaults = { 'fcen': 0.5, 'df': 0.2, 'eps_func' : 3.0,
                     'dpml': 0.5, 'dair': 0.5 }
 set_mpadj_defaults(custom_defaults)
 
+
 # query meep_adjoint for some option values we will need below
-dpml = adj_opt('dpml')
-dair = adj_opt('dair')
-fcen = adj_opt('fcen')
+dpml     = adj_opt('dpml')
+dair     = adj_opt('dair')
+fcen     = adj_opt('fcen')
+filebase = adj_opt('filebase')
+
 
 ##################################################
 # parse problem-specific command-line arguments
 ##################################################
 parser = argparse.ArgumentParser()
-parser.add_argument('--eps_wvg',        type=float, default=6.0,  help ='waveguide permittivity')
-parser.add_argument('--eps_hole',       type=float, default=3.0,  help ='hole permittivity')
-parser.add_argument('--w_wvg',          type=float, default=3.0,  help ='waveguide width')
-parser.add_argument('--h_wvg',          type=float, default=0.0,  help ='waveguide thickness in Z direction (0==2D geometry)')
-parser.add_argument('--w_hole',         type=float, default=0.5,  help ='width of hole')
-args=parser.parse_args()
+parser.add_argument('--w_wvg',    type=float, default=3.0,    help ='waveguide width')
+parser.add_argument('--h_wvg',    type=float, default=0.0,    help ='waveguide Z-thickness (=0 for 2D geometry)')
+parser.add_argument('--w_hole',   type=float, default=0.5,    help ='hole width')
+
+parser.add_argument('--eps_wvg',  type=float, default=6.0,    help ='waveguide permittivity')
+
+parser.add_argument('--eps_hole', type=str,   default=None,   help ='hole permittivity value or range (start,stop,num)')
+parser.add_argument('--fd_step',  type=float, default=0.01,   help ='relative finite-difference step')
+parser.add_argument('--fd_order', type=int,   default=2,      help ='order of finite-difference stencil')
+
+args = parser.parse_args()
 
 
-##################################################
+######################################################################
 # set up optimization problem
-##################################################
+######################################################################
 
 #----------------------------------------------------------------------
 # size of computational cell
@@ -52,8 +59,6 @@ args=parser.parse_args()
 w_wvg      = args.w_wvg
 h_wvg      = args.h_wvg
 w_hole     = args.w_hole
-eps_wvg    = args.eps_wvg
-eps_hole   = args.eps_hole
 L          = max(6.0*dpml + 2.0*w_hole,  3.0/fcen)
 sx         = dpml + L + dpml
 sy         = dpml + dair + w_wvg + dair + dpml
@@ -63,7 +68,7 @@ cell_size  = v3(sx, sy, sz)
 #----------------------------------------------------------------------
 # geometric objects (material bodies), not including the design object
 #----------------------------------------------------------------------
-wvg = mp.Block(center=V3(ORIGIN), material=mp.Medium(epsilon=eps_wvg), size=V3(sx,w_wvg,h_wvg))
+wvg = mp.Block(center=V3(ORIGIN), material=mp.Medium(epsilon=args.eps_wvg), size=V3(sx,w_wvg,h_wvg))
 
 #----------------------------------------------------------------------
 #- objective regions, objective quantities, objective function
@@ -71,9 +76,9 @@ wvg = mp.Block(center=V3(ORIGIN), material=mp.Medium(epsilon=eps_wvg), size=V3(s
 w_flux = (0.5*dair + w_wvg + 0.5*dair)
 h_flux = 0.0 if h_wvg==0.0 else (0.5*dair + h_wvg + 0.5*dair)
 flux_size = v3(0, w_flux, h_flux)
-x0   = w_hole+dpml     # distance from origin to center of flux cell
-east = Subregion(name='east', center=v3(+x0,0,0), size=flux_size, dir=mp.X)
-west = Subregion(name='west', center=v3(-x0,0,0), size=flux_size, dir=mp.X)
+d_flux = w_hole + dpml     # distance from origin to centers of flux cells
+east  = Subregion(name='east', center=v3(+d_flux,0,0), size=flux_size, dir=mp.X)
+west  = Subregion(name='west', center=v3(-d_flux,0,0), size=flux_size, dir=mp.X)
 
 objective = 'Abs(P1_east)**2'
 extra_quantities=['S_east', 'S_west', 'P1_east', 'M1_east', 'P2_east', 'M2_east']
@@ -81,7 +86,8 @@ extra_quantities=['S_east', 'S_west', 'P1_east', 'M1_east', 'P2_east', 'M2_east'
 #----------------------------------------------------------------------
 # source region
 #----------------------------------------------------------------------
-source_center = west.center - dpml*XHAT
+d_source = np.mean([d_flux, 0.5*sx-dpml])  # midway between flux cell and PML edge
+source_center = v3(-1.0*d_source, 0, 0)
 source_size   = flux_size
 source_region = Subregion(center=source_center, size=source_size, dir=mp.X)
 
@@ -99,94 +105,62 @@ design_region = Subregion(name='design', center=design_center, size=design_size)
 #----------------------------------------------------------------------
 full_region = Subregion(name='full', center=ORIGIN, size=cell_size)
 
-#----------------------------------------------------------------------
-#----------------------------------------------------------------------
-#----------------------------------------------------------------------
+
 opt_prob = OptimizationProblem(objective_regions=[east,west], objective='S_east',
                                design_region=design_region,
                                cell_size=cell_size, background_geometry=[wvg],
                                source_region=source_region,
-                               extra_quantities=extra_quantities, extra_regions=[full_region]
-                              )
+                               extra_quantities=extra_quantities, extra_regions=[full_region])
 
-meep_adjoint.launch_dashboard()
-fq = opt_prob()
-opt_prob.visualize()
-#meep_adjoint.launch_dashboard()
+######################################################################
+# do computations at all eps_hole values in user-specified range
+######################################################################
 
-# #         #----------------------------------------
-# #         # finite-element mesh and basis
-# #         #----------------------------------------
-# #         mesh = annular_cylinder_mesh(outer_radius=args.r_hole, height=args.h_wvg,
-# #                                      element_length=args.element_length)
-# #         el_type, el_order = None, None
-# #         if args.basis_type:
-# #             el_type, el_order = args.basis_type.split()[0:2]
-# #         basis = FiniteElementBasis(mesh=mesh, element_type=el_type, element_order=int(el_order))
-# #
-# #         #----------------------------------------
-# #         #- source location
-# #         #----------------------------------------
-# #
-# #----------------------------------------------------------------------
-# #- objective function and few extra objective quantities
-# #----------------------------------------------------------------------
-# objective = 'Abs(P1_east)**2'
-# extra_quantities = [ 'P1_west', 'P2_east', 'P2_west',
-#                      'M1_east', 'M1_west', 'M2_east', 'M2_west',
-#                       'S_east',  'S_west', 'UE_design', 'UH_design' ]
-#
-# problem = adjoint.OptimizationProblem( objective=objective,
-#                                        extra_quantities=extra_quantities,
-#                                        objective_regions=objective_regions,
-#                                        extra_regions=extra_regions,
-#                                        basis=basis
-#                                      )
-#
-# #
-# #         #----------------------------------------
-# #         #- internal storage for variables needed later
-# #         #----------------------------------------
-# #         self.args            = args
-# #         self.dpml            = dpml
-# #         self.cell_size       = cell_size
-# #         self.basis           = basis
-# #         self.design_center   = design_center
-# #         self.source_center   = source_center
-# #         self.source_size     = source_size
-# #
-# #         return ProblemData(objective_function, objective_regions,
-# #                            design_region, basis,
-# #                            extra_regions, extra_quantities)
-# #
-# #     ##############################################################
-# #     ##############################################################
-# #     ##############################################################
-# #     def create_sim(self, eps_func, vacuum=False):
-# #
-# #         args = self.args
-# #         disc = mp.Cylinder(center=self.design_center, radius=args.r_hole,
-# #                            height=self.args.h_wvg, epsilon_func=eps_func)
-# #
-# #         geometry = [wvg] if vacuum else [wvg, disc]
-# #
-# #         envelope, amp = mp.GaussianSource(args.fcen,fwidth=args.df), 1.0
-# #         if callable(getattr(envelope, 'fourier_transform', None)):
-# #             amp /= envelope.fourier_transform(args.fcen)
-# #         sources=[mp.EigenModeSource(src=envelope, amplitude=amp,
-# #                                     center=self.source_center,
-# #                                     size=self.source_size,
-# #                                     eig_band=self.args.source_mode,
-# #                                    )
-# #                 ]
-# #
-# #         sim=mp.Simulation(resolution=args.res,
-# #                           cell_size=self.cell_size,
-# #                           boundary_layers=[mp.PML(args.dpml)],
-# #                           geometry=geometry,
-# #                           sources=sources)
-# #
-# #         if args.complex_fields:
-# #             sim.force_complex_fields=True
-# #
-# #         return simF
+# try to interpret eps_hole argument as a single value or a range
+eps_hole_range = []
+if args.eps_hole is not None:
+    try:
+        tokens = args.eps_hole.replace(',',' ').split() + ['', '1']
+        eps_hole_range = np.linspace( float(tokens[0]), float(tokens[1] or tokens[0]), int(tokens[2]) )
+    except:
+        mp.abort('invalid --eps_hole specification {}'.format(args.eps_hole))
+
+
+# write output-file preamble if necessary
+outfile = (filebase + '.out') if filebase and eps_hole_range else None
+if outfile and not os.path.isfile(outfile):
+    with open(outfile,'w') as f:
+        f.write('#1 eps_hole \n')
+        f.write('#2 f_objective \n')
+        f.write('#3 df/deps (adjoint)\n')
+        f.write('#4 df/deps (1st-order FD)\n')
+        f.write('#5 df/deps (2nd-order FD)\n')
+
+
+# main loop
+for eps in eps_hole_range:
+
+    # compute objective function value and adjoint-method gradient
+    fq0,  gradf = opt_prob(design=eps, need_gradient=True)
+    df_adjoint  = np.average(gradf)
+
+    # compute finite-difference derivatives
+    df_fd = [0.0, 0.0]
+    if args.fd_step > 0.0:
+        delta_eps = args.fd_step * eps
+        fqp, _    = opt_prob(design=(eps + delta_eps), need_gradient=False)
+        df_fd[0]  = ( fqp[0] - fq0[0] ) / delta_eps
+        if args.fd_order == 2:
+            fqm, _   = opt_prob(design=(eps - delta_eps), need_gradient=False)
+            df_fd[1] = ( fqp[0] - fqm[0] ) / (2.0*delta_eps)
+
+    # write output to console and data file
+    if outfile:
+        with open(outfile,'a') as f:
+            f.write('{} {} {} {} {}\n',eps,fq[0],df_adjoint,df_fd[0],df_fd[1])
+
+    sys.stdout.write('\n\n For eps  = {}:\n'.format(eps))
+    sys.stdout.write('       f  = {} \n'.format(fq0[0]))
+    sys.stdout.write(' df (adj) = {} \n'.format(df_adjoint))
+    sys.stdout.write(' df (fd1) = {} \n'.format(df_fd[0]))
+    sys.stdout.write(' df (fd2) = {} \n'.format(df_fd[1]))

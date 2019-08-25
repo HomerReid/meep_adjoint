@@ -155,7 +155,7 @@ class OptionAlmanac(object):
            but of an incompatible type.
         """
         override = self.enforce_type(name, overrides.get(name))
-        return override or self.options.get(name)
+        return self.options.get(name) if override is None else override
 
 
     def enforce_type(self, name, value):

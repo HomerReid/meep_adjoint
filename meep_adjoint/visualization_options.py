@@ -130,6 +130,7 @@ VISUALIZATION_OPTION_TEMPLATES= [
     OptionTemplate('cb_pad',       0.04,            'colorbar padding'),
     OptionTemplate('cb_shrink',    0.60,            'colorbar shrink factor'),
     OptionTemplate('latex',        True,            'LaTeX text formatting'),
+    OptionTemplate('show',         True,            'display plots on screen'),
  ]
 
 """base option names, to which we prepend a prefix like 'eps_' to get section-specific options"""
@@ -153,7 +154,7 @@ VISUALIZATION_SECTIONS = {
 #----------------------------------------------------------------------
     'pml': { 'linewidth':  0.0,
              'fillcolor': '#CCCCCC',
-             'alpha':      0.25,
+             'alpha':      0.50,
            },
 
 #----------------------------------------------------------------------

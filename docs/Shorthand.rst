@@ -28,7 +28,11 @@
    python module</a>
 
 
-
 .. |simulation| raw:: html
+
+   <a href="https://meep.readthedocs.io/en/latest/Python_User_Interface/#the-simulation-class"> <pre>simulation</pre> </a>
+
+
+.. |arg| raw:: html
 
    <a href="https://meep.readthedocs.io/en/latest/Python_User_Interface/#the-simulation-class"> <pre>simulation</pre> </a>

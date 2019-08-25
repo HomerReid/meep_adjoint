@@ -50,7 +50,7 @@ def v3(a1=0.0, a2=0.0, a3=0.0):
 def fix_array_metadata(xyzw, center, size):
     for d in range(0,3):
         if size[d]==0.0 and xyzw[d][0]!=center[d]:
-            warnings.warn('correcting for bug in get_array_metadata: {}={}-->{}'.format('xyz'[d],xyzw[d][0],center[d]))
+            #warnings.warn('correcting for bug in get_array_metadata: {}={}-->{}'.format('xyz'[d],xyzw[d][0],center[d]))
             xyzw[d]=np.array([center[d]])
         else:
             xyzw[d]=np.array(xyzw[d])
@@ -175,7 +175,6 @@ class DFTCell(object):
         self.eigencache = {}    # cache of eigenmode field data to avoid redundant recalculations
 
         global dft_cell_names
-
         if region.name is not None:
             self.name = '{}_{}'.format(region.name, self.celltype)
         else:

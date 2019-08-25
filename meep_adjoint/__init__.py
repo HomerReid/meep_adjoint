@@ -16,6 +16,8 @@ from .option_almanac import (OptionTemplate, OptionAlmanac)
 
 from .adjoint_options import get_adjoint_option, set_adjoint_option_defaults
 
+from .dashboard_client import (launch_dashboard, update_dashboard, close_dashboard)
+
 from .dft_cell import (ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, EH_CPTS,
                        v3, V3, Subregion, DFTCell, Grid, fix_array_metadata,
                        make_grid, dft_cell_names, rescale_sources)
@@ -33,8 +35,6 @@ from .visualization_options import (get_visualization_option,
                                     set_visualization_option_defaults)
 
 from .visualization import visualize_sim
-
-from .dashboard_client import launch_dashboard, close_dashboard, update_dashboard
 
 from .optimization_problem import OptimizationProblem
 

@@ -20,15 +20,43 @@
   projection onto the design basis).
 """
 
-from enum import Enum
-
+import os
+import sys
+import psutil
+import time
 import numpy as np
 import meep as mp
 
 from datetime import datetime as dt2
 
-from . import (ObjectiveFunction, Basis, v3, V3, E_CPTS)
+from . import (ObjectiveFunction, Basis, v3, V3, E_CPTS, log, update_dashboard)
 from . import get_adjoint_option as adj_opt
+
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#########################################################
+# step function to update GUI dashboard progress bar
+#########################################################
+mt0, wt0, wtdb, wtcpu = 0, 0, 0, 0
+update_interval, cpu_interval, proc = 1, 2, psutil.Process(os.getpid())
+def dashboard_sf(sim):
+    global mt0, wt0, wtdb, wtcpu, update_interval, cpu_interval, proc
+    mt, wt = sim.round_time(), time.time()
+    if mt>mt0 and (wt-wtdb)>=update_interval:
+        updates = ['progress {}'.format(int(mt)),
+                   'ms_per_timestep {}'.format(1000.0*(wt-wt0)/(mt-mt0))]
+        if (wt-wtcpu) > cpu_interval:
+            wtcpu = wt
+            updates += ['cpu_usage {:.1f}'.format(proc.cpu_percent())]
+        update_dashboard(updates)
+        mt0, wt0, wtdb = mt, wt, wt
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 
 class TimeStepper(object):
 
@@ -107,7 +135,7 @@ class TimeStepper(object):
         reltol           = adj_opt('dft_reltol')
 
         # configure real-time animations of evolving time-domain fields
-        step_funcs = []
+#        step_funcs = []
 #        clist = adjoint_adj_opt('animate_components')
 #        if clist is not None:
 #            ivl=adjoint_adj_opt('animate_interval')
@@ -116,15 +144,38 @@ class TimeStepper(object):
 
         # start by timestepping without interruption until the sources are extinguished
         log("Beginning {} timestepping run...".format(job))
-        self.sim.run(*step_funcs, until=last_source_time)
+
+        update_dashboard(['run {}'.format(job)])
+        global mt0, wt0, wtdb, wtcpu, proc
+        dummy = proc.cpu_percent()
+
+        mta, mtb = 0, last_source_time
+        update_dashboard(['stage sources',
+                          'progress range {} {}'.format(int(mta),int(mtb))])
+        log('stepping from {} to {}'.format(mta,mtb))
+        sys.stdout.write('\n**\n**stepping from {} to {}\n**\n'.format(mta,mtb))
+        mt0, wt0 = mta, time.time()
+        wtdb, wtcpu, dt = wt0, wt0, (mtb-mta)/100.0
+
+        self.sim.run(mp.at_every(dt, dashboard_sf), until=mtb)
         vals = self.__update__(job)
 
         # now continue timestepping with intermittent convergence checks until
         # we converge or timeout
-        max_rel_delta = 1.0e9;
+        stage, max_rel_delta = 0, 1.0e9;
         while max_rel_delta>reltol and self.sim.round_time() < max_time:
-            check_time = self.sim.round_time() + check_interval
-            self.sim.run(*step_funcs, until = min(check_time, max_time))
+
+            #check_time = self.sim.round_time() + check_interval
+            #self.sim.run(*step_funcs, until = min(check_time, max_time))
+            mta, mtb, stage = mtb, min(mtb + check_interval, max_time), stage+1
+            update_dashboard(['stage conv {}'.format(stage),
+                              'progress range {} {}'.format(int(mta),int(mtb))])
+            log('stepping from {} to {}'.format(mta,mtb))
+            sys.stdout.write('\n**\n**stepping from {} to {}\n**\n'.format(mta,mtb))
+            mt0, wt0 = mta, time.time()
+            wtdb, wtcpu, dt = wt0, wt0, (mtb-mta)/100.0
+            self.sim.run(mp.at_every(dt, dashboard_sf), until=mtb)
+
             last_vals, vals = vals, self.__update__(job)
             rel_delta = np.array( [rel_diff(v,lv) for v,lv in zip(vals,last_vals)] )
             max_rel_delta = np.amax(rel_delta)
@@ -133,6 +184,7 @@ class TimeStepper(object):
         # for forward runs we save the converged DFT fields for later use
         if job=='forward':
             [ cell.save_fields('forward') for cell in self.dft_cells ]
+            update_dashboard(['current {:.2f}'.format(np.real(vals[0]))])
         self.state = job + '.complete'
         return vals
 

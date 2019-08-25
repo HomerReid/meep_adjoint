@@ -10,14 +10,10 @@ import warnings
 from datetime import datetime as dt2
 from tempfile import gettempdir
 
-######################################################################
-######################################################################
-######################################################################
-LOGFILE, LOGFMT = None, '%D<>%T '
+"""module-global filename and timestamp format for log files"""
+LOGFILE, LOGFMT = None, '%D<>%T.%f '
 
-LOGFILE, LOGFMT = 'meep_adjoint.log', '%D<>%T.%f '
-
-def init_log(filename=None, usecs=None):
+def init_log(filename='meep_adjoint.log', usecs=None):
     """configure global logfile settings
 
     Args:
@@ -25,18 +21,19 @@ def init_log(filename=None, usecs=None):
         usecs (bool): True/False for microsecond/second resolution in logfile timestamps
 
     Returns:
-        Nothing (sets global variables LOGFILE, LOGFMT)
+        Nothing (sets module-global variables LOGFILE, LOGFMT)
     """
     global LOGFILE, LOGFMT
     if filename is not None:
         LOGFILE = filename or None
-    if LOGFILE != os.path.abspath(LOGFILE):
+    if LOGFILE and LOGFILE!=os.path.abspath(LOGFILE):
         LOGFILE = gettempdir() + PATHSEP + LOGFILE
     if usecs is not None:
         LOGFMT = '%D<>%T' + ('.%f ' if usecs else ' ')
 
 
 def log(msg):
+    global LOGFILE
     if msg and LOGFILE:
         with open(LOGFILE,'a') as f:
             f.write(dt2.now().strftime(LOGFMT) + msg + '\n')
@@ -48,8 +45,22 @@ def warn(msg, retval=None):
     return retval
 
 
-def get_exception_info(exc_info=None,msg=None,warning=False):
-    errmsg, exc_info = io.StringIO(), exc_info or sys.exc_info()
+def get_exception_info(msg=None,warning=False):
+    """Return a detailed description of an exception in string form.
+
+    Usage example:
+        try:
+            tricky_thing()
+        except:
+            errmsg = get_exception_info(msg='failed to accomplish tricky thing')
+
+    Args:
+        msg (str): optional contextualizing string to precede exception info
+        warning (bool): If True, print the exception info as a warning message
+                        on the console. Note that the info is logged via
+                        log() regardless of the setting of warning.
+    """
+    errmsg, exc_info = io.StringIO(), sys.exc_info()
     errmsg.write('{}{}\n'.format(msg + ':' if msg else  '',exc_info[0]))
     errmsg.write('Exception value: {}\n'.format(exc_info[1]))
     traceback.print_tb(exc_info[2],limit=None,file=errmsg)

@@ -40,9 +40,6 @@ def visualize_sim(sim, dft_cells, mesh=None, fig=None, plot3D=None,
     plot_geometry(sim, dft_cells, fig=fig, plot3D=plot3D,
                   src_labels=src_labels, options=options)
 
-    if mesh is not None:
-        plot_mesh(mesh, options)
-
     ####################################################
     ####################################################
     ####################################################
@@ -53,8 +50,11 @@ def visualize_sim(sim, dft_cells, mesh=None, fig=None, plot3D=None,
     if not plot3D:
         plt.gcf().tight_layout()
 
-    plt.show(block = False)
-    plt.draw()
+    if vis_opt('show', overrides=options):
+        if mesh is not None:
+            plot_mesh(mesh, options)
+        plt.show(block = False)
+        plt.draw()
 
 
 ######################################################################
@@ -69,7 +69,6 @@ def plot_geometry(sim, dft_cells, fig=None, plot3D=False,
 
     fig = fig or plt.gcf()
     fig.clf()
-    title = options
 
     #################################################
     # plot permittivity
@@ -109,7 +108,7 @@ def plot_geometry(sim, dft_cells, fig=None, plot3D=False,
     #####################################################################
     for n, c in enumerate(dft_cells):
         section = c.celltype + '_region'
-        label = None if plot3D else c.name
+        label = None if plot3D else c.name.strip('_flux')
         plot_subregion(sim, vol=c.region, plot3D=plot3D, label=label, section=section, options=options)
 
 
@@ -295,6 +294,7 @@ def plot_mesh(mesh, options):
 
     keys = ['linecolor', 'linewidth']
     lc, lw = vis_opts(keys, section='mesh', overrides=options)
+    show = vis_opts(keys, section='mesh', overrides=options)
     if lw==0.0:
         return
     try:

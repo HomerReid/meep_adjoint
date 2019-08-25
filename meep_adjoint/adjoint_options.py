@@ -82,7 +82,7 @@ adjoint_option_templates= [
     OptionTemplate('nfreq',               1,   'number of DFT frequencies'),
     OptionTemplate('dpml',             -1.0,   'PML width (-1 --> auto-select)'),
     OptionTemplate('dair',             -1.0,   'gap width between material bodies and PMLs (-1 --> auto-select)'),
-    OptionTemplate('eps_func',        '1.0',   'function of (x,y,z) giving initial design permittivity'),
+    OptionTemplate('eps_design',      '1.0',   'function of (x,y,z) giving initial design permittivity'),
     OptionTemplate('dft_reltol',     1.0e-6,   'convergence tolerance for terminating timestepping'),
     OptionTemplate('dft_timeout',      10.0,   'max runtime in units of last_source_time'),
     OptionTemplate('dft_interval',     0.25,   'meep time between DFT convergence checks in units of last_source_time'),
@@ -95,9 +95,9 @@ adjoint_option_templates= [
     OptionTemplate('element_length',  0.0,    'finite-element discretization length'),
 
     #--------------------------------------------------
-    #- options affecting gradient-desscent optimizer
+    #- options affecting gradient-descent optimizer
     #--------------------------------------------------
-    OptionTemplate('alpha',          1.0,     'initial value of gradient relaxation parameter'),
+    OptionTemplate('alpha',          1.0,     'initial value of alpha (update relaxation parameter)'),
     OptionTemplate('alpha_min',      1.0e-3,  'minimum value of alpha'),
     OptionTemplate('alpha_max',      10.0,    'maximum value of alpha'),
     OptionTemplate('boldness',       1.25,    'sometimes you just gotta live a little (explain me)'),
@@ -105,15 +105,20 @@ adjoint_option_templates= [
     OptionTemplate('max_iters',      100,     'max number of optimization iterations'),
 
     #--------------------------------------------------
-    # visualization, console/dashboard, file output
+    # output files, logging, console, visualization, dashboard
     #--------------------------------------------------
     OptionTemplate('filebase',                '',         'base name of output files'),
-    OptionTemplate('verbose',                True,        'produce more output'),
-    OptionTemplate('visualize',              True,        'produce visualization graphics'),
+    OptionTemplate('silence_meep',           True,        'suppress MEEP console messages when timestepping'),
+    OptionTemplate('loglevel',               'info',      "['info'|'debug']"),
+    OptionTemplate('visualization',          'auto',      "['on'|'off'|'auto'] to enable/disable/automate graphical visualization"),
+    OptionTemplate('dashboard',              'auto',      "['on'|'off'|'auto'] to enable/disable/automate GUI dashboard"),
     OptionTemplate('dashboard_size',         0.5,         'GUI dashboard size relative to screen size'),
-    OptionTemplate('dashboard_position',     'top left',  'GUI dashboard position'),
+    OptionTemplate('dashboard_position',     'top right', 'GUI dashboard position'),
+    OptionTemplate('dashboard_font_family',  'Fantasque Sans Mono', 'GUI dashboard font family'),
+    OptionTemplate('dashboard_font_scale',   1.0,         'GUI dashboard font scale factor'),
     OptionTemplate('dashboard_on_top',       True,        'GUI dashboard stays on top of other windows'),
     OptionTemplate('dashboard_cpu_interval', 2000,        'GUI dashboard CPU usage update interval (ms)'),
     OptionTemplate('dashboard_host',         'localhost', 'GUI dashboard server hostname'),
-    OptionTemplate('dashboard_port',         37673,       'GUI dashboard server port')
+    OptionTemplate('dashboard_port',         37673,       'GUI dashboard server port'),
+    OptionTemplate('dashboard_loglevel',     'info',      "''info' | 'debug'")
 ]

@@ -7,7 +7,7 @@ import meep as mp
 
 from . import (DFTCell, ObjectiveFunction, TimeStepper, ConsoleManager,
                FiniteElementBasis, rescale_sources, E_CPTS, v3, V3,
-               init_log, log, dft_cell_names)
+               init_log, log, dft_cell_names, launch_dashboard, update_dashboard)
 
 from . import visualize_sim
 
@@ -151,7 +151,7 @@ class OptimizationProblem(object):
         # Note that sources and DFT cells are not added to the Simulation at
         # this stage; this is done later by internal methods of TimeStepper
         # on a just-in-time basis before starting a timestepping run.
-        self.beta_vector     = self.basis.project(adj_opt('eps_func'))
+        self.beta_vector     = self.basis.project(adj_opt('eps_design'))
         self.design_function = self.basis.parameterized_function(self.beta_vector)
         design_object   = mp.Block(center=V3(design_region.center), size=V3(design_region.size),
                                    epsilon_func = self.design_function.func())
@@ -175,17 +175,21 @@ class OptimizationProblem(object):
         if mp.am_master():
             init_log(filename=adj_opt('logfile') or adj_opt('filebase') + '.log', usecs=True)
 
+        self.dashboard_state = None
+
 
     #####################################################################
-    # The basic task of an OptimizationProblem: Given a vector of design
-    # variables, evaluate the objective function value and (optionally) gradient.
+    # The basic task of an OptimizationProblem: Given a candidate design
+    # function, compute the objective function value and (optionally) gradient.
     ######################################################################
-    def __call__(self, beta_vector=None, need_gradient=False):
+    def __call__(self, design=None, beta_vector=None, need_gradient=False):
         """Evaluate value and (optionally) gradient of objective function.
 
         Args:
+            design:
+                candidate design function
             beta_vector (np.array):
-                vector of design variables (or None to retain existing design)
+                vector of design variables
             need_gradient (bool):
                 whether or not the forward run to compute the objective-function
                 value will be followed by an adjoint run to compute the gradient.
@@ -199,8 +203,12 @@ class OptimizationProblem(object):
                     f derivatives w.r.t. each design variable (if need_gradient==True),
                   = None (need_gradient==False)
         """
-        if beta_vector:
-            self.update_design(beta_vector)
+        if design or beta_vector:
+            self.update_design(design=design, beta_vector=beta_vector)
+
+        if self.dashboard_state is None:
+            launch_dashboard(name=adj_opt('filebase'))
+            self.dashboard_state = 'launched'
 
         fq    = self.stepper.run('forward')
         gradf = self.stepper.run('adjoint') if need_gradient else None
@@ -211,18 +219,20 @@ class OptimizationProblem(object):
     #####################################################################
     # ancillary API methods #############################################
     #####################################################################
-    def update_design(self, beta_vector):
-        """Update the vector of design variables (expansion coefficients)
-           that determine the design function.
+    def update_design(self, design=None, beta_vector=None):
+        """Update the design permittivity function.
 
         Args:
-            beta_vector: real-valued numpy array, length self.basis.dim
+            design (float, string, or callable):
+                specification of new permittivity function
+            beta_vector:
+                basis expansion coefficients for new permittivity function
 
         Returns:
                None
         """
-        self.beta_vector = beta_vector
-        self.design_function.set_coefficients(beta_vector)
+        self.beta_vector = self.basis.project(design) if design else beta_vector
+        self.design_function.set_coefficients(self.beta_vector)
         self.stepper.state='reset'
 
 
@@ -230,8 +240,9 @@ class OptimizationProblem(object):
     #####################################################################
     #####################################################################
     def visualize(self, options={}):
-        """Produce a graphical visualization of the geometry and/or fields
-           as appropriate based on the current state of progress.
+        """Produce a graphical visualization of the geometry and/or fields,
+           as appropriately autodetermined based on the current state of
+           progress.
         """
         if self.stepper.state=='reset':
             self.stepper.prepare('forward')
@@ -243,4 +254,4 @@ class OptimizationProblem(object):
             visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, options=options)
         elif self.stepper.state == 'forward.complete':
             visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, options=options)
-        #else self.stepper.state == 'forward.complete':
+        #else self.stepper.state == 'adjoint.complete':

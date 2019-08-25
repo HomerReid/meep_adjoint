@@ -1,17 +1,22 @@
+**********************************************************************
 :py:mod:`meep_adjoint`: Overview and Invitation
-======================================================================
+**********************************************************************
 
-This page is designed to offer a first introductory glimpse of the
-theory and practice of :py:mod:`meep_adjoint`,
-beginning with a gentle background discussion aimed at newcomers
-and continuing with a look at some typical design problems
-and a flavor of their description in `meep_adjoint`.
-Adjoint experts will probably want to skip directly to the
-`blow-by-blow walkthrough <Tutorial_>`_ on the following page,
+This page is intended as a
+of adjoin
+:py:mod:`meep_adjoint`,
+beginning with a basic backgrounder on adjoint methods in general,
+then consider some typical design-optimization problems
+and a flavor of the workflow one
+their description in `meep_adjoint`.
+Adjoint experts will probably want to skim most of this
+before moving on to the detailed blow-by-blow of the
+<tutorial_>`_ on the following page,
 but are first encouraged at least to glance at the
-
+`
+======================================================================
 Background: Automated design optimization and the adjoint method
-********************************************************************************
+======================================================================
 
 A common task in electromagnetic engineering is to custom-tune the design
 of some component of a system---a waveguide taper, a power splitter,
