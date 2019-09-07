@@ -1,4 +1,4 @@
-. include ../Shorthand.rst
+. include ../Preamble.rst
 
 ######################################################################
 Configuration and customization

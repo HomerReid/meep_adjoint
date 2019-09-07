@@ -1,12 +1,12 @@
-.. include /Shorthand.rst
+.. include /Preamble.rst
 
 ********************************************************************************
 Overview of the :py:mod:`meep_adjoint` class hierarchy
 ********************************************************************************
 
 As noted in the :doc:tutorial,
-The :class:`OptimizationProblem` class exported by the :py:mod:`meep_adjoint`
-is the top-level entity in a hierarchy of python classes that collectively
+The :class:`OptimizationProblem` class exported by :py:mod:`meep_adjoint`
+is the top-level entity in a hierarchy of classes that collectively
 implement most of the mechanics of the adjoint solver.
 Before delving into the :doc:`detailed API reference <OptimizationProblem>`,
 on the following pages, we pause here to introduce the various classes

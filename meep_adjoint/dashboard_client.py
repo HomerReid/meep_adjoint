@@ -11,7 +11,7 @@ import socket
 import psutil
 from psutil import process_iter as procs
 import subprocess
-import asyncio
+import multiprocessing
 import time
 from tempfile import gettempdir
 import contextlib
@@ -20,22 +20,40 @@ import meep as mp
 
 from . import log, warn, get_exception_info
 from . import get_adjoint_option as adj_opt
+from . import run_dashboard
 
 
 """module-global variables describing dashboard connection status"""
-dashboard_socket, dbserver_process = None, None
+dashboard_socket, dashboard_process, dbserver_process = None, None, None
 
 
 def launch_dashboard(name=None):
-    """ try to connect to dashboard server and launch GUI dashboard """
+    """ try to launch GUI dashboard """
 
-    # check if dashboard already running or disabled by configuration options
-    global dashboard_socket, dbserver_process
+    # skip if dashboard already running or disabled by configuration options
+    global dashboard_socket, dashboard_process, dbserver_process
     host, port, size = [adj_opt('dashboard_' + s) for s in ['host','port','size'] ]
     if dashboard_socket is not None or size==0.0:
         return
 
-    # fork server process if necessary
+    # if port==0, try to launch GUI dashboard as a multiprocessing.Process()
+    if port==0:
+        try:
+            dashboard_socket, sock2 = socket.socketpair()
+            dashboard_process = multiprocessing.Process(target=run_dashboard, args=(sock2,))
+            dashboard_process.start()
+            title = 'meep_adjoint dashboard' + (' for {}'.format(name)) if name else ''
+            cpus = mp.count_processors()
+            update_dashboard(['clear', 'title ' + title, 'cpus {}'.format(cpus)])
+        except:
+            dashboard_socket, dashboard_process, dbserver_process = None, None, None
+            get_exception_info(msg='failed to fork dashboard process',warning=True)
+        return
+
+
+    # otherwise, we try to establish a TCP connection to a server listening on
+    # the given port
+
     if host=='localhost':
         fork_dashboard_server()
 
@@ -48,14 +66,17 @@ def launch_dashboard(name=None):
         cpus = mp.count_processors()
         update_dashboard(['clear', 'title ' + title, 'cpus {}'.format(cpus)])
     except:
-        dashboard_socket=None
+        dashboard_socket, dashboard_process, dbserver_process = None, None, None
         get_exception_info(msg='failed to connect to dashboard server',warning=True)
 
 
 def update_dashboard(updates):
+    """Update data fields or overall appearance of GUI dashboard.
+
+    Args:
+        updates (str or list of str): update commands
     """
-    """
-    global dashboard_socket, dbserver_process
+    global dashboard_socket, dashboard_process, dbserver_process
     if not dashboard_socket:
         return
     content = ''.join( (s+'\n') for s in ([updates] if isinstance(updates,str) else updates) )
@@ -69,9 +90,22 @@ def update_dashboard(updates):
     if condition:
         log('closing dashboard: ' + condition)
         dashboard_socket.close()
-        if dbserver_process and not dbserver_process.wait(nw_timeout()):
-            dbserver_process.kill()
-        dashboard_socket, dbserver_process = None, None
+        if dbserver_process:
+            if dbserver_process.wait(nw_timeout()) is not None:
+                log('dashboard server process properly self-terminated')
+            else:
+                dbserver_process.kill()
+                log('dashboard server process failed to self-terminate; terminating forcefully')
+        elif dashboard_process:
+            dashboard_process.join(nw_timeout())
+            if not dashboard_process.is_alive():
+                log('dashboard process properly self-terminated')
+            else:
+                dashboard_process.terminate()
+                dashboard_process.join()
+                log('dashboard process failed to self-terminate; terminating forcefully')
+
+        dashboard_socket, dashboard_process, dbserver_process = None, None, None
 
 
 def close_dashboard():
@@ -85,7 +119,7 @@ def nw_timeout():
 def fork_dashboard_server():
     """Launch a single-session dashboard server as a subprocess."""
     try:
-        # refer to our own process info to get python interpreter and server script
+        # refer to our own process info to get python interpreter and path to server script
         pycmd = psutil.Process(os.getpid()).cmdline()[0]
         pyscript = dirname(abspath(__file__)) + os.path.sep + 'dashboard_server.py'
         argv = [ pycmd, pyscript, '--single_session' ]

@@ -57,7 +57,6 @@ def dashboard_sf(sim):
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-
 class TimeStepper(object):
 
     #########################################################
@@ -114,7 +113,7 @@ class TimeStepper(object):
             self.dfdEps = np.zeros(self.design_cell.grid.shape)
             for n in [ n for (n,c) in enumerate(self.design_cell.components) if c in E_CPTS]:
                 self.dfdEps += np.real( EH_fwd[n]*EH_adj[n] )
-            retvals = self.basis.project(self.dfdEps, grid=self.design_cell.grid)
+            retvals = self.basis.project(self.dfdEps, grid=self.design_cell.grid, differential=True)
         return retvals
 
 
@@ -264,7 +263,7 @@ class TimeStepper(object):
         else:
             warnings.warn('unknown objective quantity {} in get_adjoint_sources (skipping)'.format(qname))
             return []
-        rwlist = [ (self.obj_func.qrules[i], w) for (i,w) in iwlist ]
+        rwlist = [ (self.obj_func.qrules[i], w) for (i,w) in iwlist if w!=0.0 ]
 
         ######################################################################
         # loop over all contributing objective quantities

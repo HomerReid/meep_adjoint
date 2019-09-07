@@ -46,6 +46,8 @@ parser.add_argument('--eps_hole', type=str,   default=None,   help ='hole permit
 parser.add_argument('--fd_step',  type=float, default=0.01,   help ='relative finite-difference step')
 parser.add_argument('--fd_order', type=int,   default=2,      help ='order of finite-difference stencil')
 
+parser.add_argument('--img_file', type=str,   default=None,   help ='filename for saved copy of geometry visualization')
+
 args = parser.parse_args()
 
 
@@ -106,11 +108,13 @@ design_region = Subregion(name='design', center=design_center, size=design_size)
 full_region = Subregion(name='full', center=ORIGIN, size=cell_size)
 
 
-opt_prob = OptimizationProblem(objective_regions=[east,west], objective='S_east',
+opt_prob = OptimizationProblem(objective_regions=[east,west],
+                               objective=objective,
                                design_region=design_region,
                                cell_size=cell_size, background_geometry=[wvg],
                                source_region=source_region,
                                extra_quantities=extra_quantities, extra_regions=[full_region])
+
 
 ######################################################################
 # do computations at all eps_hole values in user-specified range

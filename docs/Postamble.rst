@@ -1,0 +1,49 @@
+Howdage foryaf!
+
+..######################################################
+.. content to be included at the end of all .rst files
+..######################################################
+
+.. |mpadj| replace:: :py:mod:`meep_adjoint`
+
+
+.. |meep_python_module| raw:: html
+
+   <a href="http://meep.readthedocs.io">
+   <b><font style="font-variant: small-caps; font-size: 100%">meep</font></b>
+   python module</a>
+
+
+.. |simulation| raw:: html
+
+   <a href="https://meep.readthedocs.io/en/latest/Python_User_Interface/#the-simulation-class"> <pre>simulation</pre> </a>
+
+
+..**************************************************..
+.. frequently-occurring hyperlinks
+..**************************************************..
+
+.. _TheSimulationClass:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#the-simulation-class
+.. _GetFluxes:			https://meep.readthedocs.io/en/latest/Python_User_Interface/#get_fluxes
+.. _DFTEnergy:			https://meep.readthedocs.io/en/latest/Python_User_Interface/#dft_energy
+.. _EigenCoefficients:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#get_eigenmode_coefficients
+.. _EigenModeSource:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#eigenmodesource
+.. _EpsFunc:        		https://meep.readthedocs.io/en/latest/Python_User_Interface/#eps_func
+.. _FluxSpectra:    		https://meep.readthedocs.io/en/latest/Python_User_Interface/#FluxSpectra
+.. _RunStepFunctions:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#run-and-step-functions
+.. _RunStepFunctions:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#run-functions
+.. _DFTObj:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#dft_obj
+.. _PML:             		https://meep.readthedocs.io/en/latest/Python_User_Interface/#pml
+.. _Energy:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#energy
+.. _Source:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#source
+.. _GeometricObject: 		https://meep.readthedocs.io/en/latest/Python_User_Interface/#geometricobject
+
+.. _holey_waveguide:		Overview.md#the-holey-waveguide
+.. _CrossRouter:		Overview.md#the-cross-router
+.. _HoleCloak:			Overview.md#the-hole-cloak
+.. _AsymmetricSplitter:		Overview.md#the-asymettric-splitter
+
+.. _CrossRouterExample:		ExampleGallery.md#full-automated-optimization-of-a-cross-router-device
+.. _AdjointVsFDTest:		ExampleGallery.md#numerical-validation-of-adjoint-gradients
+
+.. _MatPlotLib:			http://matplotlib.org

@@ -11,7 +11,6 @@ import numpy as np
 
 import meep as mp
 
-
 QRule = namedtuple('QRule', 'code mode ncell')
 
 from . import dft_cell_names
@@ -40,9 +39,9 @@ def make_qrule(qname):
         raise ValueError('syntax error in quantity name ' + qname)
     if cellstr.isdigit():
         ncell = int(cellstr)
-    elif cellstr+'_flux' in dft_cell_names:
+    elif cellstr + '_flux' in dft_cell_names:
         ncell = dft_cell_names.index(cellstr+'_flux')
-    elif cellstr+'_fields' in dft_cell_names:
+    elif cellstr + '_fields' in dft_cell_names:
         ncell = dft_cell_names.index(cellstr+'_fields')
     else:
         ncell = -1

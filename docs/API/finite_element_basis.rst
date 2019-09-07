@@ -1,4 +1,4 @@
-.. include /Shorthand.rst
+.. include /Preamble.rst
 
 ==================================================
 :py:class:`finite_element_basis`

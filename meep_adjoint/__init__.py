@@ -16,6 +16,8 @@ from .option_almanac import (OptionTemplate, OptionAlmanac)
 
 from .adjoint_options import get_adjoint_option, set_adjoint_option_defaults
 
+from .dashboard_server import run_dashboard
+
 from .dashboard_client import (launch_dashboard, update_dashboard, close_dashboard)
 
 from .dft_cell import (ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, EH_CPTS,

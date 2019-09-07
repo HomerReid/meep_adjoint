@@ -1,22 +1,25 @@
+.. include Preamble.rst
+
 **********************************************************************
-:py:mod:`meep_adjoint`: Overview and Invitation
+:py:mod:`meep_adjoint` Overview and Invitation
 **********************************************************************
 
-This page is intended as a
-of adjoin
-:py:mod:`meep_adjoint`,
-beginning with a basic backgrounder on adjoint methods in general,
-then consider some typical design-optimization problems
-and a flavor of the workflow one
-their description in `meep_adjoint`.
-Adjoint experts will probably want to skim most of this
-before moving on to the detailed blow-by-blow of the
-<tutorial_>`_ on the following page,
-but are first encouraged at least to glance at the
-`
+This page offers a quick introduction to the theory and practice of
+:py:mod:`meep_adjoint`, beginning with a basic backgrounder on adjoint
+methods in general, then considering some representative design-optimization
+problems and outlining typical workflows for their solution
+in :mod:`meep_adjoint`.
+Adjoint experts will probably want to skim much of this before
+moving on to the detailed step-by-step :doc:`tutorial <../Tutorial/index>`,
+but are first encouraged at least to glance at the list of 
+
 ======================================================================
 Background: Automated design optimization and the adjoint method
 ======================================================================
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Electromagnetic design optimization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A common task in electromagnetic engineering is to custom-tune the design
 of some component of a system---a waveguide taper, a power splitter,
@@ -27,17 +30,60 @@ from frequency-domain electromagnetic fields---a `power flux <GetFluxes_>`_,
 an `energy density <DFTEnergy_>`_,
 an `eigenmode expansion coefficient <EigenCoefficients_>`_,
 or perhaps some mathematical function of one or more such
-quantities---which we will denote simply :math:`f` and refer to
+quantities---which we will denote 
+:math:`f^\text{obj}` or simply :math:`f` and refer to
 as the *objective function*. Meanwhile,
-the "design" quantity we seek to optimize will be
-the full spatially-varying scalar permittivity function
-:math:`\epsilon(\mathbf x)` in some subregion of the geometry
-(the *design region*), which we will generally approximate as a 
-finite expansion
-:math:`\epsilon(\mathbf x)\approx \sum c_d b_d(\mathbf{x})`,
-with :math:`\{b_d(\mathbf x)\}, d=1,2,\cdots,D9
-some convenient :math:`D`-dimensional set of scalar functions
-in the design region.
+the design quantity we will tweak to optimize :math:`f^\text{obj}`
+will be
+the spatially-varying scalar permittivity function
+:math:`\epsilon^\text{design}(\mathbf x)` in some
+subregion of the geometry (the *design region*
+:math:`\mathcal{V}^\text{design}`);
+naively, this would give us uncountably many degrees of
+freedom and allow permittivity functions of 
+arbitrarily rapid spatial variation, but such a design
+space would be both mathematically unwieldy and technologically
+unrealistic (in view of the finite lithographic linewidths
+and other constraints posed by real-world fabrication methods),
+whereupon in general we will approximate the design function
+as a finite expansion of the form
+
+
+.. math::
+
+    \epsilon^\text{design}(\mathbf x)\approx
+    \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+where :math:`\{b_d(\mathbf{x})\}, d=1,\cdots,D` is some conveniently-chosen
+set of :math:`D` scalar basis functions defined for
+:math:`\mathbf{x}\in\mathcal{V}^\text{design}`.
+This restricts the space of possible design functions to the span
+of the :math:`\{b_d\}` and reduces our mathematical problem to
+finding values for the :math:`\{\beta_d\}` coefficients
+that optimize the objective function---subject, of course, to
+appropriate physicality constraints on $\epsilon$.
+If we restrict consideration to nondispersive media, the
+conditions for a physical permittivity are simply
+:math:`\text{Re }\epsilon\ge 1, \text{Im }\epsilon = 0`,
+and the mathematical formulation of our design challenge
+takes the form
+
+
+.. math::
+   :label: opt_prob
+
+    \text{find } \boldsymbol{\beta} \in \mathbb{R}^D
+    \text{ such that }
+    f^\text{obj}(\boldsymbol{\beta}) = \text{optimum},
+
+    \text{subject to}
+    \sum_{d=1}^D \beta_d b_d(\mathbf x) \ge 1,
+     \,\,\,\, \forall \,\,\,\, \mathbf{x} \in \mathcal{V}^\text{design}
+
+This is a $D$-dimensional optimization problem subject to linear
+inequality constraints.[#]_
+
+
 We will shortly present a smorgasbord of examples; for now,
 perhaps a good one to have in mind is the
 [hole cloak ](#HoleCloak) discussed below, in which a
@@ -50,7 +96,11 @@ as much as possible the reflectionless transfer of power
 across the waveguide---thus hiding or "cloaking"
 the presence of defect from external detection.
 
-Now, for a given a candidate design :math:`\epsilon\sup{trial}(\mathbf{x})`,
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:codename:`meep` is a tool for computing objective-function values...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now, for a given a candidate design :math:`\epsilon^{\text{trial}}(\mathbf{x})`,
 it's clear that we can use :py:mod:`meep`---*core*:py:mod:`meep`,
 that is, no fancy new modules required---to evaluate
 the objective function and assess the candidate's performance: we simply 
@@ -74,6 +124,10 @@ Thus, for the cost of one full :py:mod:`meep` timestepping
 run we obtain the value of our objective function at one point
 in the parameter space of possible inputs. 
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+...but function *values* alone aren't enough for efficient optimization.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 But *now* what do we do?! The difficulty is that the computation
 izinust described furnishes only the *value* of the objective function
 for a given input, not its *derivatives* with respect to the
@@ -82,7 +136,7 @@ tweak the design to improve performance.
 In simple cases we might hope to proceed on the basis of physical
 intuition, while
 for small problems with just a few parameters we might try our luck with a
-[derivative-free optimization algorithm](https://en.wikipedia.org/wiki/Derivative-free_optimization);
+`derivative-free optimization algorithm`_;
 however, both of these approaches will run out of steam long before
 we scale up to 
 the full complexity of a practical problem with thousands
@@ -98,6 +152,13 @@ objective-function gradient
 So we face a dilemma: How can we obtain the derivative information
 necessary for effective optimization in a reasonable amount of time?
 This is where adjoints come to the rescue.
+
+
+.. _derivative-free optimization algorithm: https://en.wikipedia.org/wiki/Derivative-free_optimization
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:py:mod:`meep_adjoint` is a tool for computing objective-function *gradients*.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The *adjoint method* of sensitivity analysis is a technique in which
 we exploit certain facts about the physics of a problem and the
@@ -117,9 +178,9 @@ with adjoints we get both value and gradient for roughly just *twice* the
 cost of the value alone. Such a bargain! At this modest cost, derivative-based 
 optimization becomes entirely feasible.
 
---------------------------------------------------------------------------------
+======================================================================
 Examples of optimization problems
---------------------------------------------------------------------------------
+======================================================================
 
 Throughout the `meep_adjoint` documentation we will refer to a running collection of
 simple optimization problems to illustrate the mechanics of optimization,
@@ -266,11 +327,9 @@ that efficiently routs power around a 90&degree; bend
 from the eigenmode source (cyan line above)
 to the 'north' output port.
  
---------------------------------------------------
-
-
-
-### The asymmetric splitter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The asymmetric splitter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A `splitter` seeks to divide incoming power from one source
 in some specific way among two or more destinations.,
@@ -284,8 +343,9 @@ central coupler region:
 > ![zoomify](images/SplitterGeometry.png)
 
 
-Defining elements of optimization problems: Objective regions, objective functions, design regions, basis sets
---------------------------------------------------
+================================================================
+Defining elements of optimization problems
+================================================================
 
 The examples above, distinct though they all are, illustrate
 the common irreducible set of ingredients required for a full
@@ -294,8 +354,8 @@ specification of an optimization problem:
 
 + **Objective regions:** One or more `regions over which to tabulate frequency-domain fields (DFT cells) <DFTObj_>`_
   for use in computing power fluxes, mode-expansion coefficients, and other frequency-domain
-   quantities used in characterizing device performance.  Because these regions are used to evaluate
-   objective functions, we refer to them as *objective regions.*
+  quantities used in characterizing device performance.  Because these regions are used to evaluate
+  objective functions, we refer to them as *objective regions.*
 
 + **Design region:** A specification of the region over which the material design is to be
     optimized, i.e. the region in which the permittivity is given by the
@@ -323,29 +383,12 @@ specification of an optimization problem:
     subclassing an abstract base class in `mp.adjoint.`
 
 
+.. [#] Technically, equation (1) appears to be imposing uncountably many
+       constraints (one for each point :math:`\mathbf{x}` in the design region)
+       on our finite set of design variables; we will describe later how
+       to extract a finite number of constraints for numerical optimization.
 
-.. _MyFlux: https://meep.readthedocs.io/en/latest/Python_User_Interface/#get_fluxes
-.. _TheSimulationClass:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#the-simulation-class
+
 .. _GetFluxes:			https://meep.readthedocs.io/en/latest/Python_User_Interface/#get_fluxes
 .. _DFTEnergy:			https://meep.readthedocs.io/en/latest/Python_User_Interface/#dft_energy
 .. _EigenCoefficients:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#get_eigenmode_coefficients
-.. _EigenModeSource:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#eigenmodesource
-.. _EpsFunc:        		https://meep.readthedocs.io/en/latest/Python_User_Interface/#eps_func
-.. _FluxSpectra:    		https://meep.readthedocs.io/en/latest/Python_User_Interface/#FluxSpectra
-.. _RunStepFunctions:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#run-and-step-functions
-.. _RunStepFunctions:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#run-functions
-.. _DFTObj:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#dft_obj
-.. _PML:             		https://meep.readthedocs.io/en/latest/Python_User_Interface/#pml
-.. _Energy:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#energy
-.. _Source:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#source
-.. _GeometricObject: 		https://meep.readthedocs.io/en/latest/Python_User_Interface/#geometricobject
-
-.. _holey_waveguide:		Overview.md#the-holey-waveguide
-.. _CrossRouter:			Overview.md#the-cross-router
-.. _HoleCloak:			Overview.md#the-hole-cloak
-.. _AsymmetricSplitter:		Overview.md#the-asymettric-splitter
-
-.. _CrossRouterExample:		ExampleGallery.md#full-automated-optimization-of-a-cross-router-device
-.. _AdjointVsFDTest:		ExampleGallery.md#numerical-validation-of-adjoint-gradients
-
-.. _MatPlotLib:			http://matplotlib.org

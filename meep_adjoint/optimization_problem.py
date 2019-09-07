@@ -211,6 +211,7 @@ class OptimizationProblem(object):
             self.dashboard_state = 'launched'
 
         fq    = self.stepper.run('forward')
+        import ipdb; ipdb.set_trace()
         gradf = self.stepper.run('adjoint') if need_gradient else None
 
         return fq, gradf
@@ -239,7 +240,7 @@ class OptimizationProblem(object):
     #####################################################################
     #####################################################################
     #####################################################################
-    def visualize(self, options={}):
+    def visualize(self, id=None, options={}):
         """Produce a graphical visualization of the geometry and/or fields,
            as appropriately autodetermined based on the current state of
            progress.
@@ -250,8 +251,10 @@ class OptimizationProblem(object):
         bs = self.basis
         mesh = bs.fs.mesh() if (hasattr(bs,'fs') and hasattr(bs.fs,'mesh')) else None
 
+        fig = plt.figure(num=id) if id else None
+
         if self.stepper.state.endswith('.prepared'):
-            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, options=options)
+            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, fig=fig, options=options)
         elif self.stepper.state == 'forward.complete':
-            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, options=options)
+            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, fig=fig, options=options)
         #else self.stepper.state == 'adjoint.complete':

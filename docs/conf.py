@@ -27,7 +27,7 @@ on_rtd = os.environ.get('READTHEDOCS') == 'True'
 
 # -- Project information -----------------------------------------------------
 
-project = 'meep.adjoint'
+project = 'meep_adjoint'
 copyright = '2019, MEEP project'
 author = 'Homer Reid'
 

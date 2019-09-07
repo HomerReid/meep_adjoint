@@ -1,12 +1,11 @@
-.. include Shorthand.rst
+.. include Preamble.rst
 
-
-=====================================================================
+**********************************************************************
 :py:mod:`meep_adjoint`: Adjoint-solver module for :program:`pymeep`
-=====================================================================
-This is the root of the documentation tree for :py:mod:`meep_adjoint.`
-Jump directly to the module-wide :ref:`TableOfContents` below, 
-or read on for a quick-start overview.
+**********************************************************************
+This is the root of the documentation tree for :py:mod:`meep_adjoint`.
+Jump directly to the module-wide :ref:`TableOfContents` below,
+or read on for a quick-start summary.
 
 =========================
 What does this module do?
@@ -14,20 +13,10 @@ What does this module do?
 You'll find a longer answer in the :doc:`Overview <Overview/index>`
 (and a more succinct one in the :doc:`API Reference <API/index>`),
 but, in a nutshell: It extends the computational capabilities of the
-core |pymeep| library in a particular way that facilitates interaction
+core |meep| solver in a particular way that facilitates interaction
 with `numerical optimization algorithms`_, opening the door to
 intelligent design tools that automatically design devices to meet
 given performance specifications.
-
-
-
-.. |pymeep| raw:: html
-
-   <a href="http://meep.readthedocs.io">
-   <b><font style="font-variant: small-caps; font-size: 110%">pymeep</font></b></a>
-
-
-.. _numerical optimization algorithms: https://en.wikipedia.org/wiki/Category:Optimization_algorithms_and_methods
 
 
 .. admonition:: Wait, *what* exactly does the module do again?
@@ -38,11 +27,9 @@ given performance specifications.
         performance metric.
         For example, in the :doc:`cross router <Examples/cross_router>`
         example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
-        the
-        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the task is to design the central hub region to steer
-        incoming power arriving via the **East** input waveguide
-        to output 
+        incoming power arriving via the **West** input waveguide port
+        to the **North** output waveguide port
        
         the task is to design the hub region toe steer incident
         power arriving from the 
@@ -146,6 +133,8 @@ geometry. These include...**(section incomplete)**
 3) *Full iterative optimization*: Launch your optimization
 run and monitor its progress via graphical or other indicators.
 
+
+====================================
 How is the documentation structured?
 ====================================
 
@@ -171,6 +160,7 @@ Table of Contents
    API Reference <API/index>
 
 
+==================
 Indices and tables
 ==================
 
@@ -178,6 +168,13 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+
+
+..######################################################################
+..######################################################################
+..######################################################################
+
+.. _numerical optimization algorithms: https://en.wikipedia.org/wiki/Category:Optimization_algorithms_and_methods
 
 .. _myriad available gradient-based optimization algorithms: https://en.wikipedia.org/wiki/Category:Optimization_algorithms_and_methods
 
@@ -190,3 +187,11 @@ Indices and tables
        of one of the tests in the :py:mod:`meep_adjoint` unit-test suite,
        and also of the :doc:`holey waveguide <Examples/holey_waveguide>`
        example in the :doc:`example gallery.<Examples/index>`
+.. |meep| raw:: html 
+
+   <a class="codename" href="http://meep.readthedocs.io">meep</a>
+
+
+.. |mpadj| raw:: html
+
+   <a class="codename" href="https://homerreid.github.io/meep-adjoint-documentation/Tutorial/index.html">meep_adjoint</a>

@@ -1,4 +1,4 @@
-.. include /Shorthand.rst
+.. include /Preamble.rst
 
 ==================================================
 :py:class:`basis`

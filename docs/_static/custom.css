@@ -1,20 +1,12 @@
 font-family: 'Source Code Pro', monospace;
 font-family: 'Open Sans', sans-serif;
 
-.codename{
-   font-variant: small-caps;
-   font-size: 100%;
-   font-variant-numeric: oldstyle-nums;
-}
-
-body{
-/*
-    font-family: 'Roboto', sans-serif;
-*/
+body {
     font-family: 'Source Code Pro', monospace;
     font-family: 'Open Sans', sans-serif;
 }
 
+/*
 code, .rst-content tt, .rst-content code {
     font-size: 85%;
     background: #eeeeee;
@@ -28,75 +20,71 @@ code.ilpy3 {
     font-family: 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
     padding: 0 5px;
 }
-
-/*
-    white-space: nowrap;
-    max-width: 100%;
-    font-size: 100%;
 */
+
+.rst-content tt.literal, .rst-content tt.literal, .rst-content code.literal {
+    color: #9a44a9;
+}
+
+code, .rst-content tt, .rst-content code, .rst-content code.xref {
+    font-family: 'Monaco', 'Menlo', 'Consolas', 'Source Code Pro', monospace!important;
+    border: 1px solid;
+    border-radius: 3px;
+    padding: 1px 4px;
+    background: #e8e8e8;
+    color: #3c9a9a;
+    white-space: normal;
+}
 
 .wy-nav-side {
     color: #9b9b9b;
-/*
-    background: #343131;
-    background: #5c5c5c;
-    background: #bc986a;
-*/
     background: #3c9a9a;
-/*
-    background: #fbeec1;
-*/
 }
-
-.wy-side-nav-search { background-color: #daad86; }
 
 .wy-menu-vertical { color: #05386b; }
 
-a: visited { 
+a {
  font-weight: bold;
-} 
+}
 
-a { 
- font-weight: bold;
-} 
+.codename {
+   font-variant: small-caps;
+   font-size: 110%;
+   font-variant-numeric: oldstyle-nums;
+}
+
+.codename span {
+   font-variant: small-caps;
+   font-size: 110%;
+   font-variant-numeric: oldstyle-nums;
+}
 
 .rst-content .qanda {
     background: #e1bee7';
-/*
-     background: '#f8bbd0';
-*/
 }
 
 qanda { background: '#e1bee7' !important }
 
-
 .qanda { background: '#e1bee7' !important }
 
-
 div.qanda { background: '#e1bee7' !important }
-
-
 
 .rst-content .qanda admonition-title:before {
     content: "&f059"; 
 }
 
-
-
 .qanda admonition-title:before {
     content: "&f059" !important
 }
-
-
 
 qanda admonition-title:before {
     content: "&f059" !important
 }
 
-
 div.qanda admonition-title:before {
     content: "&f059" !important
 }
+
 
 .rst-content .centered {
     text-align: center
@@ -111,6 +99,8 @@ div.qanda admonition-title:before {
     background: #f3f6f6;
     border: solid 1px #e1e4e5
 }
+
+.wy-side-nav-search { background-color: #daad86; }
 
 .rst-content .sidebar p,
 .rst-content .sidebar ul,
@@ -131,7 +121,6 @@ div.qanda admonition-title:before {
     margin: -12px;
     margin-bottom: 12px;
     font-size: 100% }
-
 
 .wy-menu-vertical-header, .wy-menu-vertical p.caption {
  color: #441199;

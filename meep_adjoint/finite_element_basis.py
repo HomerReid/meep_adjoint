@@ -110,7 +110,7 @@ class FiniteElementBasis(Basis):
         super().__init__(self.fs.dim(), size=size, center=center, offset=offset )
 
 
-    def project(self, g, grid=None, retain_offset=True):
+    def project(self, g, grid=None, differential=False):
         """
         Given an arbitrary function g(x), invoke the performance-optimized routines
         in FENICS to compute the coefficients {g^p_0, g^p_1, ..., } in the expansion
@@ -118,11 +118,18 @@ class FiniteElementBasis(Basis):
 
         Parameters:
             g, grid: function specification as in make_dolfin_callable
-            retain_offset: True or False to retain or omit the constant offset.
+            differential: True if g(x) describes a *differential* quantity,
+                          i.e. an update to be added to an existing
+                          function. This information is needed only to
+                          determine whether or not the constant offset in
+                          the basis should be subtracted from g(x) before
+                          projection: yes in general, but nof for differential
+                          quantities.
+
         Return value:
             Projection coefficients as numpy array of dimension self.dim
         """
-        ofs = -1.0*self.offset if retain_offset else 0.0
+        ofs = 0.0 if differential else -1.0*self.offset
         g = make_dolfin_callable(g, grid=grid, fs=self.fs, offset=ofs)
         return df.project(g, self.fs).vector().vec().array
 
@@ -145,7 +152,7 @@ class FiniteElementBasis(Basis):
                    as the `epsilon_func` parameter when constructing a `GeometricObject`
                    in a mp.Simulation. However, as of MEEP version 1.10 (c. July 2019)
                    this seems not to work, i.e. it seems class instances can't
-                   be used as `epsilon_funcs` even if they have a __call__ method
+                   be passed as `epsilon_func`s  even if they have a __call__ method
                    with the proper calling convention. This would probably be easy
                    to address by a tweak to pymeep. For the time being, we adopt
                    the slightly unwieldy but perfectly functional approach

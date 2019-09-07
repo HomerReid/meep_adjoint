@@ -100,14 +100,26 @@ class TunableDashboard(Ui_BaseDashboard):
     commands to update dashboard display fields.
     """
 
-    def setup(self, db_widget, sock, width=960):
+    def setup(self, db_widget, sock, width=960, ffmly='Fantasque Sans Mono', fscale=1.0):
         """Initialization routine for GUI dashboard widget: Call
            the base-class initialization routine, then establish a
            callback to receive messages over the socket.
         """
 
         self.db_widget, self.sock = db_widget, sock
-        self.setupUi(db_widget, width=width)
+        self.setupUi(db_widget, width=width, ffmly=ffmly, fscale=fscale)
+
+        """ tabulate distinct fonts in widget for subsequent use in rescaling, etc. """
+        self.font_set = set()
+        def find_fonts(w):
+            if hasattr(w,'font'):
+                self.font_set.add(w.font())
+            for child in w.children():
+                find_fonts(child)
+        find_fonts(self.db_widget)
+        log('Found {} fonts:'.format(len(self.font_set)))
+        for font in self.font_set:
+            log('  {}'.format(font.toString()))
 
         """ arrange for read_input to be called whenever data is available on the socket"""
         self.sock.setblocking(False)
@@ -155,6 +167,9 @@ class TunableDashboard(Ui_BaseDashboard):
                 self.db_widget.setWindowTitle(val)
             elif key=='width':
                 self.rescale( width_fraction = float(val) )
+            elif key=='font_scale':
+                for f in self.font_set:
+                    f.setPointSize( int( float(val) * f.pointSize() ) )
             elif key == 'clear':
                 for key in DASHBOARD_ELEMENTS:
                     self.update_item(key, '', redraw=False)
@@ -181,7 +196,7 @@ class TunableDashboard(Ui_BaseDashboard):
             elif len(tok) == 3 and tok[0] == 'range' and tok[1].isdigit() and tok[2].isdigit():
                 w.setRange(int(tok[1]), int(tok[2]))
                 w.setProperty('value', int(tok[1]))
-            else:
+            elif len(tok)>1:
                 msg = 'failed to process progress-bar update: {} {}'.format(item, value)
         else:
             msg = 'failed to process update for unknown dashboard element {}={}'.format(item, value)
@@ -261,7 +276,8 @@ def run_dashboard(sock):
     Returns:
         exit status returned by QApplication upon window shutdown.
     """
-    dx, pos, on_top = [adj_opt('dashboard_' + s) for s in ['size','position','on_top']]
+    opts = ['size', 'position', 'on_top', 'font_family', 'font_scale']
+    dx, pos, on_top, ffmly, fscale = [adj_opt('dashboard_' + s) for s in opts]
     if dx==0.0:
         log('dashboard_size option set to 0; skipping GUI dashboard')
         return 0
@@ -269,7 +285,7 @@ def run_dashboard(sock):
     db_widget = QWidget()
     dashboard = TunableDashboard()
     sx, sy    = get_screen_dimensions(app)
-    dashboard.setup(db_widget, sock, width=int(sx*dx))
+    dashboard.setup(db_widget, sock, width=int(sx*dx), ffmly=ffmly, fscale=fscale)
     x0, y0 = parse_dashboard_position(pos)
     db_widget.move( int(sx*x0), int(sy*y0) )
     db_widget.setFixedSize( db_widget.width(), db_widget.height() )
@@ -286,7 +302,7 @@ def dashboard_server(single_session=False):
     This routine listens for incoming TCP connections to the
     address specified by the 'dashboard_{host,port}' options
     in the meep_adjoint configuration. The default address is
-    localhost:37673 (for the impedance of free space). Upon
+    localhost:37673 (in honor of the impedance of free space). Upon
     receiving a connection, we launch the GUI dashboard window
     and read update commands from the client until we receive
     a 'terminate' command or the connection is lost, whereupon

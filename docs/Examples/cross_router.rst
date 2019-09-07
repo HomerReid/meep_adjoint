@@ -1,4 +1,4 @@
-.. include /Shorthand.rst
+.. include /Preamble.rst
 
 ========================================================
 :py:mod:`meep_adjoint` examples: The optical router
