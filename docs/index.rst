@@ -29,27 +29,66 @@ given performance specifications.
         example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the task is to design the central hub region to steer
         incoming power arriving via the **West** input waveguide port
-        to the **North** output waveguide port
-       
-        the task is to design the hub region toe steer incident
-        power arriving from the 
-input is routed 
+        entirely to the **North** output waveguide port, ideally with zero
+        leakage power emitted from the **South** and **East** ports:
 
-        to the **North** output, allowing power to leak out through the 
-        **West** or **South** outputs.
+        To formulate this problem mathematically, suppose we
+        represent the unknown design function as an expansion in some
+        convenient finite set of basis functions:
 
-        
-        Thus, :program:pymeep allows our physical design problem
-        to be packaged as a black-box numerical function
-        :math:`f(\boldsymbol{\beta})` suitable for passage to
-        numerical optimizers 
-        Automated design optimization, here we come!
+
+        .. math::
+
+            \epsilon^\text{design}(\mathbf x)\approx
+            \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the design metric we are trying
+       to optimize---that is, our *objective function* 
+       :math:`f^\text{obj}`---may be thought of as a function of the
+       :math:`D`-dimensional vector of expansion coefficients
+       :math:`\boldsymbol{\beta}`, i.e.
+       :math:`f^\text{obj}=f^\text{obj}(\boldsymbol{\beta})`.
+
+
+       .. math::
+
+           f^\text{obj}(\boldsymbol{\beta})
+           =\text{power output from \textbf{North} port}
+           \equiv S_{\text{North}}
+
 
         There's just one problem, which perhaps already
         occurred to you if you have any experience with high-dimensional
         optimization:
 
         and asks for the optimal
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the ia the **West** input waveguide port
+        to the **North** output wav  
+
+
+
+
+n^\text{design}(\mathbf x)\approx
+       \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the ^\text{design}(\mathbf x)\approx
+       \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the ia the **West** input waveguide port
+        to the **North** output wav  
+
+
+
+
+n
         Here :math:`\epsilon(x)`
 
         .. math::

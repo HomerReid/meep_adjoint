@@ -55,7 +55,127 @@ as a finite expansion of the form
     \sum_{d=1}^D \beta_d b_d(\mathbf x)
 
 where :math:`\{b_d(\mathbf{x})\}, d=1,\cdots,D` is some conveniently-chosen
-set of :math:`D` scalar basis functions defined for
+set of :math:`D`ple, in the :doc:`cross router <Examples/cross_router>`
+        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        the task is to design the central hub region to steer
+        incoming power arriving via the **West** input waveguide port
+        entirely to the **North** output waveguide port, ideally with zero
+        leakage power emitted from the **South** and **East**
+
+        To formulate this problem mathematically, suppose we
+        represent the unknown design function as an expansion in some
+        convenient finite set of basis functions:
+
+.. math::
+
+        \epsilon^\text{design}(\mathbf x)\approx
+       \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the ia the **West** input waveguide port
+        to the **North** output wav ple, in the :doc:`cross router <Examples/cross_router>`
+        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        the task is to design the central hub region to steer
+        incoming power arriving via the **West** input waveguide port
+        entirely to the **North** output waveguide port, ideally with zero
+        leakage power emitted from the **South** and **East**
+
+        To formulate this problem mathematically, suppose we
+        represent the unknown design function as an expansion in some
+        convenient finite set of basis functions:
+
+.. math::
+
+        \epsilon^\text{design}(\mathbf x)\approx
+       \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the ia the **West** input waveguide port
+        to the **North** output wav ple, in the :doc:`cross router <Examples/cross_router>`
+        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        the task is to design the central hub region to steer
+        incoming power arriving via the **West** input waveguide port
+        entirely to the **North** output waveguide port, ideally with zero
+        leakage power emitted from the **South** and **East**
+
+        To formulate this problem mathematically, suppose we
+        represent the unknown design function as an expansion in some
+        convenient finite set of basis functions:
+
+.. math::
+
+        \epsilon^\text{design}(\mathbf x)\approx
+       \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the ia the **West** input waveguide port
+        to the **North** output wav ple, in the :doc:`cross router <Examples/cross_router>`
+        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        the task is to design the central hub region to steer
+        incoming power arriving via the **West** input waveguide port
+        entirely to the **North** output waveguide port, ideally with zero
+        leakage power emitted from the **South** and **East**
+
+        To formulate this problem mathematically, suppose we
+        represent the unknown design function as an expansion in some
+        convenient finite set of basis functions:
+
+.. math::
+
+        \epsilon^\text{design}(\mathbf x)\approx
+       \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the ia the **West** input waveguide port
+        to the **North** output wav ple, in the :doc:`cross router <Examples/cross_router>`
+        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        the task is to design the central hub region to steer
+        incoming power arriving via the **West** input waveguide port
+        entirely to the **North** output waveguide port, ideally with zero
+        leakage power emitted from the **South** and **East**
+
+        To formulate this problem mathematically, suppose we
+        represent the unknown design function as an expansion in some
+        convenient finite set of basis functions:
+
+.. math::
+
+        \epsilon^\text{design}(\mathbf x)\approx
+       \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the ia the **West** input waveguide port
+        to the **North** output wav ple, in the :doc:`cross router <Examples/cross_router>`
+        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        the task is to design the central hub region to steer
+        incoming power arriving via the **West** input waveguide port
+        entirely to the **North** output waveguide port, ideally with zero
+        leakage power emitted from the **South** and **East**
+
+        To formulate this problem mathematically, suppose we
+        represent the unknown design function as an expansion in some
+        convenient finite set of basis functions:
+
+.. math::
+
+        \epsilon^\text{design}(\mathbf x)\approx
+       \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the ia the **West** input waveguide port
+        to the **North** output wav  ^\text{design}(\mathbf x)\approx
+       \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
+       Then, for given fixed values of the input power, operating
+       frequency, and other parameters, the ia the **West** input waveguide port
+        to the **North** output wav  scalar basis functions defined for
 :math:`\mathbf{x}\in\mathcal{V}^\text{design}`.
 This restricts the space of possible design functions to the span
 of the :math:`\{b_d\}` and reduces our mathematical problem to
