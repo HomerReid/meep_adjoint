@@ -1,7 +1,8 @@
 .. include Preamble.rst
 
 **********************************************************************
-:py:mod:`meep_adjoint`: Adjoint-solver module for :program:`pymeep`
+:py:mod:`meep_adjoint`: A python module for adjoint sensitivity
+: analysis in |meep|
 **********************************************************************
 This is the root of the documentation tree for :py:mod:`meep_adjoint`.
 Jump directly to the module-wide :ref:`TableOfContents` below,
@@ -31,6 +32,9 @@ given performance specifications.
         incoming power arriving via the **West** input waveguide port
         entirely to the **North** output waveguide port, ideally with zero
         leakage power emitted from the **South** and **East** ports:
+ 
+        While human strengths like physical intuition and engineering experience
+        may suffice to yield decent results in simple cases, for 
 
         To formulate this problem mathematically, suppose we
         represent the unknown design function as an expansion in some
@@ -49,7 +53,6 @@ given performance specifications.
        :math:`f^\text{obj}`---may be thought of as a function of the
        :math:`D`-dimensional vector of expansion coefficients
        :math:`\boldsymbol{\beta}`, i.e.
-       :math:`f^\text{obj}=f^\text{obj}(\boldsymbol{\beta})`.
 
 
        .. math::
