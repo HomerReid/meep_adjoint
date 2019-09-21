@@ -4,11 +4,36 @@
 Configuration and customization
 ######################################################################
 
-The adjoint solver and visualization module are both highly customizable,
-offering a large number of user-configurable options that may be set
-by global or local configuration files, environment variables, command-line
-arguments, and/or parameters passed directly to `meep_adjoint` functions
-and methods. 
+:py:mod:`meep_adjoint` is highly customizable, offering a large number
+of user-configurable options and a convenient hierarchical framework
+for setting and updating their values.
+
+
+======================================================================
+What sorts of options are available, and how are they organized?
+======================================================================
+
+The full set of configuration options is detailed in the
+reference section below, but here are some quick points.
+
+
+======================================================================
+:py:mod:`meep_adjoint` look for option settings, and 
+======================================================================
+
+1. Package-level defaults:
+Each option
+
+2. Script-level defaults:
+
+3. User-global configuration file:
+
+4. User-local configuration file:
+
+5. Command-line arguments.
+
+6. API function parameters.
+
 
 ********************
 General overview

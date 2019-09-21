@@ -1,9 +1,8 @@
 .. include Preamble.rst
 
-**********************************************************************
-:py:mod:`meep_adjoint`: A python module for adjoint sensitivity
-: analysis in |meep|
-**********************************************************************
+***********************************************************************************
+:py:mod:`meep_adjoint`: A python module for adjoint sensitivity analysis in MEEP
+***********************************************************************************
 This is the root of the documentation tree for :py:mod:`meep_adjoint`.
 Jump directly to the module-wide :ref:`TableOfContents` below,
 or read on for a quick-start summary.
@@ -27,23 +26,57 @@ given performance specifications.
         in which we seek to tune a device geometry to optimize some
         performance metric.
         For example, in the :doc:`cross router <Examples/cross_router>`
-        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
-        the task is to design the central hub region to steer
-        incoming power arriving via the **West** input waveguide port
-        entirely to the **North** output waveguide port, ideally with zero
-        leakage power emitted from the **South** and **East** ports:
- 
-        While human strengths like physical intuition and engineering experience
-        may suffice to yield decent results in simple cases, for 
+        example in the :py:mod:`meep_adjoint` 
+        :doc:`example gallery <Examples/index>`,
+        we are designing a four-waveguide interconnect for an optical network,
+        and our goal is to choose the permittivity distribution
+        :math:`\epsilon(\mathbf{x})` in the junction region to steer
+        incoming optical signals arriving on the **West** port
+        around a 90-degree bend to the **North** port, ideally
+        with zero leakage power emitted from the **South** and
+        **East** ports:
 
-        To formulate this problem mathematically, suppose we
-        represent the unknown design function as an expansion in some
-        convenient finite set of basis functions:
+        To formulate this problem mathematically so we can
+        hand it off to a numerical optimizer, we might begin by
+        expressing the unknown design function as an expansion
+        in some convenient finite set of basis functions:
+
+        .. math:: 
+
+            \epsilon(\mathbf x)\approx\sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+        Then each possible design configuration 
+        corresponds to a :math:`D`-dimensional vector of
+        coefficient values
+        :math:`\boldsymbol{\beta}=\{\beta_1,\cdots,\beta_D\}`,
+        while the metric defining the performance of
+        a design---the quantity we are trying to
+        optimize---is a (real-valued, scalar) function of a
+        vector-valued argument, the `objective function`
+        :math:`f^\text{obj}(\boldsymbol{\beta}).` For our
+        in the router problem
+        
+        a real-valued scalar
+        device given by a 
+        and we can picture the process of device optimization
+        as a journey through a :math:`D`-dimensional space in
+        search of the magical point :math:`\boldsymbol{\beta}_*`
+        at which 
+        single point moving through a
+        location. To the performance of a 
+        location. To the performance of a 
+
+        For a 
+
+        or equivalently to a :math:`D`-dimensional
+        vector :math:`{\boldsymbol{\beta}}`,
+        ranges 
+        values of the :math:`D` coefficients
+        evice design is specified by the
+        :math:`D`-dimensional vector of numbers
+        :math:`\boldsymbol{\beta}`
 
 
-        .. math::
-
-            \epsilon^\text{design}(\mathbf x)\approx
             \sum_{d=1}^D \beta_d b_d(\mathbf x)
 
 
@@ -195,7 +228,7 @@ Table of Contents
    Tutorial <Tutorial/index>
    Example Gallery <Examples/index>
    Visualization Module <Visualization/index>
-   Configuration and customization <Config/index>
+   Configuration and customization <Customization/index>
    Test suite <TestSuite/index>
    Implementation I: Physics and math  <Implementation/MathAndPhysicsOfAdjoints>
    Implementation II: Class hierarchy <Implementation/ClassHierarchy>

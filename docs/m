@@ -1,3 +1,17 @@
 #!/bin/bash
 
 make html 2>&1 | tee /tmp/sphinx.out
+
+
+##################################################
+# forcing browser reload...
+##################################################
+    XDTARGS="--onlyvisible --desktop `xdotool get_desktop`"
+    ACTIVE=`xdotool getactivewindow`
+    RESTORE=0
+    xdotool search ${XDTARGS} --name 'Google' | while read WINDOW; do
+        Log "xdotool windowactivate --sync ${WINDOW} key ctrl+r"
+        xdotool windowactivate --sync ${WINDOW} key ctrl+r
+        RESTORE=1
+    done
+    test ${RESTORE} -eq 1 && xdotool windowactivate --sync ${ACTIVE}

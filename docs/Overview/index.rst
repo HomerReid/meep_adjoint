@@ -32,13 +32,82 @@ an `eigenmode expansion coefficient <EigenCoefficients_>`_,
 or perhaps some mathematical function of one or more such
 quantities---which we will denote 
 :math:`f^\text{obj}` or simply :math:`f` and refer to
-as the *objective function*. Meanwhile,
-the design quantity we will tweak to optimize :math:`f^\text{obj}`
-will be
-the spatially-varying scalar permittivity function
-:math:`\epsilon^\text{design}(\mathbf x)` in some
-subregion of the geometry (the *design region*
-:math:`\mathcal{V}^\text{design}`);
+as the *objective function*. 
+
+Meanwhile, the "design" entity that will be at our disposal
+to tweak and adjust in the service of optimizing :math:`f^\text{obj}`
+will be just the spatially-varying scalar dielectric function
+:math:`\epsilon^\text{des}(\mathbf x)` throughout some
+fixed subregion of the geometry (the *design region*
+:math:`\mathcal{V}^\text{des}`). 
+Of course, we will want to restrict consideration to designs that can actually be fabricated in the real world;
+at a minimum this means that the permittivity
+at each spatial point must satisfy the conditions imposed on
+physical materials by causality (which, for the
+simplest case of nondispersive dielectrics, are just that
+:math:`\epsilon` be everywhere real-valued and :math:`\ge 1`),
+but in some cases we might want to impose additional
+constraints---such as minimum linewidths---to reflect
+the limitations of practical fabrication techniques.
+
+Thus, the problems we consider will be of the
+general schematic form
+
+.. math::
+
+    \text{ for } \mathbf{x} \in \mathcal{V}^\text{des},
+    \text{ find }\epsilon^\text{des}(\mathbf{x})
+    \text{ to optimize } f^\text{obj}
+    \tag{1}
+
+subject to the constraints that
+:math:`\epsilon^\text{des}` be physical
+and (optionally) fabricatable.
+
+--------------------------------------------------
+First Examples: Holey waveguide and optical router
+--------------------------------------------------
+Here are two representative examples that we will use
+for illustrative purposes throughout this documentation
+(and for diagnostic purposes in the `test suite <../TestSuite/index>`_).
+
+First, the **Holey Waveguide** is a *toy* problem that fits the form
+of :eq:`formulation`: a simple section of waveguide, nearly pristine,
+but containing one region from which the dielectric material has been
+scooped out, leaving a hole:
+
+.. image:: HoleyWaveguideGeometry.png
+
+
+In the presence of the hole, a wave entering the waveguide section
+from the left will be partially reflected, so that not all of the
+power it carries it will exit from the right. The design-optimization
+problem is to optimize the permittivity distribution in the hole region
+to maximize output power (for fixed input power). Obviously the correct
+answer is just to fill in the hole uniformly with the waveguide
+material, and the ability to figure this out is a simple, 
+easy-to-debug test of the efficacy any optimization paradigm.
+
+
+A less trivial example is the **Cross Router,** in which we
+envision 4 waveguides conjoined by a central hub region,
+whose design we will adjust to route signals from one port 
+to another:
+
+.. image:: RouterGeometry_Iter0.png
+
+
+--------------------------------------------------
+Examples
+--------------------------------------------------
+
+    
+.. math::
+
+    \epsilon^\text{design}(\mathbf x)\approx
+    \sum_{d=1}^D \beta_d b_d(\mathbf x)
+
+
 naively, this would give us uncountably many degrees of
 freedom and allow permittivity functions of 
 arbitrarily rapid spatial variation, but such a design
