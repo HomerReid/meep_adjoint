@@ -1,4 +1,4 @@
-. include ../Preamble.rst
+.. include /Preamble.rst
 
 ######################################################################
 Configuration and customization
@@ -10,11 +10,92 @@ for setting and updating their values.
 
 
 ======================================================================
-What sorts of options are available, and how are they organized?
+Setting
 ======================================================================
+
+The protocol for option-handling 
+
+is designed to allow each option to be specified in 
+
+The option-processing subsystem considers a 
+configuration options to be specified in 
+
+option-handling mechanism is to
+each configuration
+option to be set 
+
+For each configuration option, :py:mod:`meep_adjoint` consults a
+
+an
+values to be 
+configuration files, environment variables, command-line arguments,
+and parameters to API functions.
+
+The protocol for specifying option values is intended to
+
 
 The full set of configuration options is detailed in the
 reference section below, but here are some quick points.
+
+:general options:
+
+  * would look like this. 
+
+        *italic*
+        **bold**
+
+  * Howdage foryaf!
+
+        This ``*`` character is not interpreted
+
+  * And the **note** below should be inline.
+
+    .. note:: If asterisks or backquotes appear in running text and could be confused with inline markup delimiters, they have to be escaped with a backslash.
+
+:visualization options:
+
+    Be aware of some restrictions of this markup:
+
+    * it may not be nested,
+    * content may not start or end with whitespace: ``* text*`` is wrong,
+    * it must be separated from surrounding text by non-word characters. 
+
+    Use a backslash escaped space to work around that:
+
+    * ``this is a *longish* paragraph`` is correct and gives *longish*.
+    * ``this is a long*ish* paragraph`` is not interpreted as expected. You 
+      should use ``this is a long\ *ish* paragraph`` to obtain long\ *ish* paragraph
+
+
+.. seealso:: Howdage foryaf.
+
+    This is my "seealso" block, which is wonderfatul.
+
+
+.. todo:: Remaining stuff todo foryaf.
+
+    This is my "todo" block, which sucks.
+
+
+Now is the time for all good men to come to the aid of their country.
+
+
+.. sidebar:: Will I need sidebars?
+        :subtitle: The price of fame
+
+    I will here describe the price of fame foryaf.
+
+
+.. glossary::
+
+    apical
+        at the top of the plant.
+
+    howdage
+        doomatage 
+
+    `goofy`
+        doomatage 
 
 
 ======================================================================
@@ -33,6 +114,10 @@ Each option
 5. Command-line arguments.
 
 6. API function parameters.
+
+.. topic:: My subtopic foryaf
+
+    This is what my subtopic looks like foryaf.
 
 
 ********************
@@ -117,7 +202,58 @@ Configuration-related API routines
 Adjoint options
 ********************
 
+--------------------------------------------------
+Options affecting :codename:meep geometries
+--------------------------------------------------
 
+-res          resolution
+-fcen         center frequency
+
+--very-long-option
+              The description can also start on the next line.
+
+              The description may contain multiple body elements,
+              regardless of where it starts.
+
+-x, -y, -z    Multiple options are an "option group".
+-v, --verbose  Commonly-seen: short & long options.
+-1 file, --one=file, --two file
+              Multiple options with arguments.
+/V            DOS/VMS-style options too
+
+
+**************************************************
+Trying csv tables...
+**************************************************
+
+.. csv-table:: Frozen Delights!
+   :header: "Treat", "Quantity", "Description"
+   :widths: 15, 10, 30
+
+   "Albatross", 2.99, "On a stick!"
+   "Popcorn", 1.99, "Straight from the oven"
+
+
+
+************************
+New header
+************************
+
+
+.. centered:: 
+
+    Not sure if this will work.
+
+    If it *did* work, the text will appear here.
+    :Whatever: This is handy to create new field.
+
+
+.. warning:: 
+
+    This is really a very painful process.
+
+
+.. index:: 
 
 ************************
 Visualization options

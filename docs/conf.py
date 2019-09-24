@@ -15,6 +15,8 @@ import sys
 
 import numpy as np
 
+import sphinx_rtd_theme
+
 import meep as mp
 sys.path.insert(0,os.path.abspath('..'))
 import meep_adjoint
@@ -49,6 +51,7 @@ extensions = [
  'sphinx.ext.napoleon',
  'sphinx.ext.intersphinx',
  'sphinx.ext.todo',
+ 'sphinx_rtd_theme',
  'IPython.sphinxext.ipython_console_highlighting',
  'IPython.sphinxext.ipython_directive'
 ]

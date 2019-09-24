@@ -1,4 +1,6 @@
-.. include Preamble.rst
+.. include ../Preamble.rst
+
+.. _TheOverview:
 
 **********************************************************************
 :py:mod:`meep_adjoint` Overview and Invitation
@@ -531,6 +533,8 @@ central coupler region:
 >
 > ![zoomify](images/SplitterGeometry.png)
 
+
+.. _OptProbIngredients:
 
 ================================================================
 Defining elements of optimization problems

@@ -105,7 +105,7 @@ div.qanda admonition-title:before {
 .rst-content .sidebar p,
 .rst-content .sidebar ul,
 .rst-content .sidebar dl {
-    font-size: 90%
+   font-size: 90%
 }
 
 .rst-content .sidebar .last {
@@ -117,11 +117,31 @@ div.qanda admonition-title:before {
     font-family: "Roboto Slab", "ff-tisa-web-pro", "Georgia", Arial, sans-serif;
     font-weight: bold;
     background: #e1e4e5;
-    padding: 12px 12px;
+   padding: 12px 12px;
     margin: -12px;
-    margin-bottom: 12px;
+   margin-bottom: 12px;
     font-size: 100% }
 
 .wy-menu-vertical-header, .wy-menu-vertical p.caption {
  color: #441199;
+}
+
+/* customization for 'topic' sections */
+div.topic {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    padding: 7px 7px 0 7px;
+    margin: 10px 0 10px 0;
+}
+
+/* pad the vertical space of list items to separate one item from the next */
+
+.wy-plain-list-decimal li, .wy-plain-list-disc, .rst-content .section ul li, .rst-content .section ol li, article ol li {
+    margin-bottom: 12px;
+}
+
+
+hr.thick {
+  border: 5px solid #3c9a9a;
+  border-radius: 5px;
 }

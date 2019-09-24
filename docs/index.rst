@@ -262,6 +262,8 @@ Indices and tables
        of one of the tests in the :py:mod:`meep_adjoint` unit-test suite,
        and also of the :doc:`holey waveguide <Examples/holey_waveguide>`
        example in the :doc:`example gallery.<Examples/index>`
+
+
 .. |meep| raw:: html 
 
    <a class="codename" href="http://meep.readthedocs.io">meep</a>
