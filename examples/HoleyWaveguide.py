@@ -1,17 +1,14 @@
-import sys
-import os
 import argparse
-import numpy as np
+import os
+import sys
+
 import meep as mp
+import numpy as np
 
-import meep_adjoint
-
-from meep_adjoint import ( OptimizationProblem, Subregion,
-                           ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, v3, V3)
-
-from meep_adjoint import set_option_defaults as set_mpadj_defaults
+from meep_adjoint import (OptimizationProblem, Subregion,
+                          ORIGIN, XHAT, YHAT, ZHAT, v3, V3)
 from meep_adjoint import get_adjoint_option as adj_opt
-
+from meep_adjoint import set_option_defaults as set_mpadj_defaults
 
 ######################################################################
 # for some adjoint-related configuration options, the default values

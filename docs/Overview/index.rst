@@ -1,4 +1,4 @@
-.. include ../Preamble.rst
+.. include:: /Preamble.rst
 
 .. _TheOverview:
 
@@ -542,10 +542,20 @@ Defining elements of optimization problems
 
 The examples above, distinct though they all are, illustrate
 the common irreducible set of ingredients required for a full
-specification of an optimization problem: 
+specification of an optimization problem. 
+
+In brief, 
+
+.. glossary::
+    
+    Objective function, objective quantities, objective regions
+        The *objective function* is the real-valued scalar quantity
+        that :mod:`meep_adjoint` tries to maximize [#f1]_.
 
 
-+ **Objective regions:** One or more `regions over which to tabulate frequency-domain fields (DFT cells) <DFTObj_>`_
+
+        
+    regions:** One or more `regions over which to tabulate frequency-domain fields (DFT cells) <DFTObj_>`_
   for use in computing power fluxes, mode-expansion coefficients, and other frequency-domain
   quantities used in characterizing device performance.  Because these regions are used to evaluate
   objective functions, we refer to them as *objective regions.*
@@ -585,3 +595,14 @@ specification of an optimization problem:
 .. _GetFluxes:			https://meep.readthedocs.io/en/latest/Python_User_Interface/#get_fluxes
 .. _DFTEnergy:			https://meep.readthedocs.io/en/latest/Python_User_Interface/#dft_energy
 .. _EigenCoefficients:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#get_eigenmode_coefficients
+
+.. [#f1] At present, maximization is the only supported optimization; if your objective is actually to *minimize* some quantity, just define the objective function with a minus sign. (Eventually some users it might appreciate a ``--minimize`` option that would do this internally.)
+
+
+:Footnotes:
+
+    Hi howdage, this is footnotes.
+
+:Goofatage:
+
+    Doom doomatage foryaf.

@@ -1,4 +1,4 @@
-.. include /Preamble.rst
+.. include:: /Preamble.rst
 
 ********************************************************************************
 Overview of the :py:mod:`meep_adjoint` class hierarchy

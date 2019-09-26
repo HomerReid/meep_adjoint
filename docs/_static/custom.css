@@ -1,3 +1,13 @@
+element {
+  alt_fg: #9b9b9b;
+  alt_bg: #3c9a9a;
+/*
+  alt_fg: #fafcf0;
+  alt_bg: #008291;
+*/
+}
+
+
 font-family: 'Source Code Pro', monospace;
 font-family: 'Open Sans', sans-serif;
 
@@ -37,8 +47,8 @@ code, .rst-content tt, .rst-content code, .rst-content code.xref {
 }
 
 .wy-nav-side {
-    color: #9b9b9b;
-    background: #3c9a9a;
+  color: #9b9b9b;
+  background: #3c9a9a;
 }
 
 .wy-menu-vertical { color: #05386b; }
@@ -144,4 +154,50 @@ div.topic {
 hr.thick {
   border: 5px solid #3c9a9a;
   border-radius: 5px;
+}
+
+/***************************************************/
+/* full-width color-bar backgrounds for headers    */
+/* (style gleeped from sphinx classic theme)       */
+/***************************************************/
+h2, h3, h4, h5, h6 {
+/*    font-family: Arial, sans-serif;*/
+    background-color: #3C9A9A;
+    color: #FFFFFF;
+    margin: 30px 0px 10px 0px;
+    padding: 5px 0 5px 10px;
+}
+
+h1 {
+    color: #3C9A9A;
+    font-size: 200%;
+    align: center;
+    text-align: center;
+/*
+    border-top: 20px solid white;
+    margin-top: 0;
+    font-size: 200%;
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+*/
+}
+
+/****************************************************/
+/****************************************************/
+/****************************************************/
+.rst-content dl:not(.docutils) dt {
+    margin: 6px 6px;
+    font-size: 110%;
+    line-height: normal;
+    background: #ffc99d;
+    color: #082213;
+    padding: 6px;
+    position: relative;
+    border: 1px dashed;
+    border-radius: 3px;
 }

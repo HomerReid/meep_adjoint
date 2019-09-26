@@ -1,8 +1,7 @@
-.. include ../Preamble.rst
-
+.. include:: /Preamble.rst
 
 ********************************************************************************
-:py:mod:`meep_adjoint` tutorial
+Tutorial walkthrough
 ********************************************************************************
 
 Having outlined on the :ref:`previous page <TheOverview>` some of the
@@ -16,7 +15,7 @@ could hope to design by hand.
 
 
 ======================================================================
-The problem: optimal routing of optical power
+The problem: optimal routing of optical
 ======================================================================
 The engineering problem we will be considering is the design of
 *interconnect router* devices for optical networks. For our purposes,
@@ -34,7 +33,7 @@ of output ports with optimality according to some given set of
 desiderata. Evidently, different choices of input and output ports
 and performance criteria yield different optimization problems, and we will
 show how this freedom is reflected in the :mod:`meep_adjoint` API and
-our python driver scripts; then, for most this tutorial, we will focus
+our python driver scripts. For most this tutorial, we will focus
 on two particular design tasks:
 
 
@@ -56,11 +55,11 @@ on two particular design tasks:
 ======================================================================
 Phases of a :py:mod:`meep_adjoint` session
 ======================================================================
-Like all :mod:`meep_adjoint` sessions,
-this walkthrough will proceed in three stages:
+This tutorial consists of three parts, corresponding to the three
+stages of a typical :mod:`meep_adjoint` session:
 
+    #. :ref:`Initialization <Phase1>`: *Defining the problem and initializing the solver*
 
-1. **Initialization phase:** *Defining the optimization problem*
 
         The first step is to identify all of the
         :ref:`ingredients needed to define our design-optimization problem <OptProbIngredients>`
@@ -71,8 +70,12 @@ this walkthrough will proceed in three stages:
         and the database that tracks the evolution of our design
         and its performance.
 
+        The initialization phase also typically involves setting appropriate
+        customized values for the many :doc:`configuration options <Customization>`
+        affecting the behavior of :mod:`meep_adjoint`.
 
-2. **Interactive phase:** *Single-point calculations and visualization*
+
+    #. :ref:`Interactive exploration <Phase2>`: *Single-point calculations and visualization*
 
         Before initiating a lengthy, opaque machine-driven
         design iteration, we will first do some *human*-driven
@@ -130,20 +133,26 @@ this walkthrough will proceed in three stages:
 
 
 
-|thickline|
-
-
-
+.. _Phase1:
 
 ==================================================
-Phase 1: Creating an :class:`OptimizationProblem`
+Phase 1: Problem definition and initialization
 ==================================================
+
+Creating an :class:`OptimizationProblem`
 
 The first step in every :py:mod:`meep_adjoint` workflow is
 to create an instance of :py:class:`OptimizationProblem`.
 This class plays for :mod:`meep_adjoint` a role
-analogous to the `Simulation <Simulation_>`_ class in
-the core :mod:`pymeep` module: it
+analogous to the :class:`Simulation <Simulation_>`_ class in
+the core :codename:`pymeep` package:
+its public methods offer access to solver functionality
+
+and its internal data fields maintain 
+its data fields story 
+
+
+
 
 
 .. _Simulation:  https://meep.readthedocs.io/en/latest
@@ -163,34 +172,22 @@ And this would be a literal include foryaf:
 .. literalinclude:: ../Examples/CrossRouter.py
 
 
+.. _Phase2:
+
 ==================================================
-Creating an :py:class:`OptimizationProblem`
+Phase 2: Interactive exploration
 ==================================================
 
+
+.. _Phase3:
+
+==================================================
+Phase 3: Automated optimization
+==================================================
 
 ==================================================
 Glossary foryaf:
 ==================================================
-
-.. glossary::
-
-GitHub
-    GitHub is a web-based Git repository hosting service. It offers all of the distributed version control and source code management (SCM) functionality of Git as well as adding its own features. It provides access control and several collaboration features such as bug tracking, feature requests, task management, and wikis for every project.
-
-
-RST
-    |RST| is an easy-to-read, what-you-see-is-what-you-get plaintext markup syntax and parser system. It is useful for in-line program documentation (such as Python docstrings), for quickly creating simple web pages, and for standalone documents. |RST| is designed for extensibility for specific application domains. The |RST| parser is a component of Docutils.
-
-Sphinx
-    Sphinx is a tool that makes it easy to create intelligent and beautiful documentation. It was originally created for the Python documentation, and it has excellent facilities for the documentation of software projects in a range of languages.
-
-Sublime Text
-    Sublime Text is a sophisticated text editor for code, markup and prose. You'll love the slick user interface, extraordinary features and amazing performance.
-
-Substitution
-    Substitutions are variables that you can add to text. If the value changes, you change it in one place, and it is updated throughout documentation. See :ref:`Use a Substitution`.
-
-
 
 
 .. |thickline| raw:: html 
@@ -198,4 +195,4 @@ Substitution
    <hr class="thick">
 
 
-.. include ../Postamble.rst
+.. include:: /Postamble.rst

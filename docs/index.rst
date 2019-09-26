@@ -1,7 +1,7 @@
-.. include Preamble.rst
+.. include:: Preamble.rst
 
 ***********************************************************************************
-:py:mod:`meep_adjoint`: A python module for adjoint sensitivity analysis in MEEP
+:mod:`meep_adjoint`: A python module for adjoint sensitivity analysis in MEEP
 ***********************************************************************************
 This is the root of the documentation tree for :py:mod:`meep_adjoint`.
 Jump directly to the module-wide :ref:`TableOfContents` below,
@@ -220,19 +220,41 @@ Table of Contents
 ===================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: meep_adjoint Table of Contents
+   :maxdepth: 3
+   :caption: Invitation: Overview, Tutorial, Examples
 
    self
    Overview <Overview/index>
    Tutorial <Tutorial/index>
    Example Gallery <Examples/index>
+
+
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Reference
+
+   Basis sets <Visualization/index>
    Visualization Module <Visualization/index>
    Configuration and customization <Customization/index>
    Test suite <TestSuite/index>
+
+
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Implementation notes
+
    Implementation I: Physics and math  <Implementation/MathAndPhysicsOfAdjoints>
    Implementation II: Class hierarchy <Implementation/ClassHierarchy>
+
+
+.. toctree::
+   :maxdepth: 3
+   :caption: API Reference
+
    API Reference <API/index>
+
 
 
 ==================
@@ -272,3 +294,5 @@ Indices and tables
 .. |mpadj| raw:: html
 
    <a class="codename" href="https://homerreid.github.io/meep-adjoint-documentation/Tutorial/index.html">meep_adjoint</a>
+
+

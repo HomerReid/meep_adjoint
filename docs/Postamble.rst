@@ -1,13 +1,11 @@
-Howdage foryaf!
+.. ######################################################
+.. # content to be included at the end of all .rst files
+.. ######################################################
 
-..######################################################
-.. content to be included at the end of all .rst files
-..######################################################
-
-.. |mpadj| replace:: :py:mod:`meep_adjoint`
+.. |mpadj| replace:: :mod:`meep_adjoint`
 
 
-.. |meep_python_module| raw:: html
+.. |pymeep| raw:: html
 
    <a href="http://meep.readthedocs.io">
    <b><font style="font-variant: small-caps; font-size: 100%">meep</font></b>
@@ -47,3 +45,6 @@ Howdage foryaf!
 .. _AdjointVsFDTest:		ExampleGallery.md#numerical-validation-of-adjoint-gradients
 
 .. _MatPlotLib:			http://matplotlib.org
+
+.. _FENICSFETable:              https://fenicsproject.org/olddocs/dolfin/1.3.0/python/programmers-reference/functions/functionspace/FunctionSpace.html
+.. _FEMTable:                   http://femtable.org/

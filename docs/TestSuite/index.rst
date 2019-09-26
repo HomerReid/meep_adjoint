@@ -1,4 +1,4 @@
-.. include Preamble.rst
+.. include:: /Preamble.rst
 
 =====================================================================
 :py:mod:`meep_adjoint` Test Suite

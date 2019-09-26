@@ -1,29 +1,29 @@
 """Definition of the Basis abstract base class.
 
-   A Basis is a finite-dimensional space of scalar functions defined on
-   a finite spatial region (the *domain*).
+    A Basis is a finite-dimensional space of scalar functions defined on
+    a finite spatial region (the *domain*).
 
-**Instance Data**
+    **Instance Data**
 
-   An instance of Basis is defined by the following data:
-       (1) a domain V,
-       (2) a set of D scalar basis functions {b_n(x)}, n=0,1,...,D-1, defined in V.
+    An instance of Basis is defined by the following data:
+        (1) a domain V,
+        (2) a set of D scalar basis functions {b_n(x)}, n=0,1,...,D-1, defined in V.
 
-   Once item (2) is specified, individual elements f(x) in the space f(x) are
-   identified by a D-dimensional vector of expansion coefficients
-   {\beta_n} according to f(x) = \sum \beta_n b_n(x).
+    Once item (2) is specified, individual elements f(x) in the space f(x) are
+    identified by a D-dimensional vector of expansion coefficients
+    {\beta_n} according to f(x) = \sum \beta_n b_n(x).
 
-**Exported Methods**
+    **Exported Methods**
 
-   An instance of Basis exports methods implementing the following two operations:
+       An instance of Basis exports methods implementing the following two operations:
 
-       (1) *Projection*: Given an arbitrary scalar function g(x) on V,
-           return the coefficients {g_n} of the element in the space
-           lying closest to g(x).
+          (1) *Projection*: Given an arbitrary scalar function g(x) on V,
+              return the coefficients {g_n} of the element in the space
+              lying closest to g(x).
 
-       (2) *Function instance*: Given a set of expansion coefficients {beta_n}
-           return a callable func that inputs a spatial variable x and
-           outputs func(x) = \sum beta_n b_n(x).
+          (2) *Function instance*: Given a set of expansion coefficients {beta_n}
+              return a callable func that inputs a spatial variable x and
+              outputs func(x) = \sum beta_n b_n(x).
 """
 
 from numbers import Number

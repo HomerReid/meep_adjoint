@@ -1,4 +1,4 @@
-.. include /Preamble.rst
+.. include:: /Preamble.rst
 
 ==================================================
 :py:class:`objective`

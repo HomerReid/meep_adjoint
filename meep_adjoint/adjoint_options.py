@@ -1,8 +1,8 @@
 """ Handling of adjoint-related configuration options.
 
     This file exports two routines:
-        -- get_adjoint_option() to lookup the value of an option
-        -- set_default_adjoint_options() to override default option values
+        get_adjoint_option() to lookup the value of an option
+        set_default_adjoint_options() to override default option values
 
     Internally, option settings are maintained by a module-wide instance of
     'OptionAlmanac' (generic class for option handling defined in util.py),
@@ -72,7 +72,7 @@ def set_adjoint_options(options):
 adjoint_option_templates= [
 
     #--------------------------------------------------
-    #- options affecting MEEP calculations
+    #- options affecting FDTD geometries/calculations
     #--------------------------------------------------
     OptionTemplate('res',              20.0,   'Yee grid resolution'),
     OptionTemplate('fcen',              0.0,   'source center frequency'),

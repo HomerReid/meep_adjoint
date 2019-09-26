@@ -52,9 +52,14 @@ extensions = [
  'sphinx.ext.intersphinx',
  'sphinx.ext.todo',
  'sphinx_rtd_theme',
+ 'sphinx_navtree',
  'IPython.sphinxext.ipython_console_highlighting',
  'IPython.sphinxext.ipython_directive'
 ]
+
+# enable sphinx-navtree extension, which allows insertion of
+# section headers in the navbar
+navtree_shift = True
 
 pygments_style = 'friendly'
 # pygments_style = 'breeze'
