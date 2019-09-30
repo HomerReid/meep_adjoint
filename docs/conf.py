@@ -52,7 +52,7 @@ extensions = [
  'sphinx.ext.intersphinx',
  'sphinx.ext.todo',
  'sphinx_rtd_theme',
- 'sphinx_navtree',
+# 'sphinx_navtree',
  'IPython.sphinxext.ipython_console_highlighting',
  'IPython.sphinxext.ipython_directive'
 ]

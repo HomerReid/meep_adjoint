@@ -1,4 +1,6 @@
+.. ##################################################
 .. include:: /Preamble.rst
+.. ##################################################
 
 ********************************************************************************
 Tutorial walkthrough
@@ -15,7 +17,7 @@ could hope to design by hand.
 
 
 ======================================================================
-The problem: optimal routing of optical
+The problem: optimal routing of optical power flows
 ======================================================================
 The engineering problem we will be considering is the design of
 *interconnect router* devices for optical networks. For our purposes,
@@ -58,80 +60,99 @@ Phases of a :py:mod:`meep_adjoint` session
 This tutorial consists of three parts, corresponding to the three
 stages of a typical :mod:`meep_adjoint` session:
 
-    #. :ref:`Initialization <Phase1>`: *Defining the problem and initializing the solver*
+
+    .. glossary::
 
 
-        The first step is to identify all of the
-        :ref:`ingredients needed to define our design-optimization problem <OptProbIngredients>`
-        and communicate them to :mod:`meep_adjoint` in the form of
-        arguments passed to the :class:`OptimizationProblem` constructor.
-        The class instance we get back will furnish the
-        portal through which we access :mod:`meep_adjoint` functionality
-        and the database that tracks the evolution of our design
-        and its performance.
-
-        The initialization phase also typically involves setting appropriate
-        customized values for the many :doc:`configuration options <Customization>`
-        affecting the behavior of :mod:`meep_adjoint`.
+        :ref:`1. Initialization <Phase1>`: *Defining the problem and initializing the solver*
 
 
-    #. :ref:`Interactive exploration <Phase2>`: *Single-point calculations and visualization*
+           The first step is to identify all of the
+           :ref:`ingredients needed to define our design-optimization problem <OptProbIngredients>`
+           and communicate them to :mod:`meep_adjoint` in the form of
+           arguments passed to the :class:`OptimizationProblem` constructor.
+           The class instance we get back will furnish the
+           portal through which we access :mod:`meep_adjoint` functionality
+           and the database that tracks the evolution of our design
+           and its performance.
 
-        Before initiating a lengthy, opaque machine-driven
-        design iteration, we will first do some *human*-driven
-        poking and prodding to kick the tires of our
-        :class:`OptimizationProblem`---both to make sure we defined the
-        problem correctly, and also to get a feel for how challenging
-        it seems, which will inform our choice of convergence criteria
-        and other parameter settings for the automated phase.
-        More specifically, in this phase we will invoke
-        :mod:`meep_adjoint` API routines to do the following:
-
-
-            A. update the design function :math:`\epsilon^\text{des}(\mathbf{x})`---that is,
-               move to a new point :math:`\boldsymbol{\beta}`
-               in design space
+           The initialization phase also typically involves setting appropriate
+           customized values for the many :doc:`configuration options <Customization>`
+           affecting the behavior of :mod:`meep_adjoint`.
 
 
-            B. numerically evaluate the objective-function value :math:`f^\text{obj}(\boldsymbol{\beta})`
-               at the current design point
+           |br|
 
 
-            C. numerically evaluate the objective-function *gradient* :math:`\boldsymbol{\nabla} f^\text{obj}`
-               at the current design point 
 
 
-            D. produce graphical visualizations of both the device geometry---showing
-               the spatially-varying permittivity distribution of the current design---and
-               the results of the :codename:`meep` calculations of the previous two
-               items, showing the spatial configuration of electromagnetic fields produced
-               by the current iteration of the device design.
+        :ref:`2. Interactive exploration <Phase2>`: *Single-point calculations and visualization*
 
- 
-        Because steps B, C, and D here are executed with the device geometry held fixed at the
-        design point chosen in step A, we refer to them as *single-point* operations.
-        Of course, of all the single-point tests we might run in our interactive investigation,
-        perhaps the most useful is
-
-            E. *check* the adjoint calculation of step C above
-               by slightly displacing the design point in the direction
-               of the gradient reported by :py:mod:`meep_adjoint` and
-               confirming that this does, in fact, improve the value
-               of the objective function---that is, compute
-               :math:`f^\text{obj}\Big(\boldsymbol{\beta} + \alpha\boldsymbol{\nabla} f\Big)`
-               (with :math:`\alpha\sim 10^{-2}` a small scalar value)
-               and verify that it is an improvement over the result of step B above.
+           Before initiating a lengthy, opaque machine-driven
+           design iteration, we will first do some *human*-driven
+           poking and prodding to kick the tires of our
+           :class:`OptimizationProblem`---both to make sure we defined the
+           problem correctly, and also to get a feel for how challenging
+           it seems, which will inform our choice of convergence criteria
+           and other parameter settings for the automated phase.
+           More specifically, in this phase we will invoke
+           :mod:`meep_adjoint` API routines to do the following:
 
 
-3. **Automated phase:** *Fully machine-driven iterative design optimization*
+               A. update the design function :math:`\epsilon^\text{des}(\mathbf{x})`---that is,
+                  move to a new point :math:`\boldsymbol{\beta}`
+                  in design space
 
-        Once we've confirmed that our problem setup is correct
-        and acquired some feel for how it behaves in practice,
-        we'll be ready to hand it off to a numerical optimizer
-        and hope for the best. We will discuss 
- 
+               B. numerically evaluate the objective-function value :math:`f^\text{obj}(\boldsymbol{\beta})`
+                  at the current design point
+
+               C. numerically evaluate the objective-function *gradient* :math:`\boldsymbol{\nabla} f^\text{obj}`
+                  at the current design point 
 
 
+               D. produce graphical visualizations of both the device geometry---showing
+                  the spatially-varying permittivity distribution of the current design---and
+                  the results of the :codename:`meep` calculations of the previous two
+                  items, showing the spatial configuration of electromagnetic fields produced
+                  by the current iteration of the device design.
+
+    
+           Because steps B, C, and D here are executed with the device design held fixed
+           at a single point in design space, we refer to them as static or *single-point*
+           operations, to be distinguished from the dynamic multi-point trajectory through
+           design space traversed by the automated design optimization of the following stage.
+           
+           Of course, of all the single-point tests we might run in our interactive investigation,
+           perhaps the most useful is
+
+               E. *check* the adjoint calculation of step C above
+                  by slightly displacing the design point in the direction
+                  of the gradient reported by :py:mod:`meep_adjoint` and
+                  confirming that this does, in fact, improve the value
+                  of the objective function---that is, compute
+                  :math:`f^\text{obj}\Big(\boldsymbol{\beta} + \alpha\boldsymbol{\nabla} f\Big)`
+                  (with :math:`\alpha\sim 10^{-2}` a small scalar value)
+                  and verify that it is an improvement over the result of step B above.
+
+
+           |br|
+
+
+        :ref:`3. Automation <Phase3>`: *Machine-driven iterative design optimization*
+
+           Once we've confirmed that our problem setup is correct
+           and acquired some feel for how it behaves in practice,
+           we'll be ready to hand it off to a numerical optimizer
+           and hope for the best. As we will demonstrate, the easiest way 
+           to proceed here is
+           to invoke the simple built-in gradient-descent optimizer
+           provided by :mod:`meep_adjoint`---which, we will see, is
+           more than adequate to yield excellent results for the
+           specific problems addressed in this tutorial---but we will also
+           show how, with only slightly more effort, you can 
+           use your favorite external gradient-based optimization package
+           instead.
+           
 
 .. _Phase1:
 
@@ -139,23 +160,22 @@ stages of a typical :mod:`meep_adjoint` session:
 Phase 1: Problem definition and initialization
 ==================================================
 
+--------------------------------------------------
 Creating an :class:`OptimizationProblem`
+--------------------------------------------------
 
 The first step in every :py:mod:`meep_adjoint` workflow is
 to create an instance of :py:class:`OptimizationProblem`.
 This class plays for :mod:`meep_adjoint` a role
-analogous to the :class:`Simulation <Simulation_>`_ class in
-the core :codename:`pymeep` package:
-its public methods offer access to solver functionality
+analogous to the |simulation| class in the core |pymeep|:
+its public methods offer access to solver functionality,
+and its internal data fields store all data and state 
+needed to track the progress of a session.
 
-and its internal data fields maintain 
-its data fields story 
+The :class:`OptimizationProblem` constructor takes a large
+number of required and optional parameters, fully detailed in
+the :ref:`OptimizationProblem`
 
-
-
-
-
-.. _Simulation:  https://meep.readthedocs.io/en/latest
 
 .. code-block:: python
    :linenos:
@@ -167,9 +187,6 @@ its data fields story
 
 
 And this would be a literal include foryaf:
-
-
-.. literalinclude:: ../Examples/CrossRouter.py
 
 
 .. _Phase2:
@@ -185,14 +202,6 @@ Phase 2: Interactive exploration
 Phase 3: Automated optimization
 ==================================================
 
-==================================================
-Glossary foryaf:
-==================================================
-
-
-.. |thickline| raw:: html 
-
-   <hr class="thick">
-
-
+.. ##################################################
 .. include:: /Postamble.rst
+.. ##################################################

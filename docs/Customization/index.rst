@@ -206,16 +206,6 @@ Trying csv tables...
    "Albatross", 2.99, "On a stick!"
    "Popcorn", 1.99, "Straight from the oven"
 
-
-
-entered:: I wonder if this will ork.
-
-    Not sure if this will work.
-
-    If it *did* work, the text will appear here.
-    :Whatever: This is handy to create new field.
-
-
 .. warning:: 
 
     This is really a very painful process.

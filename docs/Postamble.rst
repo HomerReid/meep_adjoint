@@ -7,19 +7,25 @@
 
 .. |pymeep| raw:: html
 
-   <a href="http://meep.readthedocs.io">
-   <b><font style="font-variant: small-caps; font-size: 100%">meep</font></b>
-   python module</a>
+   <a href="https://meep.readthedocs.io/en/latest/Python_User_Interface/">
+   <font style="font-variant: small-caps; font-size: 100%">meep</font>
+   python module
+   </a>
 
 
 .. |simulation| raw:: html
 
-   <a href="https://meep.readthedocs.io/en/latest/Python_User_Interface/#the-simulation-class"> <pre>simulation</pre> </a>
+   <a href="https://meep.readthedocs.io/en/latest/Python_User_Interface/#the-simulation-class"> <code>Simulation</code> </a>
 
 
-..**************************************************..
+.. |br| raw:: html
+
+   <br>
+
+
+.. **************************************************
 .. frequently-occurring hyperlinks
-..**************************************************..
+.. **************************************************
 
 .. _TheSimulationClass:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#the-simulation-class
 .. _GetFluxes:			https://meep.readthedocs.io/en/latest/Python_User_Interface/#get_fluxes
@@ -35,6 +41,7 @@
 .. _Energy:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#energy
 .. _Source:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#source
 .. _GeometricObject: 		https://meep.readthedocs.io/en/latest/Python_User_Interface/#geometricobject
+.. _GaussianSource: 		https://meep.readthedocs.io/en/latest/Python_User_Interface/#gaussiansource
 
 .. _holey_waveguide:		Overview.md#the-holey-waveguide
 .. _CrossRouter:		Overview.md#the-cross-router
@@ -48,3 +55,15 @@
 
 .. _FENICSFETable:              https://fenicsproject.org/olddocs/dolfin/1.3.0/python/programmers-reference/functions/functionspace/FunctionSpace.html
 .. _FEMTable:                   http://femtable.org/
+
+.. _numerical optimization algorithms: https://en.wikipedia.org/wiki/Category:Optimization_algorithms_and_methods
+
+.. _adjoint sensitivity analysis: https://en.wikipedia.org/wiki/Adjoint_state_method
+
+
+.. |MeepGaussianSource| replace:: ``GaussianSource``
+.. _MeepGaussianSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#gaussiansource
+
+
+.. |get_array_metadata| replace:: ``get_array_metadata``
+.. _get_array_metadata: https://meep.readthedocs.io/en/latest/Python_User_Interface/#array-metadata

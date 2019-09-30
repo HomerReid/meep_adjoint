@@ -3,17 +3,20 @@
 .. _TheOverview:
 
 **********************************************************************
-:py:mod:`meep_adjoint` Overview and Invitation
+Introduction and Overview
 **********************************************************************
 
 This page offers a quick introduction to the theory and practice of
 :py:mod:`meep_adjoint`, beginning with a basic backgrounder on adjoint
 methods in general, then considering some representative design-optimization
-problems and outlining typical workflows for their solution
+problems and outlining typical workflows for tackling
 in :mod:`meep_adjoint`.
 Adjoint experts will probably want to skim much of this before
 moving on to the detailed step-by-step :doc:`tutorial <../Tutorial/index>`,
-but are first encouraged at least to glance at the list of 
+but are first encouraged at least to glance at our conventions for
+what constitute the
+:doc:`essential defining ingredients of optimization problems <OptProbIngredients_>`_.
+
 
 ======================================================================
 Background: Automated design optimization and the adjoint method
@@ -540,8 +543,8 @@ central coupler region:
 Defining elements of optimization problems
 ================================================================
 
-The examples above, distinct though they all are, illustrate
-the common irreducible set of ingredients required for a full
+The examples above, distinct though they all are, 
+the common set of ingredients required for a full
 specification of an optimization problem. 
 
 In brief, 

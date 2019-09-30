@@ -221,9 +221,14 @@ Table of Contents
 
 .. toctree::
    :maxdepth: 3
-   :caption: Invitation: Overview, Tutorial, Examples
 
    self
+
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Overview and Invitation
+
    Overview <Overview/index>
    Tutorial <Tutorial/index>
    Example Gallery <Examples/index>
@@ -234,6 +239,7 @@ Table of Contents
    :maxdepth: 3
    :caption: Reference
 
+   Installation <Installation/index>
    Basis sets <Visualization/index>
    Visualization Module <Visualization/index>
    Configuration and customization <Customization/index>

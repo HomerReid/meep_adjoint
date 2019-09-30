@@ -1,10 +1,9 @@
 ==============================================================
-:py:mod:` API Reference
+API Reference
 ==============================================================
 
 .. toctree::
     :maxdepth: 1
-    :caption: API Reference
 
     Introduction to the Class Hierarchy <ClassHierarchy>
     optimization_problem
