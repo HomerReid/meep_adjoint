@@ -175,6 +175,7 @@ needed to track the progress of a session.
 The :class:`OptimizationProblem<OptimizationProblem>` constructor takes a large
 number of required and optional parameters, which are documented
 in full detail in the :mod:`optimization_problem <API/optimization_problem>`
+API reference.
 
 
 
