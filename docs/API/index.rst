@@ -6,18 +6,18 @@ API Reference
     :maxdepth: 3
     :caption: High-level interface: Public API functions and classes
 
-        /API/PublicAPI.rst
+        /API/PublicAPI
 
 
 .. toctree::
     :maxdepth: 3
     :caption: Lower-level classes
 
-        /API/LowLevel.rst
+        /API/LowLevel
 
 
 .. toctree::
     :maxdepth: 3
     :caption: The ``Basis`` class:
 
-        /API/LowLevelrst
+        /API/LowLevel
