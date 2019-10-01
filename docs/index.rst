@@ -221,6 +221,7 @@ Table of Contents
 
 .. toctree::
    :maxdepth: 3
+   :caption: Documentation Home
 
    self
 
@@ -302,3 +303,6 @@ Indices and tables
    <a class="codename" href="https://homerreid.github.io/meep-adjoint-documentation/Tutorial/index.html">meep_adjoint</a>
 
 
+.. |TopNavbarEntry| raw:: html
+
+    howdage foryaf
