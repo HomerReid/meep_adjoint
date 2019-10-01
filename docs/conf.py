@@ -46,8 +46,21 @@ extensions = [
  'IPython.sphinxext.ipython_directive'
 ]
 
+default_role = 'py:obj'
+
+nitpicky = True    # issue warnings for all broken links
+
+######################################################################
+# text to be automatically included at top and bottom of all .rst files
+######################################################################
 rst_prolog = """
-..
+.. include:: /Preamble.rst
+"""
+
+rst_epilog = """
+.. include:: /Postamble.rst
+"""
+
 
 ######################################################################
 # pygments
@@ -76,3 +89,4 @@ autodoc_default_options = {
  }
 autosummary_generate = True
 add_module_names = False
+modindex_common_prefix = ['meep_adjoint.']
