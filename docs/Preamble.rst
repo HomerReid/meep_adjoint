@@ -2,8 +2,6 @@
 .. # content to be included at the top of all .rst files
 .. #######################################################
 
-Hello, this is some header text.
-
 
 .. role:: codename
 

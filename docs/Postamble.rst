@@ -2,9 +2,6 @@
 .. # content to be included at the end of all .rst files
 .. ######################################################
 
-Hello, this is some footer text.
-
-
 .. |mpadj| replace:: :mod:`meep_adjoint`
 
 
