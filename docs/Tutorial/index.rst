@@ -1,16 +1,12 @@
-.. ##################################################
-.. include:: /Preamble.rst
-.. ##################################################
-
 ********************************************************************************
 Tutorial walkthrough
 ********************************************************************************
 
 Having outlined on the :ref:`previous page <TheOverview>` some of the
-big-picture story---how :py:mod:`meep_adjoint` fits into the larger
+big-picture story---how :obj:`meep_adjoint` fits into the larger
 design-optimization ecosystem, and what you can expect to put into and 
 get out of a typical session---on this page we get down to details.
-We will present a step-by-step walkthrough of a :py:mod:`meep_adjoint` session
+We will present a step-by-step walkthrough of a :obj:`meep_adjoint` session
 that, starting from scratch, automagically finds intricate and *highly*
 non-intuitive device designs whose performance far exceeds anything we
 could hope to design by hand.
@@ -34,7 +30,7 @@ arriving on some given set of input ports are routed to some given set
 of output ports with optimality according to some given set of 
 desiderata. Evidently, different choices of input and output ports
 and performance criteria yield different optimization problems, and we will
-show how this freedom is reflected in the :mod:`meep_adjoint` API and
+show how this freedom is reflected in the :obj:`meep_adjoint` API and
 our python driver scripts. For most this tutorial, we will focus
 on two particular design tasks:
 
@@ -55,10 +51,10 @@ on two particular design tasks:
 
 
 ======================================================================
-Phases of a :mod:`meep_adjoint` session
+Phases of a :obj:`meep_adjoint` session
 ======================================================================
 This tutorial consists of three parts, corresponding to the three
-stages of a typical :mod:`meep_adjoint` session:
+stages of a typical :obj:`meep_adjoint` session:
 
 
     .. glossary::
@@ -69,16 +65,16 @@ stages of a typical :mod:`meep_adjoint` session:
 
            The first step is to identify all of the
            :ref:`ingredients needed to define our design-optimization problem <OptProbIngredients>`
-           and communicate them to :mod:`meep_adjoint` in the form of
+           and communicate them to :obj:`meep_adjoint` in the form of
            arguments passed to the :class:`OptimizationProblem` constructor.
            The class instance we get back will furnish the
-           portal through which we access :mod:`meep_adjoint` functionality
+           portal through which we access :obj:`meep_adjoint` functionality
            and the database that tracks the evolution of our design
            and its performance.
 
            The initialization phase also typically involves setting appropriate
            customized values for the many :doc:`configuration options <Customization>`
-           affecting the behavior of :mod:`meep_adjoint`.
+           affecting the behavior of :obj:`meep_adjoint`.
 
 
            |br|
@@ -96,7 +92,7 @@ stages of a typical :mod:`meep_adjoint` session:
            it seems, which will inform our choice of convergence criteria
            and other parameter settings for the automated phase.
            More specifically, in this phase we will invoke
-           :mod:`meep_adjoint` API routines to do the following:
+           :obj:`meep_adjoint` API routines to do the following:
 
 
                A. update the design function :math:`\epsilon^\text{des}(\mathbf{x})`---that is,
@@ -127,7 +123,7 @@ stages of a typical :mod:`meep_adjoint` session:
 
                E. *check* the adjoint calculation of step C above
                   by slightly displacing the design point in the direction
-                  of the gradient reported by :py:mod:`meep_adjoint` and
+                  of the gradient reported by :obj:`meep_adjoint` and
                   confirming that this does, in fact, improve the value
                   of the objective function---that is, compute
                   :math:`f^\text{obj}\Big(\boldsymbol{\beta} + \alpha\boldsymbol{\nabla} f\Big)`
@@ -146,7 +142,7 @@ stages of a typical :mod:`meep_adjoint` session:
            and hope for the best. As we will demonstrate, the easiest way 
            to proceed here is
            to invoke the simple built-in gradient-descent optimizer
-           provided by :mod:`meep_adjoint`---which, we will see, is
+           provided by :obj:`meep_adjoint`---which, we will see, is
            more than adequate to yield excellent results for the
            specific problems addressed in this tutorial---but we will also
            show how, with only slightly more effort, you can 
@@ -164,9 +160,9 @@ Phase 1: Problem definition and initialization
 Creating an :class:`OptimizationProblem`
 --------------------------------------------------
 
-The first step in every :py:mod:`meep_adjoint` workflow is
-to create an instance of :py:class:`OptimizationProblem`.
-This class plays for :mod:`meep_adjoint` a role
+The first step in every :obj:`meep_adjoint` workflow is
+to create an instance of :class:`OptimizationProblem`.
+This class plays for :obj:`meep_adjoint` a role
 analogous to the |simulation| class in the core |pymeep|:
 its public methods offer access to solver functionality,
 and its internal data fields store all data and state 
@@ -203,7 +199,3 @@ Phase 2: Interactive exploration
 ==================================================
 Phase 3: Automated optimization
 ==================================================
-
-.. ##################################################
-.. include:: /Postamble.rst
-.. ##################################################
