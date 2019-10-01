@@ -88,8 +88,12 @@ html_compact_lists = False
 ######################################################################
 autodoc_default_options = {
    'members':          True,
-   'show-inheritance': True
+   'show-inheritance': True,
+   'exclude-members': '__weakref__'
  }
+autoclass_content = 'both'
+autodoc_member_order = 'bysource'
 autosummary_generate = True
 add_module_names = False
+
 modindex_common_prefix = ['meep_adjoint.']
