@@ -3,14 +3,18 @@ API Reference
 ==============================================================
 
 .. toctree::
-    :maxdepth: 1
-    :caption: High-level interface: Public API
+    :maxdepth: 3
+    :caption: High-level interface: Public API functions and classes
 
-        :class:`OptimizationProblem`: Top-level class drives
+        API/PublicAPI.rst
 
-    User Interface
 
-    optimization_problem
+.. toctree::
+    :maxdepth: 3
+    :caption: Lower-level classes:
+
+        API/LowLevel.rst
+
     timestepper
     objective
     dft_cell
