@@ -173,8 +173,8 @@ and its internal data fields store all data and state
 needed to track the progress of a session.
 
 The :class:`OptimizationProblem` constructor takes a large
-number of required and optional parameters, fully detailed in
-the :ref:`OptimizationProblem`
+number of required and optional parameters, which are documented
+in full detail in the :mod:`optimization_problem`
 
 
 .. code-block:: python

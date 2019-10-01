@@ -11,6 +11,7 @@ element {
 font-family: 'Source Code Pro', monospace;
 font-family: 'Open Sans', sans-serif;
 
+
 body {
     font-family: 'Source Code Pro', monospace;
     font-family: 'Open Sans', sans-serif;
@@ -36,7 +37,7 @@ code.ilpy3 {
     color: #9a44a9;
 }
 
-code, .rst-content tt, .rst-content code, .rst-content code.xref {
+code, .rst-content tt, .rst-content code, .rst-content code.xref, .wy-menu-vertical li code {
     font-family: 'Monaco', 'Menlo', 'Consolas', 'Source Code Pro', monospace!important;
     border: 1px solid;
     border-radius: 3px;
