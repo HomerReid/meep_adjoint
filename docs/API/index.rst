@@ -6,7 +6,7 @@ API Reference
     :maxdepth: 1
     :caption: High-level interface: Public API
 
-    :caption: High-level interface: Public API
+        :class:`OptimizationProblem`: Top-level class drive
 
     User Interface
 
