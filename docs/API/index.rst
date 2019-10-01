@@ -4,6 +4,9 @@ API Reference
 
 .. toctree::
     :maxdepth: 1
+    :caption: High-level interface: Public API
+
+    :caption: High-level interface: Public API
 
     User Interface
 
