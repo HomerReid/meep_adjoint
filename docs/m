@@ -1,6 +1,7 @@
 #!/bin/bash
 
-make html 2>&1 | tee /tmp/sphinx.out
+date > /tmp/sphinx.out
+make html 2>&1 | tee -a /tmp/sphinx.out
 PolishHTML.sh
 
 ##################################################
