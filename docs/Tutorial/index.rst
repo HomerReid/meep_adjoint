@@ -55,7 +55,7 @@ on two particular design tasks:
 
 
 ======================================================================
-Phases of a :py:mod:`meep_adjoint` session
+Phases of a :mod:`meep_adjoint` session
 ======================================================================
 This tutorial consists of three parts, corresponding to the three
 stages of a typical :mod:`meep_adjoint` session:
