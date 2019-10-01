@@ -2,11 +2,11 @@
 .. ##################################################
 
 ********************************************************************************
-Implementation notes I: The math and physics behind :py:mod:`meep_adjoint`
+Implementation notes I: The math and physics behind :mod:`meep_adjoint`
 ********************************************************************************
  
 These notes are intended as something of a
-companion to the rest of the :py:mod:`meep_adjoint` documentation,
+companion to the rest of the :mod:`meep_adjoint` documentation,
 and particularly as a complement and sequel to the
 :doc:`Overview <../Overview/index>`; whereas the goal of
 that content is to document the user interface and

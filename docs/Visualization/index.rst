@@ -4,7 +4,7 @@
 Visualization module
 **********************************************************************
 
-The :py:mod:`meep_adjoint` package includes a 
+The :mod:`meep_adjoint` package includes a 
 
 ======================================================================
 Visualization module

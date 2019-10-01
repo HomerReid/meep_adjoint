@@ -2,6 +2,8 @@
 .. # content to be included at the top of all .rst files
 .. #######################################################
 
+Hello, this is some header text.
+
 
 .. role:: codename
 
@@ -16,9 +18,3 @@
 .. raw:: html
     
     <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Code+Pro&display=swap" rel="stylesheet">
-
-    
-.. |thickline| raw:: html 
-
-   <hr class="thick">
-

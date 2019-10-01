@@ -1,7 +1,7 @@
 .. include:: ../Preamble.rst
 
 ==========================================================================
-Implementation notes: The math and physics behind :py:mod:`meep_adjoint`
+Implementation notes: The math and physics behind :mod:`meep_adjoint`
 ==========================================================================
 
 

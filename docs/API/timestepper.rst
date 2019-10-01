@@ -1,5 +1,5 @@
 ==================================================
-:py:mod:`timestepper` module
+:mod:`timestepper` module
 ==================================================
 
 .. automodule:: meep_adjoint.timestepper

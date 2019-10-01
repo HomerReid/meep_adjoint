@@ -1,5 +1,5 @@
 ==================================================
-:py:mod:`option_almanac` module
+:mod:`option_almanac` module
 ==================================================
 
 .. automodule:: meep_adjoint.option_almanac

@@ -3,7 +3,7 @@
 ***********************************************************************************
 :mod:`meep_adjoint`: A python module for adjoint sensitivity analysis in MEEP
 ***********************************************************************************
-This is the root of the documentation tree for :py:mod:`meep_adjoint`.
+This is the root of the documentation tree for :mod:`meep_adjoint`.
 Jump directly to the module-wide :ref:`TableOfContents` below,
 or read on for a quick-start summary.
 
@@ -22,11 +22,11 @@ given performance specifications.
 .. admonition:: Wait, *what* exactly does the module do again?
 
         If that was a bit vague, we can be more specific about precisely what
-        :py:mod:`meep_adjoint` does. Consider a typical design problem
+        :mod:`meep_adjoint` does. Consider a typical design problem
         in which we seek to tune a device geometry to optimize some
         performance metric.
         For example, in the :doc:`cross router <Examples/cross_router>`
-        example in the :py:mod:`meep_adjoint` 
+        example in the :mod:`meep_adjoint` 
         :doc:`example gallery <Examples/index>`,
         we are designing a four-waveguide interconnect for an optical network,
         and our goal is to choose the permittivity distribution
@@ -142,10 +142,10 @@ n
         to maximize the *difference* between two fluxes, etc.
 
         For any given trial design function :math:`\epsilon(\mathbf x)`
-        we can use :py:mod:`pymeep` to evaluate 
+        we can use :mod:`pymeep` to evaluate 
         we create a ``Simulation``_ with $\epsilon^{\text{trial}}$
 
-        What :py:mod:`meep_adjoint` does is to add a 
+        What :mod:`meep_adjoint` does is to add a 
 
 
 
@@ -154,21 +154,21 @@ n
 
          **Q.** Does this mean that the module *only* computes objective-function gradients? That is, it doesn't actually do any optimization?
 
-         **A.** The *primary* mission of :py:mod:`meep_adjoint` is to compute objective-function gradients. This is the task the module guarantees to execute efficiently and accurately, and it's one that's self-contained, unambiguous, and easily *testable.* [#]_
+         **A.** The *primary* mission of :mod:`meep_adjoint` is to compute objective-function gradients. This is the task the module guarantees to execute efficiently and accurately, and it's one that's self-contained, unambiguous, and easily *testable.* [#]_
   
          The larger question of how best to *use* gradient information for
          design automation---which involves questions such as which of the
          `myriad available gradient-based optimization algorithms`_ to use,
          and how to configure its tunable parameters---is officially beyond the
-         purview of :py:mod:`meep_adjoint`, and indeed is much too broad
+         purview of :mod:`meep_adjoint`, and indeed is much too broad
          a problem to be treated with anything approaching comprehensiveness
-         by any single module. We hope :py:mod:`meep_adjoint` will be
-         helpful to :py:mod:`meep` users as they navigate this
+         by any single module. We hope :mod:`meep_adjoint` will be
+         helpful to :mod:`meep` users as they navigate this
          vast domain.
 
 
          **With all of that by way of disclaimer,** however, we note that
-         :py:mod:`meep_adjoint` does ship with one (rather simple-minded)
+         :mod:`meep_adjoint` does ship with one (rather simple-minded)
          implementation of an optimization algorithm---namely, a 
          :doc:`basic gradient-descent solver.` 
          Per the discussion above, we make
@@ -191,12 +191,12 @@ quick rundown:
 
 
 1) *Initialization and Problem Definition:* 
-You begin by creating an instance of :py:class:`optimization_problem`
-This is the top-level python class exported by :py:mod:`meep_adjoint`, 
+You begin by creating an instance of :class:`optimization_problem`
+This is the top-level python class exported by :mod:`meep_adjoint`, 
 analogous to the `Simulation <Simulation_>`_
-class in the core :py:mod:`meep` module; it stores all data and state
+class in the core :mod:`meep` module; it stores all data and state
 relevant to the progress of a design optimization, and
-you will access most :py:mod:`meep_adjoint` functionality
+you will access most :mod:`meep_adjoint` functionality
 via its class methods.
 
 2) *Interactive single-point calculations*  Before 
@@ -285,10 +285,10 @@ Indices and tables
 .. _Simulation:  https://meep.readthedocs.io/en/latest
 
 .. [#] For example, one obvious test of the correctness
-       of :py:mod:`meep_adjoint` is to estimate objective-function
+       of :mod:`meep_adjoint` is to estimate objective-function
        derivatives by numerical finite-differencing and compare to 
        components of the adjoint-method gradient. This is the basis
-       of one of the tests in the :py:mod:`meep_adjoint` unit-test suite,
+       of one of the tests in the :mod:`meep_adjoint` unit-test suite,
        and also of the :doc:`holey waveguide <Examples/holey_waveguide>`
        example in the :doc:`example gallery.<Examples/index>`
 

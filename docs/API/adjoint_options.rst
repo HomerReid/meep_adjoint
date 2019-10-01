@@ -1,5 +1,5 @@
 ==================================================
-:py:mod:`adjoint_options` module
+:mod:`adjoint_options` module
 ==================================================
 
 .. automodule:: meep_adjoint.adjoint_options

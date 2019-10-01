@@ -1,7 +1,7 @@
 .. include:: /Preamble.rst
 
 ==================================================
-:py:class:`objective`
+:class:`objective`
 ==================================================
 
 .. automodule:: meep_adjoint.objective

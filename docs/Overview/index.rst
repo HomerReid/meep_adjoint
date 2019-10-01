@@ -7,7 +7,7 @@ Introduction and Overview
 **********************************************************************
 
 This page offers a quick introduction to the theory and practice of
-:py:mod:`meep_adjoint`, beginning with a basic backgrounder on adjoint
+:mod:`meep_adjoint`, beginning with a basic backgrounder on adjoint
 methods in general, then considering some representative design-optimization
 problems and outlining typical workflows for tackling
 in :mod:`meep_adjoint`.
@@ -130,7 +130,7 @@ as a finite expansion of the form
 
 where :math:`\{b_d(\mathbf{x})\}, d=1,\cdots,D` is some conveniently-chosen
 set of :math:`D`ple, in the :doc:`cross router <Examples/cross_router>`
-        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        example in the :mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the task is to design the central hub region to steer
         incoming power arriving via the **West** input waveguide port
         entirely to the **North** output waveguide port, ideally with zero
@@ -149,7 +149,7 @@ set of :math:`D`ple, in the :doc:`cross router <Examples/cross_router>`
        Then, for given fixed values of the input power, operating
        frequency, and other parameters, the ia the **West** input waveguide port
         to the **North** output wav ple, in the :doc:`cross router <Examples/cross_router>`
-        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        example in the :mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the task is to design the central hub region to steer
         incoming power arriving via the **West** input waveguide port
         entirely to the **North** output waveguide port, ideally with zero
@@ -168,7 +168,7 @@ set of :math:`D`ple, in the :doc:`cross router <Examples/cross_router>`
        Then, for given fixed values of the input power, operating
        frequency, and other parameters, the ia the **West** input waveguide port
         to the **North** output wav ple, in the :doc:`cross router <Examples/cross_router>`
-        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        example in the :mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the task is to design the central hub region to steer
         incoming power arriving via the **West** input waveguide port
         entirely to the **North** output waveguide port, ideally with zero
@@ -187,7 +187,7 @@ set of :math:`D`ple, in the :doc:`cross router <Examples/cross_router>`
        Then, for given fixed values of the input power, operating
        frequency, and other parameters, the ia the **West** input waveguide port
         to the **North** output wav ple, in the :doc:`cross router <Examples/cross_router>`
-        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        example in the :mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the task is to design the central hub region to steer
         incoming power arriving via the **West** input waveguide port
         entirely to the **North** output waveguide port, ideally with zero
@@ -206,7 +206,7 @@ set of :math:`D`ple, in the :doc:`cross router <Examples/cross_router>`
        Then, for given fixed values of the input power, operating
        frequency, and other parameters, the ia the **West** input waveguide port
         to the **North** output wav ple, in the :doc:`cross router <Examples/cross_router>`
-        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        example in the :mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the task is to design the central hub region to steer
         incoming power arriving via the **West** input waveguide port
         entirely to the **North** output waveguide port, ideally with zero
@@ -225,7 +225,7 @@ set of :math:`D`ple, in the :doc:`cross router <Examples/cross_router>`
        Then, for given fixed values of the input power, operating
        frequency, and other parameters, the ia the **West** input waveguide port
         to the **North** output wav ple, in the :doc:`cross router <Examples/cross_router>`
-        example in the :py:mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
+        example in the :mod:`meep_adjoint` :doc:`example gallery <Examples/index>`,
         the task is to design the central hub region to steer
         incoming power arriving via the **West** input waveguide port
         entirely to the **North** output waveguide port, ideally with zero
@@ -295,10 +295,10 @@ the presence of defect from external detection.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now, for a given a candidate design :math:`\epsilon^{\text{trial}}(\mathbf{x})`,
-it's clear that we can use :py:mod:`meep`---*core*:py:mod:`meep`,
+it's clear that we can use :mod:`meep`---*core*:py:mod:`meep`,
 that is, no fancy new modules required---to evaluate
 the objective function and assess the candidate's performance: we simply 
-**(1)** create a :py:mod:`meep` geometry with `GeometricObjects` for
+**(1)** create a :mod:`meep` geometry with `GeometricObjects` for
 the waveguides and a `Block` with :math:`\epsilon\sup{trial}` as a
 `spatially-varying permittivity function <EpsFunc_>`_ in the design region,
 **(2)** add `DFT cells <FluxSpectra_>`_ to tabulate the frequency-domain 
@@ -309,12 +309,12 @@ fields converge, then **(4)** use post-processing routines like
 or 
 ` ``get_eigenmode_coefficients`` <EigenCoefficients_>`_
 to get the quantities needed to evaluate the objective function.
-This is a totally standard application of canonical :py:mod:`meep`
+This is a totally standard application of canonical :mod:`meep`
 functionality, and it has the effect of converting our engineering
 design problem into a pure numerical optimization problem: given
 a
 
-Thus, for the cost of one full :py:mod:`meep` timestepping
+Thus, for the cost of one full :mod:`meep` timestepping
 run we obtain the value of our objective function at one point
 in the parameter space of possible inputs. 
 
@@ -351,7 +351,7 @@ This is where adjoints come to the rescue.
 .. _derivative-free optimization algorithm: https://en.wikipedia.org/wiki/Derivative-free_optimization
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:py:mod:`meep_adjoint` is a tool for computing objective-function *gradients*.
+:mod:`meep_adjoint` is a tool for computing objective-function *gradients*.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The *adjoint method* of sensitivity analysis is a technique in which
@@ -361,7 +361,7 @@ linearity and reciprocity of Maxwell's equations---to rearrange the
 calculation of derivatives in a way that yields an *enormous* speedup
 over the brute-force finite-difference approach. More specifically,
 after we have computed the objective-function value by doing
-the full :py:mod:`meep` timestepping run mentioned
+the full :mod:`meep` timestepping run mentioned
 above---the "forward" run in adjoint-method parlance---we can magically
 compute its derivatives with respect to *all* design variables by doing
 just *one* additional timestepping run with a funny-looking choice
@@ -406,7 +406,7 @@ Incident power from an
 travels leftward through the waveguide, but is partially 
 reflected by the hole, resulting in less than 100% power
 the waveguide output (as may be 
-characterized in :py:mod:`meep`
+characterized in :mod:`meep`
 by observing power flux and/or
 eigenmode expansion coefficients at the two 
 flux monitors, labeled `east` and `west`).
@@ -500,7 +500,7 @@ as the `east` fields have with their backward-traveling
 
 The point is that the definition of an optimization problem
 involves not only a set of physical quantities  (power fluxes, eigenmode coefficients,
-etc.) that we compute from :py:mod:`meep` calculations,
+etc.) that we compute from :mod:`meep` calculations,
 but also a rule (the objective function :math:`f`) for crunching those 
 numbers in some specific way to define a single scalar figure of merit. 
 
@@ -508,7 +508,7 @@ In  `mp.adjoint` we use the collective term *objective quantities*
 for the power fluxes, eigenmode coefficients, and other physical quantities
 needed to compute the objective function.
 Similarly, the special geometric subregions of 
-:py:mod:`meep` geometries with
+:mod:`meep` geometries with
 which objective quantities are associated---the
 cross-sectional flux planes of `DFTFlux` cells or 
 field-energy boxes of `DFTField` cells----are known as *objective regions.*
@@ -583,7 +583,7 @@ In brief,
     numerical values for the :math:`N`-vector of coefficients 
     :math:`\boldsymbol{\beta}=\{\beta_n\},n=1,\cdots,N.`
 
-    For adjoint optimization in :py:mod:`meep`, the
+    For adjoint optimization in :mod:`meep`, the
     basis set is chosen by the user, either from among a predefined collection of
     common basis sets, or as an arbitrary user-defined basis set specified by
     subclassing an abstract base class in `mp.adjoint.`

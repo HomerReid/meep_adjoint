@@ -1,5 +1,5 @@
 ==================================================
-:py:mod:`visualization` module
+:mod:`visualization` module
 ==================================================
 
 .. automodule:: meep_adjoint.visualization

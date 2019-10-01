@@ -1,5 +1,5 @@
 ==================================================
-:py:mod:`dft_cell` module
+:mod:`dft_cell` module
 ==================================================
 
 .. automodule:: meep_adjoint.dft_cell

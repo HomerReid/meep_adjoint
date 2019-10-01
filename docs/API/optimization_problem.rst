@@ -1,5 +1,5 @@
 ==================================================
-:py:mod:`optimization_problem` module
+:mod:`optimization_problem` module
 ==================================================
 
 .. automodule:: meep_adjoint.optimization_problem

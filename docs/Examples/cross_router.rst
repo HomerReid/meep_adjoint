@@ -1,6 +1,6 @@
 .. include:: /Preamble.rst
 
 ========================================================
-:py:mod:`meep_adjoint` examples: The optical router
+:mod:`meep_adjoint` examples: The optical router
 ========================================================
 In this example we consider

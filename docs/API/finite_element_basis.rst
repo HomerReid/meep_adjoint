@@ -1,7 +1,7 @@
 .. include:: /Preamble.rst
 
 ==================================================
-:py:class:`finite_element_basis`
+:class:`finite_element_basis`
 ==================================================
 .. automodule:: meep_adjoint.finite_element_basis
     :members:
