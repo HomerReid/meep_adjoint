@@ -77,3 +77,5 @@ Hello, this is some footer text.
 
    <hr class="thick">
 
+
+.. py:mod:: meep_adjoint
