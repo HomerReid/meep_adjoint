@@ -5,7 +5,8 @@ API Reference
 .. toctree::
     :maxdepth: 1
 
-    Introduction to the Class Hierarchy <ClassHierarchy>
+    User Interface
+
     optimization_problem
     timestepper
     objective
