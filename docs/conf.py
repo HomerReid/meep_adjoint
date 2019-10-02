@@ -102,10 +102,10 @@ modindex_common_prefix = ['meep_adjoint.']
 ######################################################################
 # hook to do some minor post-processing of html files after sphinx build
 ######################################################################
-def cleanup_html_files(app, docname, source):
+def cleanup_html_files(app, exception):
     with open('/tmp/goofy','w') as f:
         f.write('out_dir={}'.format(app.outdir))
-        f.write('docname={}'.format(docname))
+        f.write('exception={}'.format(exception or 'none'))
 
 
 def setup(app):
