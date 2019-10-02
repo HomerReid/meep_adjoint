@@ -106,7 +106,7 @@ modindex_common_prefix = ['meep_adjoint.']
 def cleanup_html_file(file):
     with open(file,'r') as f:
         lines = f.readlines()
-     with open(file,'w') as f:
+    with open(file,'w') as f:
          for line in lines:
              if re.search(r'toctree-l',line) and not re.search(r'<code>',line):
                  line = line.replace('meep_adjoint','<code>meep_adjoint</code>')
