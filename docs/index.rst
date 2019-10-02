@@ -24,7 +24,7 @@ given performance specifications.
         in which we seek to tune a device geometry to optimize some
         performance metric.
         For example, in the :doc:`cross router <Examples/cross_router>`
-        example in the :obj:`meep_adjoint` 
+        example in the :obj:`meep_adjoint`
         :doc:`example gallery <Examples/index>`,
         we are designing a four-waveguide interconnect for an optical network,
         and our goal is to choose the permittivity distribution
@@ -39,21 +39,18 @@ given performance specifications.
         expressing the unknown design function as an expansion
         in some convenient finite set of basis functions:
 
-        .. math:: 
+        .. math::
 
             \epsilon(\mathbf x)\approx\sum_{d=1}^D \beta_d b_d(\mathbf x)
 
-        Then each possible design configuration 
-        corresponds to a :math:`D`-dimensional vector of
-        coefficient values
-        :math:`\boldsymbol{\beta}=\{\beta_1,\cdots,\beta_D\}`,
+        Then each possible design configuration corresponds to a :math:`D`-dimensional vector of
+        coefficient values :math:`\boldsymbol{\beta}=\{\beta_1,\cdots,\beta_D\}`,
         while the metric defining the performance of
         a design---the quantity we are trying to
         optimize---is a (real-valued, scalar) function of a
         vector-valued argument, the `objective function`
         :math:`f^\text{obj}(\boldsymbol{\beta}).` For our
         in the router problem
-        
         a real-valued scalar
         device given by a 
         and we can picture the process of device optimization
