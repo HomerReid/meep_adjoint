@@ -52,20 +52,20 @@ given performance specifications.
         :math:`f^\text{obj}(\boldsymbol{\beta}).` For our
         in the router problem
         a real-valued scalar
-        device given by a 
+        device given by a
         and we can picture the process of device optimization
         as a journey through a :math:`D`-dimensional space in
         search of the magical point :math:`\boldsymbol{\beta}_*`
-        at which 
+        at which
         single point moving through a
-        location. To the performance of a 
-        location. To the performance of a 
+        location. To the performance of a
+        location. To the performance of a
 
-        For a 
+        For a
 
         or equivalently to a :math:`D`-dimensional
         vector :math:`{\boldsymbol{\beta}}`,
-        ranges 
+        ranges
         values of the :math:`D` coefficients
         evice design is specified by the
         :math:`D`-dimensional vector of numbers
@@ -77,7 +77,7 @@ given performance specifications.
 
        Then, for given fixed values of the input power, operating
        frequency, and other parameters, the design metric we are trying
-       to optimize---that is, our *objective function* 
+       to optimize---that is, our *objective function*
        :math:`f^\text{obj}`---may be thought of as a function of the
        :math:`D`-dimensional vector of expansion coefficients
        :math:`\boldsymbol{\beta}`, i.e.
@@ -98,7 +98,7 @@ given performance specifications.
 
        Then, for given fixed values of the input power, operating
        frequency, and other parameters, the ia the **West** input waveguide port
-        to the **North** output wav  
+       to the **North** output wav
 
 
 
@@ -114,7 +114,7 @@ n^\text{design}(\mathbf x)\approx
 
        Then, for given fixed values of the input power, operating
        frequency, and other parameters, the ia the **West** input waveguide port
-        to the **North** output wav  
+       to the **North** output wav
 
 
 
@@ -130,17 +130,17 @@ n
 
         you're a device designer tasked with maximizing
         some performance metric $f$ expressed as a function of these
-        output quantities---for example, we might put 
+        output quantities---for example, we might put
         :math:`f=S_2(\omega_3)` to maximize flux through the 2nda
-        flux region at the 3rd frequency, or 
+        flux region at the 3rd frequency, or
         :math:`f = (S_1(\omega_3) - S_2(\omega_3))^2`
         to maximize the *difference* between two fluxes, etc.
 
         For any given trial design function :math:`\epsilon(\mathbf x)`
-        we can use :obj:`pymeep` to evaluate 
+        we can use :obj:`pymeep` to evaluate
         we create a ``Simulation``_ with $\epsilon^{\text{trial}}$
 
-        What :obj:`meep_adjoint` does is to add a 
+        What :obj:`meep_adjoint` does is to add a
 
 
 
@@ -150,7 +150,7 @@ n
          **Q.** Does this mean that the module *only* computes objective-function gradients? That is, it doesn't actually do any optimization?
 
          **A.** The *primary* mission of :obj:`meep_adjoint` is to compute objective-function gradients. This is the task the module guarantees to execute efficiently and accurately, and it's one that's self-contained, unambiguous, and easily *testable.* [#]_
-  
+
          The larger question of how best to *use* gradient information for
          design automation---which involves questions such as which of the
          `myriad available gradient-based optimization algorithms`_ to use,
@@ -164,8 +164,8 @@ n
 
          **With all of that by way of disclaimer,** however, we note that
          :obj:`meep_adjoint` does ship with one (rather simple-minded)
-         implementation of an optimization algorithm---namely, a 
-         :doc:`basic gradient-descent solver.` 
+         implementation of an optimization algorithm---namely, a
+         :doc:`basic gradient-descent solver.`
          Per the discussion above, we make
          no claim as to the robustness or efficiency of this solver,
          and we encourage users to consider it a first step in the
@@ -174,29 +174,29 @@ n
          we note that the simple built-in optimizer suffices to
          yield good results on all the problems considered in
          the :doc:`example gallery <Examples/index>`.
-  
+
 
 =======================================
 What does a typical workflow look like?
 =======================================
 You'll find a full step-by-step walkthrough in the
 :doc:`Tutorial <Tutorial/index>` and additional guided case studies
-in the :doc:`Example gallery <Examples/index>`, but here is a 
+in the :doc:`Example gallery <Examples/index>`, but here is a
 quick rundown:
 
 
-1) *Initialization and Problem Definition:* 
+1) *Initialization and Problem Definition:*
 You begin by creating an instance of :class:`optimization_problem`
-This is the top-level python class exported by :obj:`meep_adjoint`, 
+This is the top-level python class exported by :obj:`meep_adjoint`,
 analogous to the `Simulation <Simulation_>`_
 class in the core :obj:`meep` module; it stores all data and state
 relevant to the progress of a design optimization, and
 you will access most :obj:`meep_adjoint` functionality
 via its class methods.
 
-2) *Interactive single-point calculations*  Before 
+2) *Interactive single-point calculations*  Before
 launching a full-blown iterative optimization run that
-could run for hours or days, you will probably want 
+could run for hours or days, you will probably want
 to run some sanity-check calculations involving your
 geometry. These include...**(section incomplete)**
 
@@ -281,14 +281,14 @@ Indices and tables
 
 .. [#] For example, one obvious test of the correctness
        of :obj:`meep_adjoint` is to estimate objective-function
-       derivatives by numerical finite-differencing and compare to 
+       derivatives by numerical finite-differencing and compare to
        components of the adjoint-method gradient. This is the basis
        of one of the tests in the :obj:`meep_adjoint` unit-test suite,
        and also of the :doc:`holey waveguide <Examples/holey_waveguide>`
        example in the :doc:`example gallery.<Examples/index>`
 
 
-.. |meep| raw:: html 
+.. |meep| raw:: html
 
    <a class="codename" href="http://meep.readthedocs.io">meep</a>
 

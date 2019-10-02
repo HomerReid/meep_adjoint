@@ -4,7 +4,7 @@ Tutorial walkthrough
 
 Having outlined on the :ref:`previous page <TheOverview>` some of the
 big-picture story---how :obj:`meep_adjoint` fits into the larger
-design-optimization ecosystem, and what you can expect to put into and 
+design-optimization ecosystem, and what you can expect to put into and
 get out of a typical session---on this page we get down to details.
 We will present a step-by-step walkthrough of a :obj:`meep_adjoint` session
 that, starting from scratch, automagically finds intricate and *highly*
@@ -27,7 +27,7 @@ The router will live inside an optical-network switch with
 each port connected to a fiber-optic cable carrying incoming and outgoing
 signals, and our job is to design the central hub to ensure that signals
 arriving on some given set of input ports are routed to some given set
-of output ports with optimality according to some given set of 
+of output ports with optimality according to some given set of
 desiderata. Evidently, different choices of input and output ports
 and performance criteria yield different optimization problems, and we will
 show how this freedom is reflected in the :obj:`meep_adjoint` API and
@@ -103,7 +103,7 @@ stages of a typical :obj:`meep_adjoint` session:
                   at the current design point
 
                C. numerically evaluate the objective-function *gradient* :math:`\boldsymbol{\nabla} f^\text{obj}`
-                  at the current design point 
+                  at the current design point
 
 
                D. produce graphical visualizations of both the device geometry---showing
@@ -112,12 +112,12 @@ stages of a typical :obj:`meep_adjoint` session:
                   items, showing the spatial configuration of electromagnetic fields produced
                   by the current iteration of the device design.
 
-    
+
            Because steps B, C, and D here are executed with the device design held fixed
            at a single point in design space, we refer to them as static or *single-point*
            operations, to be distinguished from the dynamic multi-point trajectory through
            design space traversed by the automated design optimization of the following stage.
-           
+
            Of course, of all the single-point tests we might run in our interactive investigation,
            perhaps the most useful is
 
@@ -139,16 +139,16 @@ stages of a typical :obj:`meep_adjoint` session:
            Once we've confirmed that our problem setup is correct
            and acquired some feel for how it behaves in practice,
            we'll be ready to hand it off to a numerical optimizer
-           and hope for the best. As we will demonstrate, the easiest way 
+           and hope for the best. As we will demonstrate, the easiest way
            to proceed here is
            to invoke the simple built-in gradient-descent optimizer
            provided by :obj:`meep_adjoint`---which, we will see, is
            more than adequate to yield excellent results for the
            specific problems addressed in this tutorial---but we will also
-           show how, with only slightly more effort, you can 
+           show how, with only slightly more effort, you can
            use your favorite external gradient-based optimization package
            instead.
-           
+
 
 .. _Phase1:
 
@@ -165,7 +165,7 @@ to create an instance of :class:`OptimizationProblem`.
 This class plays for :obj:`meep_adjoint` a role
 analogous to the |simulation| class in the core |pymeep|:
 its public methods offer access to solver functionality,
-and its internal data fields store all data and state 
+and its internal data fields store all data and state
 needed to track the progress of a session.
 
 The :class:`OptimizationProblem<OptimizationProblem>` constructor takes a large

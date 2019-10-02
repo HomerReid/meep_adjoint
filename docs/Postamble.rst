@@ -68,9 +68,9 @@
 .. |get_array_metadata| replace:: ``get_array_metadata``
 .. _get_array_metadata: https://meep.readthedocs.io/en/latest/Python_User_Interface/#array-metadata
 
- 
 
-.. |thickline| raw:: html 
+
+.. |thickline| raw:: html
 
    <hr class="thick">
 

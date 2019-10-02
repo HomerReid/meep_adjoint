@@ -33,16 +33,16 @@ from frequency-domain electromagnetic fields---a `power flux <GetFluxes_>`_,
 an `energy density <DFTEnergy_>`_,
 an `eigenmode expansion coefficient <EigenCoefficients_>`_,
 or perhaps some mathematical function of one or more such
-quantities---which we will denote 
+quantities---which we will denote
 :math:`f^\text{obj}` or simply :math:`f` and refer to
-as the *objective function*. 
+as the *objective function*.
 
 Meanwhile, the "design" entity that will be at our disposal
 to tweak and adjust in the service of optimizing :math:`f^\text{obj}`
 will be just the spatially-varying scalar dielectric function
 :math:`\epsilon^\text{des}(\mathbf x)` throughout some
 fixed subregion of the geometry (the *design region*
-:math:`\mathcal{V}^\text{des}`). 
+:math:`\mathcal{V}^\text{des}`).
 Of course, we will want to restrict consideration to designs that can actually be fabricated in the real world;
 at a minimum this means that the permittivity
 at each spatial point must satisfy the conditions imposed on
@@ -88,13 +88,13 @@ power it carries it will exit from the right. The design-optimization
 problem is to optimize the permittivity distribution in the hole region
 to maximize output power (for fixed input power). Obviously the correct
 answer is just to fill in the hole uniformly with the waveguide
-material, and the ability to figure this out is a simple, 
+material, and the ability to figure this out is a simple,
 easy-to-debug test of the efficacy any optimization paradigm.
 
 
 A less trivial example is the **Cross Router,** in which we
 envision 4 waveguides conjoined by a central hub region,
-whose design we will adjust to route signals from one port 
+whose design we will adjust to route signals from one port
 to another:
 
 .. image:: RouterGeometry_Iter0.png
@@ -104,7 +104,7 @@ to another:
 Examples
 --------------------------------------------------
 
-    
+
 .. math::
 
     \epsilon^\text{design}(\mathbf x)\approx
@@ -112,7 +112,7 @@ Examples
 
 
 naively, this would give us uncountably many degrees of
-freedom and allow permittivity functions of 
+freedom and allow permittivity functions of
 arbitrarily rapid spatial variation, but such a design
 space would be both mathematically unwieldy and technologically
 unrealistic (in view of the finite lithographic linewidths
@@ -283,8 +283,8 @@ chunk of material has been removed from an otherwise perfect waveguide
 section, ruining the otherwise perfectly unidirectional (no scattering or reflection)
 flow of power from a source at one end of the guide to a sink at the other;
 our task is to tweak the permittivity in an annular region
-surrounding the defect (the *cloak*) so as to restore 
-as much as possible the reflectionless transfer of power 
+surrounding the defect (the *cloak*) so as to restore
+as much as possible the reflectionless transfer of power
 across the waveguide---thus hiding or "cloaking"
 the presence of defect from external detection.
 
@@ -295,16 +295,16 @@ the presence of defect from external detection.
 Now, for a given a candidate design :math:`\epsilon^{\text{trial}}(\mathbf{x})`,
 it's clear that we can use :mod:`meep`---*core*:py:mod:`meep`,
 that is, no fancy new modules required---to evaluate
-the objective function and assess the candidate's performance: we simply 
+the objective function and assess the candidate's performance: we simply
 **(1)** create a :mod:`meep` geometry with `GeometricObjects` for
 the waveguides and a `Block` with :math:`\epsilon\sup{trial}` as a
 `spatially-varying permittivity function <EpsFunc_>`_ in the design region,
-**(2)** add `DFT cells <FluxSpectra_>`_ to tabulate the frequency-domain 
+**(2)** add `DFT cells <FluxSpectra_>`_ to tabulate the frequency-domain
 Poynting flux entering and departing the cloak region,
-**(3)** `timestep <RunStepFunctions_>`_ until the frequency-domain 
+**(3)** `timestep <RunStepFunctions_>`_ until the frequency-domain
 fields converge, then **(4)** use post-processing routines like
 ` ``get_fluxes()`` <GetFluxes_>`_
-or 
+or
 ` ``get_eigenmode_coefficients`` <EigenCoefficients_>`_
 to get the quantities needed to evaluate the objective function.
 This is a totally standard application of canonical :mod:`meep`
@@ -314,7 +314,7 @@ a
 
 Thus, for the cost of one full :mod:`meep` timestepping
 run we obtain the value of our objective function at one point
-in the parameter space of possible inputs. 
+in the parameter space of possible inputs.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ...but function *values* alone aren't enough for efficient optimization.
@@ -330,15 +330,15 @@ intuition, while
 for small problems with just a few parameters we might try our luck with a
 `derivative-free optimization algorithm`_;
 however, both of these approaches will run out of steam long before
-we scale up to 
+we scale up to
 the full complexity of a practical problem with thousands
 of degrees of freedom.
 Alternatively, we could get approximate derivative information by brute-force
-finite-differencing---slightly tweaking one design variable, repeating 
-the full timestepping run, and asking how the results changed---but 
-proceeding this way to compute derivatives with respect to all :math:`D` 
+finite-differencing---slightly tweaking one design variable, repeating
+the full timestepping run, and asking how the results changed---but
+proceeding this way to compute derivatives with respect to all :math:`D`
 design variables would require fully :math:`D` separate timestepping runs;
-for the problem sizes we have in mind, this would make calculating the 
+for the problem sizes we have in mind, this would make calculating the
 objective-function gradient
 *several thousand times* more costly than calculating its value.
 So we face a dilemma: How can we obtain the derivative information
@@ -367,7 +367,7 @@ of sources and outputs (the "adjoint" run).
 Thus, whereas gradient computation via finite-differencing is at least :math:`D`
 times more expensive than computing the objective function value,
 with adjoints we get both value and gradient for roughly just *twice* the
-cost of the value alone. Such a bargain! At this modest cost, derivative-based 
+cost of the value alone. Such a bargain! At this modest cost, derivative-based
 optimization becomes entirely feasible.
 
 ======================================================================
@@ -376,8 +376,8 @@ Examples of optimization problems
 
 Throughout the `meep_adjoint` documentation we will refer to a running collection of
 simple optimization problems to illustrate the mechanics of optimization,
-among which are the following; click the geometry images to view 
-in higher resolution.   
+among which are the following; click the geometry images to view
+in higher resolution.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The Holey Waveguide
@@ -386,34 +386,34 @@ The Holey Waveguide
 By way of warm-up, a useful toy version of an optimization problem
 is an otherwise pristine length of dielectric slab waveguide in
 which a careless technician has torn a circular `hole` of variable
-permittivity :math:`\epsilon\sup{hole}`.     
+permittivity :math:`\epsilon\sup{hole}`.
 
-    
 
-    
+
+
 
 > :bookmark:{.center}
 >
 > ![zoomify](images/holey_waveguideGeometry.png)
 
 
- 
+
 
 Incident power from an
 `eigenmode source <EigenModeSource_>`_ (cyan line in figure)
-travels leftward through the waveguide, but is partially 
+travels leftward through the waveguide, but is partially
 reflected by the hole, resulting in less than 100% power
-the waveguide output (as may be 
+the waveguide output (as may be
 characterized in :mod:`meep`
 by observing power flux and/or
-eigenmode expansion coefficients at the two 
+eigenmode expansion coefficients at the two
 flux monitors, labeled `east` and `west`).
 Our objective is to tweak the value of
 :math:`\epsilon\sup{hole}` to maximize transmission
 as assessed by one of these metrics.
 The simplicity of this model makes it a useful
 initial warm-up and sanity check for making sure we know
-what we are doing in design optimization; for example, 
+what we are doing in design optimization; for example,
 `in this worked example <AdjointVsFDTest_>`_
 we use it to confirm the numerical accuracy of
 adjoint-based gradients computed by `mp.adjoint`
@@ -424,11 +424,11 @@ The Hole Cloak
 
 We obtain a more challenging variant of the holey-waveguide problem
 be supposing that the material in the hole region is *not* a
-tunable design parameter---it is fixed at vacuum, say, or 
+tunable design parameter---it is fixed at vacuum, say, or
 perfect metal---but that we *are* allowed to vary the permittivity
 in an annular region surrounding the hole in such a way
 as to mimic the effect of filling in the hole, i.e. of hiding
-or "cloaking" the hole  as much as  possible from external 
+or "cloaking" the hole  as much as  possible from external
  detection.
 
 > :bookmark:{.center}
@@ -445,9 +445,9 @@ between the actual fields passing through monitor
 the :math:`n`th forward- or backward-traveling eigenmode
 of the waveguide (which we label :math:`\{P,M\}_{n,\text{east}}`
 with :math:`P,M` standing for "plus and minus.")
-On the other hand, the design space here is more 
+On the other hand, the design space here is more
 complicated than for the simple hole, consisting
-of all possible scalar functions :math:`\epsilon(r,\theta)` 
+of all possible scalar functions :math:`\epsilon(r,\theta)`
 defined on the annular cloak region.
 
 
@@ -456,7 +456,7 @@ The cross-router
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A different flavor of waveguide-optimization problem arises when we
-consider the *routing* of signals from given inputs to 
+consider the *routing* of signals from given inputs to
 given destinations. One example is the *cross-router*, involving
 an intersection between :math:`x-`directed and :math:`y-`directed waveguides,
 with center region of variable permittivity that we may
@@ -473,8 +473,8 @@ for a problem like this there are many possibilities.
 For example, given fixed input power supplied by an eigenmode
 source on the "western" branch (cyan line),
 we might be less interested in the absolute output
-power at any port and more concerned with 
-achieving maximal *equality* of output 
+power at any port and more concerned with
+achieving maximal *equality* of output
 power among the north, south, and east outputs,
 whereupon we might minimize an objective function of
 the form
@@ -483,14 +483,14 @@ the form
   +\Big( S\sub{north} - S\sub{east}\Big)^2
  + \Big( S\sub{east} - S\sub{south}\Big)^2
 :math:``
-(or a similar functional form involving eigenmode 
+(or a similar functional form involving eigenmode
 coefficients).
 Alternatively, perhaps we don't care what happens in
-the southern branch, but we really want the fields 
-traveling past the `north` monitor 
+the southern branch, but we really want the fields
+traveling past the `north` monitor
 to have twice as much
 overlap with the forward-traveling 3rd eigenmode of that
-waveguide 
+waveguide
 as the `east` fields have with their backward-traveling
 2nd eigenmode:
 
@@ -499,16 +499,16 @@ as the `east` fields have with their backward-traveling
 The point is that the definition of an optimization problem
 involves not only a set of physical quantities  (power fluxes, eigenmode coefficients,
 etc.) that we compute from :mod:`meep` calculations,
-but also a rule (the objective function :math:`f`) for crunching those 
-numbers in some specific way to define a single scalar figure of merit. 
+but also a rule (the objective function :math:`f`) for crunching those
+numbers in some specific way to define a single scalar figure of merit.
 
 In  `mp.adjoint` we use the collective term *objective quantities*
 for the power fluxes, eigenmode coefficients, and other physical quantities
 needed to compute the objective function.
-Similarly, the special geometric subregions of 
+Similarly, the special geometric subregions of
 :mod:`meep` geometries with
 which objective quantities are associated---the
-cross-sectional flux planes of `DFTFlux` cells or 
+cross-sectional flux planes of `DFTFlux` cells or
 field-energy boxes of `DFTField` cells----are known as *objective regions.*
 
 The `Example Gallery <ExampleGallery.md_>`_ includes a worked example
@@ -518,7 +518,7 @@ it over the course of 50 iterations to yield a device
 that efficiently routs power around a 90&degree; bend
 from the eigenmode source (cyan line above)
 to the 'north' output port.
- 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The asymmetric splitter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -527,7 +527,7 @@ A `splitter` seeks to divide incoming power from one source
 in some specific way among two or more destinations.,
 We will consider an asymmetric splitter in which power
 arriving from a single incoming waveguide is to be routed
-into two outgoing waveguides by varying the design of the 
+into two outgoing waveguides by varying the design of the
 central coupler region:
 
 > :bookmark:{.center}
@@ -541,21 +541,21 @@ central coupler region:
 Defining elements of optimization problems
 ================================================================
 
-The examples above, distinct though they all are, 
+The examples above, distinct though they all are,
 the common set of ingredients required for a full
-specification of an optimization problem. 
+specification of an optimization problem.
 
-In brief, 
+In brief,
 
 .. glossary::
-    
+
     Objective function, objective quantities, objective regions
         The *objective function* is the real-valued scalar quantity
         that :mod:`meep_adjoint` tries to maximize [#f1]_.
 
 
 
-        
+
     regions:** One or more `regions over which to tabulate frequency-domain fields (DFT cells) <DFTObj_>`_
   for use in computing power fluxes, mode-expansion coefficients, and other frequency-domain
   quantities used in characterizing device performance.  Because these regions are used to evaluate
@@ -578,7 +578,7 @@ In brief,
     where :math:`\{\mathcal{b}_n(\mathbf x)\}` is a set of :math:`D` scalar-valued
     basis functions defined for :math:`\mathbf x\in\mathcal{V}\sup{des}`.
     The task of the optimizer then becomes to determine
-    numerical values for the :math:`N`-vector of coefficients 
+    numerical values for the :math:`N`-vector of coefficients
     :math:`\boldsymbol{\beta}=\{\beta_n\},n=1,\cdots,N.`
 
     For adjoint optimization in :mod:`meep`, the

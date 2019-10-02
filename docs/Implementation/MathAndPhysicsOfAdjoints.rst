@@ -1,7 +1,7 @@
 ********************************************************************************
 Implementation notes I: The math and physics behind :mod:`meep_adjoint`
 ********************************************************************************
- 
+
 These notes are intended as something of a
 companion to the rest of the :mod:`meep_adjoint` documentation,
 and particularly as a complement and sequel to the
@@ -15,7 +15,7 @@ Actually, as will be clear to anyone who has ever reviewed the
 fundamentals of `adjoint sensitivity analysis`_,
 the conceptual basis of the method and the derivation of its key
 formulas are almost trivially straightforward, with the only
-potential source of difficulty being how to massage the mechanics 
+potential source of difficulty being how to massage the mechanics
 of the procedure into a form that comports with
 :codename:`meep` conventions.
 
@@ -47,16 +47,16 @@ Permittivity derivative by finite-differencing
 ==================================================
 
 An obvious brute-force way to get at this is simply
-to do two :codename:`meep` 
+to do two :codename:`meep`
 calculations, with :math:`\epsilon^\text{des}`
 augmented by a small finite amount :math:`\Delta\epsilon` on the
 second run, then compute the difference between the frequency-domain
 electric fields at :math:`\mathbf{x}^\text{obj}` and divide
 by :math:`\Delta\epsilon` to estimate the derivative.
-The following two figures illustrate results obtained by 
+The following two figures illustrate results obtained by
 executing such a strategy; the upper plot shows the spatial
 distribution of **E**-field strength for the unperturbed geometry,
-while the lower plot shows the *difference* between the field 
+while the lower plot shows the *difference* between the field
 strengths in the perturbed and unperturbed cases:
 
 .. math::
@@ -152,7 +152,7 @@ with respect to :math:`\epsilon`. In other words,
     \widetilde{\Delta \mathbf J}=-i\omega\widetilde{\mathbf{E}}(\mathbf{x}^\text{obj})
     \end{array}\right)
     \]
-  
+
 
 Analogous reasoning yields a prescription for magnetic-field derivatives:
 
@@ -175,7 +175,7 @@ Analogous reasoning yields a prescription for magnetic-field derivatives:
 Digression: Configuring time-domain sources for desired frequency-domain fields in :codename:`meep`
 ========================================================================================================
 
-In frequency-domain electromagnetism we usually consider 
+In frequency-domain electromagnetism we usually consider
 a time-harmonic source distribution of the form
 
 
@@ -195,7 +195,7 @@ radiated by this distribution:
 where :math:`\sim` indicates frequency-domain amplitudes. A typical frequency-domain solver might input
 :math:`\widetilde{\mathbf J}(\mathbf x)` and output :math:`\widetilde{\mathbf E}(\mathbf x)`:
 
-.. math:: 
+.. math::
 
     \widetilde{\mathbf J}(\mathbf x)
     \quad \Longrightarrow \quad
@@ -217,7 +217,7 @@ frequency width :math:`\Delta \omega =2\pi \Delta f`, and
 peak time :math:`t_0`, we have
 
 
-.. math:: 
+.. math::
 
     G(t) = e^{-i\omega_0(t-t_0) - \frac{1}{2}[\Delta f(t-t_0)]^2}.
 
@@ -235,7 +235,7 @@ The Fourier transform of this is
 
 So the :codename:`meep` version of the above input/output diagram looks like
 
-.. math:: 
+.. math::
 
     G(t)\widetilde{\mathbf J}(\mathbf x)
     \quad \Longrightarrow \quad
@@ -265,14 +265,14 @@ as spatial convolutions:
 
     \widetilde{E_i}(\omega, \mathbf{x}^\text{dest}) =
     \int
-    \mathcal{G}^\text{EE}_{ij}(\omega, \mathbf{x}^\text{dest}, \mathbf{x}^\text{src}) 
+    \mathcal{G}^\text{EE}_{ij}(\omega, \mathbf{x}^\text{dest}, \mathbf{x}^\text{src})
     \widetilde{J_j}(\omega, \mathbf{x}^\text{src})
    \,d\mathbf{x}^\text{src}
 
 
 with :math:`\boldsymbol{\mathcal{G}}^\text{EE}` the
 electric-electric dyadic Green's function of the material geometry
-(giving the electric field produced by a unit-strength electric 
+(giving the electric field produced by a unit-strength electric
 current).  In this language, the effective-source representation
 of the permittivity derivative reads
 
@@ -343,11 +343,11 @@ For the magnetic-field derivative we have similarly
 
 
 where :math:`\boldsymbol{\mathcal{G}}^\text{ME}` is the magnetic-electric
-Green's function, giving the magnetic field produced 
+Green's function, giving the magnetic field produced
 by an electric current.
 
 Computationally, inner products like
-:math:`\VMV{\mathbf f}{\boldsymbol{\mathcal{G}}^\text{EE}}{\mathbf g}` 
+:math:`\VMV{\mathbf f}{\boldsymbol{\mathcal{G}}^\text{EE}}{\mathbf g}`
 for arbitrary functions :math:`\mathbf{f}(\mathbf x), \mathbf{g}(\mathbf x)`
 may be evaluated in :codename:`meep`
 as follows:
@@ -366,7 +366,7 @@ as follows:
 The virtue of writing things this way is that it allows the physical
 property of reciprocity to be expressed as the mathematical property
 that the aforementioned inner-product machine is insensitive to the
-order of its arguments, i.e. we can flip the :math:`\mathbf f` and :math:`\mathbf g` 
+order of its arguments, i.e. we can flip the :math:`\mathbf f` and :math:`\mathbf g`
 inputs and still get the same scalar output:
 
 
@@ -484,7 +484,7 @@ Poynting flux
 
 A case that arises frequently is that in which the objective region
 is a cross-sectional surface :math:`\mathcal S^\text{obj}` cutting normally through a
-waveguide or similar structure and the objective function is the 
+waveguide or similar structure and the objective function is the
 normal Poynting flux through :math:`\mathcal S`.
 For example, the :math:`x`-directed Poynting flux is given by
 
@@ -522,7 +522,7 @@ Differentiating and rearranging slightly, we have
                         -i\omega \VMV{\widetilde{\mathbf H}_z^\text{obj*}} {\boldsymbol{\mathcal{G}}^\text{EE}}
                                      {\widetilde{\mathbf E}^\text{des}}
                         +\cdots
-               \right\} 
+               \right\}
     \\[5pt]
     &\hspace{-0.5in}\text{Use reciprocity:}
     \\[5pt]
@@ -541,11 +541,11 @@ Differentiating and rearranging slightly, we have
 .. ######################################################################
 .. HR20190926 this section current commented out
 .. ######################################################################
-.. 
+..
 .. ======================================================================
 .. Mode coefficient
 .. ======================================================================
-.. 
+..
 .. :math:`` \alpha_m^\pm = C_1 \pm C_2 :math:``
 .. \begin{align*}
 ..  C_1 &=\frac{1}{\mathcal{N}}
@@ -553,9 +553,9 @@ Differentiating and rearranging slightly, we have
 ..  C_2 &=
 ..    \frac{1}{\mathcal{N}}\int_{\mathcal S^\text{obj}} \Big(h^*_z E_y - h^*_y E_z\Big)d\mathbf{x}\\
 .. \end{align*}
-.. 
-.. 
-.. 
+..
+..
+..
 
 
 .. |br| raw:: html

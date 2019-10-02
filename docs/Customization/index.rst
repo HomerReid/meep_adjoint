@@ -43,7 +43,7 @@ sector of :mod:`meep_adjoint` behavior they affect:
 
     :Options governing graphical visualization:
         + ``latex``:        Use :math:`LaTeX` formatting for
-                            graph axes and titles 
+                            graph axes and titles
 
         + ``linecolor``:    Color of lines and curves (default)
 
@@ -59,7 +59,7 @@ How do I set option values?
 ======================================================================
 
 For each configuration option, :mod:`meep_adjoint` consults
-the following fixed sequence of 
+the following fixed sequence of
 
 
     :1. Package-level default settings:
@@ -71,8 +71,8 @@ the following fixed sequence of
 
         The python script you write to drive your :mod:`meep_adjoint` study may optionally
         override
-        custom defaults 
-        override the package-level option defaults 
+        custom defaults
+        override the package-level option defaults
 
 
     :3. User-level defaults: Global configuration files:
@@ -100,7 +100,7 @@ Implementation
 ======================================================================
 
 ======================================================================
-Options 
+Options
 ======================================================================
 
 ======================================================================
@@ -137,8 +137,8 @@ of the later-encountered source, i.e. new option settings always overwrite
 existing settings [1]_.
 
 .. [1] An exception is the case in which the *type* of an option setting
-is incompatible with the type of the existing option value; in this case 
-the new setting is ignored with a warning and the previous option value 
+is incompatible with the type of the existing option value; in this case
+the new setting is ignored with a warning and the previous option value
 retained.
 
 More specifically, the value stored in the
@@ -204,6 +204,6 @@ Trying csv tables...
    "Albatross", 2.99, "On a stick!"
    "Popcorn", 1.99, "Straight from the oven"
 
-.. warning:: 
+.. warning::
 
     This is really a very painful process.
