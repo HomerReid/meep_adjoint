@@ -43,14 +43,6 @@
 .. _GeometricObject: 		https://meep.readthedocs.io/en/latest/Python_User_Interface/#geometricobject
 .. _GaussianSource: 		https://meep.readthedocs.io/en/latest/Python_User_Interface/#gaussiansource
 
-.. _holey_waveguide:		Overview.md#the-holey-waveguide
-.. _CrossRouter:		Overview.md#the-cross-router
-.. _HoleCloak:			Overview.md#the-hole-cloak
-.. _AsymmetricSplitter:		Overview.md#the-asymettric-splitter
-
-.. _CrossRouterExample:		ExampleGallery.md#full-automated-optimization-of-a-cross-router-device
-.. _AdjointVsFDTest:		ExampleGallery.md#numerical-validation-of-adjoint-gradients
-
 .. _MatPlotLib:			http://matplotlib.org
 
 .. _FENICSFETable:              https://fenicsproject.org/olddocs/dolfin/1.3.0/python/programmers-reference/functions/functionspace/FunctionSpace.html
