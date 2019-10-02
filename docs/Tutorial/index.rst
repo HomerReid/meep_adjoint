@@ -182,7 +182,7 @@ The various pieces of input information that must be specified to instantiate an
 **(B)** inputs describing the design space and the tweakable degrees of freedom,
 and
 **(C)** inputs describing the underlying FDTD simulation geometry in which
-        the previous items are defined.
+        the previous items are defined. 
 
 
 .. code-block:: python
