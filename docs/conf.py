@@ -99,3 +99,14 @@ add_module_names = False
 modindex_common_prefix = ['meep_adjoint.']
 
 
+######################################################################
+# hook to do some minor post-processing of html files after sphinx build
+######################################################################
+def cleanup_html_files(app, docname, source):
+    with open('/tmp/goofy','w') as f:
+        f.write('out_dir={}'.format(app.outdir))
+        f.write('docname={}'.format(docname))
+
+
+def setup(app):
+    app.connect('build-finished', source_read_handler)
