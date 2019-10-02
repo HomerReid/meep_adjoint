@@ -23,7 +23,7 @@ given performance specifications.
         :obj:`meep_adjoint` does. Consider a typical design problem
         in which we seek to tune a device geometry to optimize some
         performance metric.
-        For example, in the :doc:`cross router <Examples/cross_router>`
+        For example, in the :doc:`right-angle router <Examples/cross_router>`
         example in the :obj:`meep_adjoint`
         :doc:`example gallery <Examples/index>`,
         we are designing a four-waveguide interconnect for an optical network,
@@ -44,8 +44,8 @@ given performance specifications.
             \epsilon(\mathbf x)\approx\sum_{d=1}^D \beta_d b_d(\mathbf x)
 
         Then each possible design configuration corresponds to a :math:`D`-dimensional vector of
-        coefficient values :math:`\boldsymbol{\beta}=\{\beta_1,\cdots,\beta_D\}`,
-        while the metric defining the performance of
+        coefficient values :math:`\boldsymbol{\beta}=\{\beta_1,\cdots,\beta_D\}`, while the metric
+        defining the performance of
         a design---the quantity we are trying to
         optimize---is a (real-valued, scalar) function of a
         vector-valued argument, the `objective function`
