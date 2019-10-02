@@ -98,12 +98,11 @@ given performance specifications.
 
        Then, for given fixed values of the input power, operating
        frequency, and other parameters, the ia the **West** input waveguide port
-       to the **North** output wav
 
 
 
 
-n^\text{design}(\mathbf x)\approx
+ ^\text{design}(\mathbf x)\approx
        \sum_{d=1}^D \beta_d b_d(\mathbf x)
 
 
@@ -113,7 +112,7 @@ n^\text{design}(\mathbf x)\approx
 
 
        Then, for given fixed values of the input power, operating
-       frequency, and other parameters, the ia the **West** input 
+       frequency, and other parameters, the ia the **West** input
        waveguide port to the **North** output wav
 
 
