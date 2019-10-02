@@ -111,6 +111,7 @@ def post_build_hook(app, exception):
     for root, dirs, files in os.walk(app.outdir):
         for file in files:
             if file.endswith(".html"):
+            if file.endswith(".html"):
             cleanup_html_file(file)
 
 
