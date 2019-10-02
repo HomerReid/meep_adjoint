@@ -171,9 +171,18 @@ progress of a computational session.
 
 The :class:`OptimizationProblem<OptimizationProblem>` constructor takes a large
 number of required and optional parameters, for which you will find full detailed
-documentation in the :ref:`API reference <API/optimization_problem>`. In this
-tutorial we will set
+documentation in the :ref:`API reference <API/optimization_problem>`; in most
+cases you'll probably be able simply to copy the initialization code from this tutorial
+or one of the other :ref:`worked examples <Examples/index>` and modify as appropriate
+for your problem.
 
+The various pieces of input information that must be specified to instantiate an
+:class:`OptimizationProblem` may be roughly divided into three categories:
+**(A)** inputs describing the objective function and how it is computed,
+**(B)** inputs describing the design space and the tweakable degrees of freedom,
+and
+**(C)** inputs describing the underlying FDTD simulation geometry in which
+        the previous items are defined.
 
 
 .. code-block:: python
