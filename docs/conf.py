@@ -108,9 +108,9 @@ def cleanup_html_file(file):
         lines = f.readlines()
     with open(file,'w') as f:
         for line in lines:
-            if re.match(r'toctree-l',line):
+            if re.search(r'toctree-l',line):
                 line = line.replace('meep_adjoint','<code>meep_adjoint</code>')
-                line = line.replace('meep','<span class=codename>meep</span>')
+                line = line.replace('MEEP','<span class=codename>meep</span>')
             f.write(line)
 
 
