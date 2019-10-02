@@ -35,7 +35,7 @@
 .. _EpsFunc:        		https://meep.readthedocs.io/en/latest/Python_User_Interface/#eps_func
 .. _FluxSpectra:    		https://meep.readthedocs.io/en/latest/Python_User_Interface/#FluxSpectra
 .. _RunStepFunctions:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#run-and-step-functions
-.. _RunStepFunctions:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#run-functions
+.. _RunFunctions:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#run-functions
 .. _DFTObj:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#dft_obj
 .. _PML:             		https://meep.readthedocs.io/en/latest/Python_User_Interface/#pml
 .. _Energy:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#energy
@@ -75,4 +75,4 @@
    <hr class="thick">
 
 
-.. py:mod:: meep_adjoint
+.. :mod:: meep_adjoint
