@@ -113,13 +113,11 @@ n^\text{design}(\mathbf x)\approx
 
 
        Then, for given fixed values of the input power, operating
-       frequency, and other parameters, the ia the **West** input waveguide port
-       to the **North** output wav
+       frequency, and other parameters, the ia the **West** input 
+       waveguide port to the **North** output wav
 
 
 
-
-n
         Here :math:`\epsilon(x)`
 
         .. math::
