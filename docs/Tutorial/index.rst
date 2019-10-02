@@ -166,12 +166,13 @@ This class plays for :obj:`meep_adjoint` a role
 analogous to the |simulation| class in the core |pymeep|
 package: its public methods offer access to the computational
 capabilities of the solver, and its internal data fields
-keep track of all data and state needed to track the progress of a session.
+keep track of all data and state needed to track the
+progress of a computational session.
 
 The :class:`OptimizationProblem<OptimizationProblem>` constructor takes a large
-number of required and optional parameters, which are documented
-in full detail in the :mod:`optimization_problem <API/optimization_problem>`
-API reference.
+number of required and optional parameters, for which you will find full detailed
+documentation in the :ref:`API reference <API/optimization_problem>`. In this
+tutorial we will set
 
 
 
