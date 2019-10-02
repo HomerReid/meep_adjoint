@@ -109,4 +109,4 @@ def cleanup_html_files(app, docname, source):
 
 
 def setup(app):
-    app.connect('build-finished', source_read_handler)
+    app.connect('build-finished',cleanup_html_files)
