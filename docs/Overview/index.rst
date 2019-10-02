@@ -597,13 +597,4 @@ In brief,
 .. _DFTEnergy:			https://meep.readthedocs.io/en/latest/Python_User_Interface/#dft_energy
 .. _EigenCoefficients:		https://meep.readthedocs.io/en/latest/Python_User_Interface/#get_eigenmode_coefficients
 
-.. [#f1] At present, maximization is the only supported optimization; if your objective is actually to *minimize* some quantity, just define the objective function with a minus sign. (Eventually some users it might appreciate a ``--minimize`` option that would do this internally.)
-
-
-:Footnotes:
-
-    Hi howdage, this is footnotes.
-
-:Goofatage:
-
-    Doom doomatage foryaf.
+.. [#f1] At present, maximization is the only supported optimization; if your objective is actually to *minimize* some quantity, just define the objective function with a minus sign. (Eventually some users might appreciate a ``--minimize`` option that would do this internally.)

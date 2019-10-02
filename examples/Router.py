@@ -25,7 +25,7 @@ meep_adjoint.set_option_defaults( { 'fcen': 0.5, 'df': 0.2,
 
 ######################################################################
 # subroutine that initializes and returns an OptimizationProblem
-# structure for the cross-router geometry.
+# structure for the router geometry
 ######################################################################
 def init_problem():
     """ Initialize four-way router optimization problem.
@@ -47,7 +47,7 @@ def init_problem():
     ######################################################################
     parser = argparse.ArgumentParser()
 
-    # options affecting the geometry of the cross-router
+    # options affecting the geometry of the router
     parser.add_argument('--wh',       type=float, default=1.5,  help='width of horizontal waveguide')
     parser.add_argument('--wv',       type=float, default=1.5,  help='width of vertical waveguide')
     parser.add_argument('--h',        type=float, default=0.0,  help='height of waveguide in z-direction')
