@@ -176,6 +176,7 @@ given performance specifications.
 =======================================
 What does a typical workflow look like?
 =======================================
+
 You'll find a full step-by-step walkthrough in the
 :doc:`Tutorial <Tutorial/index>` and additional guided case studies
 in the :doc:`Example gallery <Examples/index>`, but here is a
