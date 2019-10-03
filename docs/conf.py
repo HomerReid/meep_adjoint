@@ -106,7 +106,6 @@ modindex_common_prefix = ['meep_adjoint.']
 OLD = 'meep_adjoint: A python module for adjoint sensitivity analysis in MEEP'
 NEW = '<code class=xref>meep_adjoint</code>: A python module for adjoint sensitivity analysis in <span class="codename">meep</span>'
 def cleanup_html_file(file):
-    pass
      with open(file,'r') as f:
          lines = f.readlines()
      with open(file,'w') as f:
