@@ -47,9 +47,7 @@ code, .rst-content tt, .rst-content code, .rst-content code.xref, .wy-menu-verti
     white-space: normal;
 }
 
-.wy-nav-side code, .wy-body-for-nav code {
-    border: 0;
-    padding: inherit;
+.wy-nav-side code, .wy-body-for-nav code, .wy-menu-vertical li code {
     background: inherit;
     color: inherit;
 }
