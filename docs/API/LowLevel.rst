@@ -2,37 +2,21 @@
 Low-level (private) API: Classes and functions intended for use within :obj: `meep_adjoint`
 ***************************************************************************************
 
-================================================================================
-:class:`TimeStepper`: Interface to codename:`meep` or other FDTD
-                      back-end computational engine
-================================================================================
+============================================================================================================
+:class:`TimeStepper`: Interface to computational back-end provided by :codename:`meep` or other FDTD solver
+============================================================================================================
 
-.. _TheOptimizationProblemClass:
+.. _TheTimeStepperClass:
 
-.. autoclass:: OptimizationProblem
+.. autoclass:: TimeStepper
    :inherited-members:
 
 
-==========================================================================================
-Package-level functions for accessing configuration options
-==========================================================================================
+============================================================================================================
+:class:`ObjectiveFunction`: Evaluation of objective-function values and partial derivatives
+============================================================================================================
 
-----------------------------------------------------------------------
-Adjoint-solver options
-----------------------------------------------------------------------
+.. _TheObjectiveFunctionClass:
 
-.. autofunction:: meep_adjoint.get_adjoint_option
-
-.. autofunction:: meep_adjoint.set_adjoint_option_defaults
-
-----------------------------------------------------------------------
-Visualization options
-----------------------------------------------------------------------
-
-.. autofunction:: meep_adjoint.get_visualization_option
-
-.. autofunction:: meep_adjoint.get_visualization_options
-
-.. autofunction:: meep_adjoint.set_visualization_option_defaults
-
-.. autofunction:: meep_adjoint.set_option_defaults
+.. autoclass:: ObjectiveFunction
+   :inherited-members:
