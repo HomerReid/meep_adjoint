@@ -5,7 +5,7 @@ API reference
 .. toctree::
     :maxdepth: 3
 
-        High-level API: Public functions and classes
+        High-level API: Public classes
         The `OptimizationProblem` class <
 
         Visualization Module <Visualization/index>
