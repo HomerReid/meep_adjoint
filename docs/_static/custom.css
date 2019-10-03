@@ -48,9 +48,9 @@ code, .rst-content tt, .rst-content code, .rst-content code.xref, .wy-menu-verti
 }
 
 .wy-nav-side code, .wy-body-for-nav code, .wy-menu-vertical li code {
-    background: inherit;
-    color: inherit;
+    background: #a4c3b2;
 }
+
 
 .wy-nav-side {
   color: #9b9b9b;
