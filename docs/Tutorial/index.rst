@@ -176,10 +176,12 @@ but in most cases you'll probably be able simply to copy the initialization
 code from this tutorial
 or one of the other :ref:`worked examples <Examples/index>` and modify as appropriate
 for your problem.
-Roughly speaking, the input data required to instantiate an
-:class:`OptimizationProblem` may be divided into three categories:
+Roughly speaking, instantiating an :class:`OptimizationProblem` requires
+three
+may be divided into three categories:
+each of which 
 
-    * inputs describing the objective function and how it is computed
+    * a description of the objective function and how it is computed
 
     * inputs describing the design space and the tweakable degrees of freedom
 
