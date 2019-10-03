@@ -73,12 +73,14 @@ a {
    font-variant: small-caps;
    font-size: 110%;
    font-variant-numeric: oldstyle-nums;
+   font-family: 'Roboto'
 }
 
 .codename span {
    font-variant: small-caps;
    font-size: 110%;
    font-variant-numeric: oldstyle-nums;
+   font-family: 'Roboto'
 }
 
 .rst-content .qanda {
