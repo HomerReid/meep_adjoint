@@ -7,6 +7,7 @@ API reference
     :caption: High-level interface: Public API functions and classes
 
         The `OptimizationProblem` class
+
         Visualization Module <Visualization/index>
 
         PublicAPI
