@@ -73,7 +73,7 @@ stages of a typical :obj:`meep_adjoint` session:
            and its performance.
 
            The initialization phase also typically involves setting appropriate
-           customized values for the many ::`configuration options <Customization>`
+           customized values for the many :ref:`configuration options </Customization/index>`
            affecting the behavior of :obj:`meep_adjoint`.
 
 
