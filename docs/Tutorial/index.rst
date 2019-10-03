@@ -170,8 +170,9 @@ keep track of all data and state needed to track the
 progress of a computational session.
 
 The :class:`OptimizationProblem<OptimizationProblem>` constructor accepts a
-large number of required and optional input arguments, 
-will typically involve a straightforward but somewhat lengthy chunk
+large number of required and optional input arguments, whose setup
+will typically occupy a straightforward but somewhat lengthy chunk
+of your driver script. In the
 
 ; you will find the full
 documentation for these in the :ref:`API reference <OptimizationProblem>`,
