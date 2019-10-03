@@ -3,8 +3,8 @@ Low-level (private) API: Classes and functions intended for use within :obj: `me
 ***************************************************************************************
 
 ================================================================================
-:class:`TimeStepper`: Interface to back-end computational engine
-                      codename:`meep` or other FDTD
+:class:`TimeStepper`: Interface to codename:`meep` or other FDTD
+                      back-end computational engine
 ================================================================================
 
 .. _TheOptimizationProblemClass:
