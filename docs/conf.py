@@ -104,15 +104,16 @@ modindex_common_prefix = ['meep_adjoint.']
 # hook to do some minor post-processing of html files after sphinx build
 ######################################################################
 def cleanup_html_file(file):
-    with open(file,'r') as f:
-        lines = f.readlines()
-    with open(file,'w') as f:
-         for line in lines:
-             if re.search(r'toctree-l',line) and not re.search(r'<code>',line):
-                 line = line.replace('meep_adjoint','<code>meep_adjoint</code>')
-                 line = line.replace('MEEP','<span class=codename>meep</span>')
-             f.write(line)
-
+    pass
+    # with open(file,'r') as f:
+    #     lines = f.readlines()
+    # with open(file,'w') as f:
+    #      for line in lines:
+    #          if re.search(r'toctree-l',line) and not re.search(r'<code>',line):
+    #              line = line.replace('meep_adjoint','<code>meep_adjoint</code>')
+    #              line = line.replace('MEEP','<span class=codename>meep</span>')
+    #          f.write(line)
+    #
 def post_build_hook(app, exception):
     for root, dirs, files in os.walk(app.outdir):
         for file in files:
