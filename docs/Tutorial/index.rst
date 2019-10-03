@@ -187,7 +187,7 @@ and of course
 
     * parameters describing the underlying FDTD simulation geometry.
 
-Setting up
+The 
 involves straightforward but somewhat lengthy
 
 
