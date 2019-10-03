@@ -23,7 +23,7 @@ given performance specifications.
         :obj:`meep_adjoint` does. Consider a typical design problem
         in which we seek to tune a device geometry to optimize some
         performance metric.
-        For example, in the :doc:`right-angle router <Examples/cross_router>`
+        For example, in the :doc:`right-angle router <Examples/router>`
         example in the :obj:`meep_adjoint`
         :doc:`example gallery <Examples/index>`,
         we are designing a four-waveguide interconnect for an optical network,
