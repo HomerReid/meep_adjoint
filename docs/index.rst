@@ -253,8 +253,8 @@ Table of Contents
    :maxdepth: 3
    :caption: API Reference
 
-   <API/HighLevel>
-   <API/LowLevel>
+    High-level (public) API <API/HighLevel>
+    Low-level (internal) API <API/LowLevel>
 
 
 
