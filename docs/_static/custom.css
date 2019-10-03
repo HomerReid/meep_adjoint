@@ -73,14 +73,14 @@ a {
    font-variant: small-caps;
    font-size: 110%;
    font-variant-numeric: oldstyle-nums;
-   font-family: 'Playfair Display SC', serif
+/*   font-family: 'Playfair Display SC', serif*/
 }
 
 .codename span {
    font-variant: small-caps;
    font-size: 110%;
    font-variant-numeric: oldstyle-nums;
-   font-family: 'Playfair Display SC', serif
+/*   font-family: 'Playfair Display SC', serif*/
 }
 
 .rst-content .qanda {
