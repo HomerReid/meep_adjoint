@@ -38,7 +38,7 @@ code.ilpy3 {
 }
 
 code, .rst-content tt, .rst-content code, .rst-content code.xref, .wy-menu-vertical li code {
-    font-family: 'Monaco', 'Menlo', 'Consolas', 'Source Code Pro', monospace!important;
+    font-family: 'Menlo', 'Consolas', 'Source Code Pro', monospace!important;
     border: 1px solid;
     border-radius: 3px;
     padding: 1px 4px;
@@ -48,7 +48,7 @@ code, .rst-content tt, .rst-content code, .rst-content code.xref, .wy-menu-verti
 }
 
 
-.rst-content a code { color: #2980b9; }
+.rst-content a code, .rst-content a code.xref { color: #2980b9; }
 
 /*
  failed attempt to improve appearance of code strings in navigation menu

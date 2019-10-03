@@ -161,7 +161,7 @@ Creating an :class:`OptimizationProblem`
 --------------------------------------------------
 
 The first step in every :obj:`meep_adjoint` workflow is
-to create an instance of :class:`meep_adjoint.OptimizationProblem`.
+to create an instance of :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>`.
 This class plays for :obj:`meep_adjoint` a role
 analogous to that of the |simulation| class in the core |pymeep|:
 its public methods offer access to the computational
