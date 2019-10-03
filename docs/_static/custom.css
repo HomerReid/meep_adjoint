@@ -47,9 +47,12 @@ code, .rst-content tt, .rst-content code, .rst-content code.xref, .wy-menu-verti
     white-space: normal;
 }
 
+/*
+ failed attempt to improve appearance of code strings in navigation menu
 .wy-nav-side code, .wy-body-for-nav code, .wy-menu-vertical li code {
     background: #a4c3b2;
 }
+*/
 
 
 .wy-nav-side {
