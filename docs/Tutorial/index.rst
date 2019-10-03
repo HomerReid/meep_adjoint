@@ -176,19 +176,20 @@ but in most cases you'll probably be able simply to copy the initialization
 code from this tutorial
 or one of the other :ref:`worked examples <Examples/index>` and modify as appropriate
 for your problem.
-Roughly speaking, instantiating an :class:`OptimizationProblem` requires
-three
+Roughly speaking, the inputrequired to instantiate an :class:`OptimizationProblem` requires
+three 
 may be divided into three categories:
 each of which 
 
-    * a description of the objective function and how it is computed
+    * parameters describing the objective function and how it is computed
 
-    * inputs describing the design space and the tweakable degrees of freedom
+    * parameters describing the design space and the tweakable degrees of freedom
 
 and of course
 
     * inputs describing the underlying FDTD simulation geometry in which
       the previous items are defined. 
+
 
 
 .. code-block:: python
