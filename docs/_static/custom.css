@@ -48,7 +48,7 @@ code, .rst-content tt, .rst-content code, .rst-content code.xref, .wy-menu-verti
 }
 
 
-a code
+a code { color: #2980b9; }
 
 /*
  failed attempt to improve appearance of code strings in navigation menu
