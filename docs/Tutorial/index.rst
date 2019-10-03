@@ -49,6 +49,9 @@ on two particular design tasks:
       output power, but rather maximal *uniformity* of power
       emissions from the three output ports.
 
+The 
+:mod:`an_example_pypi_project`
+
 
 ======================================================================
 Phases of a :obj:`meep_adjoint` session
@@ -172,7 +175,7 @@ progress of a computational session.
 The :class:`OptimizationProblem<OptimizationProblem>` constructor accepts a
 large number of required and optional input arguments, whose setup
 will typically occupy a straightforward but somewhat lengthy chunk
-of your driver script. In the
+of your driver script. Inf the
 
 ; you will find the full
 documentation for these in the :ref:`API reference <OptimizationProblem>`,
