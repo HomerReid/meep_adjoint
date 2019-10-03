@@ -1,9 +1,10 @@
-********************************************************************************
-Low-level (private) API: Internal classes and functions used within
-********************************************************************************
+***************************************************************************************
+Low-level (private) API: Classes and functions intended for use within :obj: `meep_adjoint`
+***************************************************************************************
 
 ================================================================================
-:class:`OptimizationProblem`: Driver class for :obj:`meep_adjoint` sessions
+:class:`TimeStepper`: Interface to back-end computational engine
+                      codename:`meep` or other FDTD
 ================================================================================
 
 .. _TheOptimizationProblemClass:
