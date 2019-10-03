@@ -1,19 +1,20 @@
-****************************************************************************************
-High-level interface: Public API
-****************************************************************************************
+********************************************************************************
+Low-level API: classes and functions
+********************************************************************************
 
-==========================================================================================
-:class:`OptimizationProblem`: Top-level class that drives :obj:`meep_adjoint` sessions
-==========================================================================================
+================================================================================
+:class:`OptimizationProblem`: Driver class for :obj:`meep_adjoint` sessions
+================================================================================
+
+.. _TheOptimizationProblemClass:
 
 .. autoclass:: OptimizationProblem
    :inherited-members:
 
 
 ==========================================================================================
-Module-wide routines for accessing configuration options
+Package-level functions for accessing configuration options
 ==========================================================================================
-
 
 ----------------------------------------------------------------------
 Adjoint-solver options
@@ -33,4 +34,4 @@ Visualization options
 
 .. autofunction:: meep_adjoint.set_visualization_option_defaults
 
-.. autofunction:: meep_adjoint.set_option_defaults(custom_defaults={}, search_env=True):
+.. autofunction:: meep_adjoint.set_option_defaults

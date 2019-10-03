@@ -1,5 +1,5 @@
 ****************************************************************************************
-High-level interface: Public API
+High-level API: Exported classes and functions
 ****************************************************************************************
 
 .. _TheOptimizationProblemClass:
