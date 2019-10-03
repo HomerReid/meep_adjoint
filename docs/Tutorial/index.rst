@@ -163,15 +163,15 @@ Creating an :class:`OptimizationProblem`
 The first step in every :obj:`meep_adjoint` workflow is
 to create an instance of :class:`OptimizationProblem`.
 This class plays for :obj:`meep_adjoint` a role
-analogous to the |simulation| class in the core |pymeep|
-package: its public methods offer access to the computational
+analogous to that of the |simulation| class in the core |pymeep|:
+its public methods offer access to the computational
 capabilities of the solver, and its internal data fields
 keep track of all data and state needed to track the
 progress of a computational session.
 
 The :class:`OptimizationProblem<OptimizationProblem>` constructor takes a large
 number of required and optional parameters, for which you will find full detailed
-documentation in the :ref:`API reference <API/optimization_problem>`; in most
+documentation in the :ref:`API reference <OptimizationProblem>`; in most
 cases you'll probably be able simply to copy the initialization code from this tutorial
 or one of the other :ref:`worked examples <Examples/index>` and modify as appropriate
 for your problem.
