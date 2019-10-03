@@ -170,7 +170,9 @@ keep track of all data and state needed to track the
 progress of a computational session.
 
 The :class:`OptimizationProblem<OptimizationProblem>` constructor accepts a
-large number of required and optional input arguments,
+large number of required and optional input arguments, 
+and 
+large number of required and optional input arguments, whose initialization
 you will find the full
 documentation for these in the :ref:`API reference <OptimizationProblem>`,
 but in most cases you'll probably be able simply to copy the initialization 
@@ -188,6 +190,8 @@ and of course
 
     * parameters describing the underlying FDTD simulation geometry.
 
+
+    :Parameters describing the underlying FDTD simulation geometry.
 
 
 
