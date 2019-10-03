@@ -47,6 +47,13 @@ code, .rst-content tt, .rst-content code, .rst-content code.xref, .wy-menu-verti
     white-space: normal;
 }
 
+.wy-body-for-nav code {
+    border: 0;
+    padding: inherit;
+    background: inherit;
+    color: inherit;
+}
+
 .wy-nav-side {
   color: #9b9b9b;
   background: #3c9a9a;
