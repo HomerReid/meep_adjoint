@@ -187,8 +187,7 @@ and of course
 
     * parameters describing the underlying FDTD simulation geometry.
 
-The 
-involves straightforward but somewhat lengthy
+The Initializing
 
 
     :Parameters describing the underlying FDTD simulation geometry.
