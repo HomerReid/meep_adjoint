@@ -161,7 +161,7 @@ Creating an :class:`OptimizationProblem`
 --------------------------------------------------
 
 The first step in every :obj:`meep_adjoint` workflow is
-to create an instance of :class:`OptimizationProblem`.
+to create an instance of :class:`meep_adjoint.OptimizationProblem`.
 This class plays for :obj:`meep_adjoint` a role
 analogous to that of the |simulation| class in the core |pymeep|:
 its public methods offer access to the computational
@@ -181,13 +181,11 @@ Roughly speaking, the input data required to instantiate an
     * inputs describing the objective function and how it is computed
 
     * inputs describing the design space and the tweakable degrees of freedom
-    * inputs describing the design space and the tweakable degrees of freedom
 
-    * inputs describing the design space and the tweakable degrees of freedom
+and of course
 
-and
-**(C)** inputs describing the underlying FDTD simulation geometry in which
-        the previous items are defined. 
+    * inputs describing the underlying FDTD simulation geometry in which
+      the previous items are defined. 
 
 
 .. code-block:: python
