@@ -1,10 +1,13 @@
-==============================================================
-API Reference
-==============================================================
+********************************************************************************
+API reference
+********************************************************************************
 
 .. toctree::
     :maxdepth: 3
     :caption: High-level interface: Public API functions and classes
+
+        The `OptimizationProblem` class
+        Visualization Module <Visualization/index>
 
         PublicAPI
 
