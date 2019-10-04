@@ -180,13 +180,7 @@ of arguments in the :ref:`API reference <OptimizationProblem>`,
 but in most cases you'll probably be able simply to copy the initialization 
 code from :mod:`Router.py`
 or one of the other :ref:`worked examples <Examples/index>` and modify as appropriate
-for your problem.
-
-In :mod:`Router.py` script, this is
-done by a function named `init_problem,` which accepts no arguments
-and returns a new instance of
-:class:`OptimizationProblem<OptimizationProblem>`.
-
+for your problem. 
 Roughly speaking, the inputs needed to instantiate an :class:`OptimizationProblem`
 may be grouped into three categories:
 
@@ -198,10 +192,13 @@ and of course
 
     * parameters describing the underlying FDTD simulation geometry.
 
-The Initializing
+In :mod:`Router.py` this setup is handled by a
 
+**Parameters describing the underlying FDTD simulation geometry:**
 
-    :Parameters describing the underlying FDTD simulation geometry.
+    :`cell_size`:
+
+    :`background_geometry`:
 
 
 
