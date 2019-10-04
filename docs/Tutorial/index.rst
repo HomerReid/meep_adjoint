@@ -213,7 +213,13 @@ may be grouped into three categories:
         of |simulation|.
 
 
-    :`background_geometry`:
+    :`sources`:
+
+        List of |Meep| structures describing material
+
+
+    :`source_region`:
+        This 
         
         
 

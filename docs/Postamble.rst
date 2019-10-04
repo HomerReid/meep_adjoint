@@ -53,6 +53,10 @@
 .. _adjoint sensitivity analysis: https://en.wikipedia.org/wiki/Adjoint_state_method
 
 
+.. |MeepSource| replace:: ``source``
+.. _MeepGaussianSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#gaussiansource
+
+
 .. |MeepGaussianSource| replace:: ``GaussianSource``
 .. _MeepGaussianSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#gaussiansource
 
