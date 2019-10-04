@@ -190,17 +190,15 @@ may be grouped into three categories:
 
     * parameters describing the design space and the tweakable degrees of freedom
 
-and of course
-
-In :mod:`Router.py` this setup is handled by a function 
-
 .. topic:: Parameters describing the underlying FDTD simulation geometry:
 
     :`cell_size`:
 
+        A ese are 
+
     :`background_geometry`:
 
-
+    :`foreground_geometry`:
 
 
 .. code-block:: python
