@@ -223,7 +223,13 @@ may be grouped into three categories:
     :`source_region`:
 
         This is a convenience argument that may be used instead of
-        `sources` for problems 
+        `sources` for problems with only a single excitation source.
+        If present, `source_region` should be a :class:`Subregion`
+        (or a |MeepVolume|) specifying the spatial extent of
+        the source, which is used together with the values of
+        :obj:`meep_adjoint` :ref:`configuration options</Customization/index>`
+        
+        the source, which is used together with the 
         
         
 

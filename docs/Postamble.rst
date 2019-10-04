@@ -57,6 +57,10 @@
 .. _MeepSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#source
 
 
+.. |MeepVolume| replace:: ``Volume``
+.. _MeepVolume: https://meep.readthedocs.io/en/latest/Python_User_Interface/#volume
+
+
 .. |MeepGaussianSource| replace:: ``GaussianSource``
 .. _MeepGaussianSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#gaussiansource
 
