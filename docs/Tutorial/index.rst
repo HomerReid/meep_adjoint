@@ -217,7 +217,7 @@ may be grouped into three categories:
 
         List of |MeepSource| structures describing excitation sources,
         passed without modification as the parameter of the same name
-        to the |simulation| constructor.
+        to the |simulation| constructor.[#f1]_
 
 
     :`source_region`:
@@ -226,10 +226,10 @@ may be grouped into three categories:
         `sources` for problems with only a single excitation source.
         If present, `source_region` should be a :class:`Subregion`
         (or a |MeepVolume|) specifying the spatial extent of
-        the source, which is used together with the values of
-        :obj:`meep_adjoint` :ref:`configuration options</Customization/index>`
-        
-        the source, which is used together with the 
+        the source, which :obj:`meep_adjoint` will use together
+        with the values of :ref:`configuration options</Customization/index>`[#f2]_
+        to construct a single-element list passed as the
+        `sources` parameter to the |simulation| constructor.
         
         
 
@@ -258,3 +258,8 @@ Phase 2: Interactive exploration
 ==================================================
 Phase 3: Automated optimization
 ==================================================
+
+
+.. [#f1] To clarify, these are the sources for the *forward* simulation; sources for the *adjoint* simulation are determined automatically within :obj:`meep_adjoint`.
+
+.. [#f2]
