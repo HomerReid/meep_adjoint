@@ -231,6 +231,19 @@ may be grouped into three categories:
         to construct a single-element list passed as the
         `sources` parameter to the |simulation| constructor.
         
+
+.. topic:: Parameters describing the objective function and how it is computed
+
+    :`objective`:
+
+
+    :`objective_regions`:
+
+        List of :class:`Subregion` structures
+
+
+.. topic:: Parameters describing the design space and the tweakable degrees of freedom
+
         
 
 
@@ -241,9 +254,6 @@ may be grouped into three categories:
    :name: this-py
 
    print 'Explicit is better than implicit.'
-
-
-And this would be a literal include foryaf:
 
 
 .. _Phase2:
@@ -262,4 +272,5 @@ Phase 3: Automated optimization
 
 .. [#f1] To clarify, these are the sources for the *forward* simulation; sources for the *adjoint* simulation are determined automatically within :obj:`meep_adjoint`.
 
-.. [#f2]
+.. [#f2] More specifically, the following configuration options
+         are referenced: `fcen`, `df`, `source_component`, and `source_mode`.

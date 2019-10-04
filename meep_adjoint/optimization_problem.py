@@ -92,8 +92,8 @@ class OptimizationProblem(object):
               As an alternative convenience convention, the caller may omit
               sources and instead specify source_region; in this case, a
               source distribution over the given region is automatically
-              created based on the values of module-wide adj_opt (such
-              as fcen, df, source_component, source_mode)
+              created based on the values of the module-wide configuration
+              options fcen, df, source_component, source_mode.
 
 
           extra_quantities  (list of str)
