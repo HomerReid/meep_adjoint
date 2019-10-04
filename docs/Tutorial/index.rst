@@ -50,7 +50,7 @@ on two particular design tasks:
       emissions from the three output ports.
 
 The 
-:mod:`an_example_pypi_project`
+:mod:`meep_adjoint.examples/an_example_pypi_project`
 
 
 ======================================================================
