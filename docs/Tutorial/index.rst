@@ -215,11 +215,15 @@ may be grouped into three categories:
 
     :`sources`:
 
-        List of |Meep| structures describing material
+        List of |MeepSource| structures describing excitation sources,
+        passed without modification as the parameter of the same name
+        to the |simulation| constructor.
 
 
     :`source_region`:
-        This 
+
+        This is a convenience argument that may be used instead of
+        `sources` for problems 
         
         
 
