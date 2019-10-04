@@ -209,8 +209,11 @@ may be grouped into three categories:
         lists contain objects that logically lie "beneath" and "above"
         the design region; internally, these lists are concatenated,
         with the automatically-created design object in between,
-        to form the list of objects passed to the `geometry` parameter
+        to form the list of objects passed as the `geometry` parameter
         of |simulation|.
+
+
+    :`background_geometry`:
         
         
 
