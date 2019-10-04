@@ -56,6 +56,9 @@
 .. |MeepGaussianSource| replace:: ``GaussianSource``
 .. _MeepGaussianSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#gaussiansource
 
+.. |MeepGeometricObject| replace:: ``GeometricObject``
+.. _MeepGeometricObject: https://meep.readthedocs.io/en/latest/Python_User_Interface/#geometricobject
+
 
 .. |get_array_metadata| replace:: ``get_array_metadata``
 .. _get_array_metadata: https://meep.readthedocs.io/en/latest/Python_User_Interface/#array-metadata

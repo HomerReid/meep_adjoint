@@ -194,11 +194,13 @@ may be grouped into three categories:
 
     :`cell_size`:
 
-        A ese are 
+        List or `numpy` array of computational cell dimensions.
 
     :`background_geometry`:
 
     :`foreground_geometry`:
+
+        List of |MeepGeometricObject| structures 
 
 
 .. code-block:: python
