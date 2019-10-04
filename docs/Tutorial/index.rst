@@ -175,17 +175,18 @@ progress of a computational session.
 The :class:`OptimizationProblem<OptimizationProblem>` constructor accepts a
 large number of required and optional input arguments, whose setup
 will typically occupy a straightforward but somewhat lengthy chunk
-of your driver script. In the :mod:`Router.py` script, this is
-done by the `init_problem` function, which accepts no arguments
-and 
-
-
-; you will find the full
-documentation for these in the :ref:`API reference <OptimizationProblem>`,
+of your driver script. You will find documentation for the full set
+of arguments in the :ref:`API reference <OptimizationProblem>`,
 but in most cases you'll probably be able simply to copy the initialization 
-code from this tutorial
+code from :mod:`Router.py`
 or one of the other :ref:`worked examples <Examples/index>` and modify as appropriate
 for your problem.
+
+In :mod:`Router.py` script, this is
+done by a function named `init_problem,` which accepts no arguments
+and returns a new instance of
+:class:`OptimizationProblem<OptimizationProblem>`.
+
 Roughly speaking, the inputs needed to instantiate an :class:`OptimizationProblem`
 may be grouped into three categories:
 
