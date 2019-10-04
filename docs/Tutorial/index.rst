@@ -184,17 +184,17 @@ for your problem.
 Roughly speaking, the inputs needed to instantiate an :class:`OptimizationProblem`
 may be grouped into three categories:
 
+    * parameters describing the underlying FDTD simulation geometry
+
     * parameters describing the objective function and how it is computed
 
     * parameters describing the design space and the tweakable degrees of freedom
 
 and of course
 
-    * parameters describing the underlying FDTD simulation geometry.
+In :mod:`Router.py` this setup is handled by a function 
 
-In :mod:`Router.py` this setup is handled by a
-
-**Parameters describing the underlying FDTD simulation geometry:**
+.. topic:: Parameters describing the underlying FDTD simulation geometry:
 
     :`cell_size`:
 
