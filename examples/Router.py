@@ -145,11 +145,16 @@ def init_problem():
     #----------------------------------------------------------------------
     #----------------------------------------------------------------------
     #----------------------------------------------------------------------
-    return OptimizationProblem(objective_regions=[north, south, east, west1, west2],
-                               objective=objective, design_region=design_region,
-                               cell_size=cell_size, background_geometry=[ew_wvg, ns_wvg],
-                               source_region=source_region, extra_quantities=extra_quantities,
-                               extra_regions=[full_region])
+    return OptimizationProblem(
+     cell_size=cell_size,
+     background_geometry=[ew_wvg, ns_wvg],
+     source_region=source_region,
+     objective=objective,
+     objective_regions=[north, south, east, west1, west2],
+     extra_quantities=extra_quantities,
+     design_region=design_region,
+     extra_regions=[full_region]
+    )
 
 
 ######################################################################

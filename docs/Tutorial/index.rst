@@ -194,13 +194,25 @@ may be grouped into three categories:
 
     :`cell_size`:
 
-        List or `numpy` array of computational cell dimensions.
+        List or `numpy` array of computational cell dimensions,
+        identical to the parameter of the same name passed to the
+        |simulation| constructor.
+        
 
     :`background_geometry`:
-
     :`foreground_geometry`:
 
-        List of |MeepGeometricObject| structures 
+        List of |MeepGeometricObject| structures describing material
+        bodies in the geometry, *not* including the design region,
+        for which :mod:`meep_adjoint` automatically creates an
+        appropriate object internally. The "background" and "foreground"
+        lists contain objects that logically lie "beneath" and "above"
+        the design region; internally, these lists are concatenated,
+        with the automatically-created design object in between,
+        to form the list of objects passed to the `geometry` parameter
+        of |simulation|.
+        
+        
 
 
 .. code-block:: python
