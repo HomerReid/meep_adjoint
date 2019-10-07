@@ -55,6 +55,8 @@ which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution. Click below for a sneak peak at this
 script, or read on for a step-by-step discussion.
 
+.. tutorial-router-py::
+
 
 .. admonition:: |RouterPyTitle|
    :class: code-listing
@@ -200,7 +202,7 @@ will typically occupy a straightforward but somewhat lengthy chunk
 of your driver script. You will find documentation for the full set
 of arguments in the :ref:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
-code from :mod:`router.py`
+code from :ref:`router.py<tutorial-router-py>`
 or one of the other :ref:`worked examples <example_gallery/index>` and modify as appropriate
 for your problem. 
 Roughly speaking, the inputs needed to instantiate an 
