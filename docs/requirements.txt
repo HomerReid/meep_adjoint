@@ -1,2 +1,0 @@
-meep
-sympy
