@@ -194,7 +194,7 @@ The :class:`OptimizationProblem<OptimizationProblem>` constructor accepts a
 large number of required and optional input arguments, whose setup
 will typically occupy a straightforward but somewhat lengthy chunk
 of your driver script. You will find documentation for the full set
-of arguments in the :ref:`API reference <OptimizationProblem>`,
+of arguments in the :ref:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
 code from :mod:`Router.py`
 or one of the other :ref:`worked examples <Examples/index>` and modify as appropriate
