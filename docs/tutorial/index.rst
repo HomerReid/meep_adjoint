@@ -57,6 +57,7 @@ source distribution.
 
 .. admonition:: |RouterPyTitle|
    :class: code-listing
+   :name: router-py
 
 
     .. literalinclude:: /example_gallery/router.py

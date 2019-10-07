@@ -231,13 +231,11 @@ h1 {
 
 .rst-content .code-listing {
     background-color: #F0F0F0;
-    border-collapse: separate;
     overflow-x: auto;
-    background-size: 100%;
 }
 
 /***************************************************/
-/* FIXME *******************************************/
+/***************************************************/
 /***************************************************/
 #router-py-listing {
     display: none;
