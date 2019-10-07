@@ -49,8 +49,20 @@ on two particular design tasks:
       output power, but rather maximal *uniformity* of power
       emissions from the three output ports.
 
-The 
-:mod:`meep_adjoint.examples/an_example_pypi_project`
+
+The driver script for this problem is 'Router.py',
+which lives in the `examples` subdirectory of the `meep_adjoint`
+eource distribution.
+
+.. container:: toggle
+
+   Hello, how are you?
+
+
+.. container:: toggle
+   
+    .. literalinclude:: examples/Router.py
+
 
 
 ======================================================================
