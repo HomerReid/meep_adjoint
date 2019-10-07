@@ -55,38 +55,19 @@ which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution.
 
 
-
-.. |RouterPy| raw:: html
-
-
-   <div class="admonition">
-     <p class="admonition-title">
-       <code>Router.py</code>
-       <a href="javascript:showhide(document.getElementById('howdage'))"> (Show/hide) </a>
-     </p>
-     <div id="howdage" style="display: none;">
-
-         Howdage, the hidable code goes here foryaf.
-
-     </div>
-   </div>
-
-
-
 .. admonition:: |RouterPyTitle|
    :class: code-listing
 
    .. literalinclude:: /Examples/Router.py
        :linenos:
-       :caption: `examples/Router.py`
        :name:    `router-py-listing`
        :class:   `code-listing`
 
 
 .. |RouterPyTitle| raw:: html
 
-       <code>Router.py</code>
-       <a href="javascript:showhide(document.getElementById('router-py-listing'))"> (Show/hide) </a>
+       File: <code xref>examples/Router.py</code>
+      <a href="javascript:showhide(document.getElementById('router-py-listing'))">   (Click to show/hide)   </a>
 
 
 
