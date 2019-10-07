@@ -213,7 +213,8 @@ may be grouped into three categories:
 .. admonition:: |Parms1|
    :class: collapsible
 
-    .. container:: parms1
+    .. container:: custom
+        :name: parms1
 
        :`cell_size`:
 
@@ -259,7 +260,7 @@ may be grouped into three categories:
 
 .. |Parms1| raw:: html
 
-      <a href="javascript:showhide(document.getElementById('parms1'))">
+      <a href="javascript:showhide(document.getElementByClassName('parms1'))">
       <b>Parameters describing the underlying FDTD simulation geometry</b>
       </a>
 
