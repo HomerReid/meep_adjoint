@@ -33,6 +33,8 @@ templates_path = ['_templates']
 source_suffix = ['.rst', '.md']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'Shorthand.rst']
 
+sys.path.insert(0,os.path.abspath('./_extensions'))
+
 extensions = [
  'recommonmark',
  'sphinx.ext.autodoc',
@@ -45,7 +47,8 @@ extensions = [
  'sphinx.ext.todo',
  'sphinx_rtd_theme',
  'IPython.sphinxext.ipython_console_highlighting',
- 'IPython.sphinxext.ipython_directive'
+ 'IPython.sphinxext.ipython_directive',
+ 'hidden_code_block'
 ]
 
 default_role = 'py:obj'
