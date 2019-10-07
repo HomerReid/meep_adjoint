@@ -287,10 +287,20 @@ may be grouped into three categories:
             List of :class:`Subregion` structures
 
 
+.. |Parms2| raw:: html
+
+      <a href="javascript:showhide(document.getElementsByClassName('parms2')[0])">
+      <b>Parameters describing the objective function and how it is computed</b>
+      </a>
+
+
+.. **********************************************************************
+.. **********************************************************************
+.. **********************************************************************
+
 .. topic:: Parameters describing the underlying FDTD simulation geometry:
         
 
-.. topic:: Parameters describing the objective function and how it is computed
 
 .. topic:: Parameters describing the design space and the tweakable degrees of freedom
 
