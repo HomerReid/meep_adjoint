@@ -74,9 +74,12 @@ source distribution.
       <a href="javascript:showhide(document.getElementById('router-py-listing'))">   (Click to show/hide)   </a>
 
 
+.. note:: 
 
-
-.. literalinclude:: /example_gallery/router.py
+    .. literalinclude:: /example_gallery/router.py
+       :linenos:
+       :name: hello-py-listing
+       :class: my-listing
 
 
 
