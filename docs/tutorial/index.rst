@@ -247,7 +247,7 @@ may be grouped into three categories:
         (or a |MeepVolume|) specifying the spatial extent of
         the source, which :obj:`meep_adjoint` will use together
         with the values of 
-        :ref:`configuration options</customization/index>` [#f2]_
+        :doc:`configuration options</customization/index>` [#f2]_
         to construct a single-element list passed as the
         `sources` parameter to the |simulation| constructor.
         

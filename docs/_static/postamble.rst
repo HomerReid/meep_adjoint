@@ -64,6 +64,9 @@
 .. |MeepGaussianSource| replace:: ``GaussianSource``
 .. _MeepGaussianSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#gaussiansource
 
+.. |MeepEigenmodeSource| replace:: ``EigenmodeSource``
+.. _MeepEigenmodeSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#eigenmodesource
+
 .. |MeepGeometricObject| replace:: ``GeometricObject``
 .. _MeepGeometricObject: https://meep.readthedocs.io/en/latest/Python_User_Interface/#geometricobject
 
