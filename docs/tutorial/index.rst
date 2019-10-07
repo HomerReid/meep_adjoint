@@ -58,13 +58,17 @@ source distribution.
 .. admonition:: |RouterPyTitle|
    :class: code-listing
 
+
    .. literalinclude:: /examples/router.py
        :linenos:
        :name:    `router-py-listing`
        :class:   `code-listing`
 
 
+
+
 .. |RouterPyTitle| raw:: html
+
 
        File: <code xref>examples/router.py</code>
       <a href="javascript:showhide(document.getElementById('router-py-listing'))">   (Click to show/hide)   </a>
