@@ -240,3 +240,8 @@ h1 {
 #router-py-listing {
     display: none;
 }
+
+#router-py blockquote {
+    display: none;
+    visible: hidden;
+}
