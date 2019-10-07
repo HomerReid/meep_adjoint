@@ -1,5 +1,0 @@
-#!/bin/bash
-
-sphinx-autobuild --open-browser --ignore '_build/*' . _build/html &
-
-#google-chrome --new-window file:///home/homer/work/Simpetus/meep/python/adjoint/docs/_build/html/index.html

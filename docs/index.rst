@@ -172,7 +172,7 @@ given performance specifications.
          sophisticated solvers as necessary; but, having said that,
          we note that the simple built-in optimizer suffices to
          yield good results on all the problems considered in
-         the :doc:`example gallery <Examples/index>`.
+         the :doc:`example gallery <example_gallery/index>`.
 
 
 =======================================
@@ -237,9 +237,9 @@ Table of Contents
 
    Installation <installation/index>
    Basis sets <visualization/index>
-   Visualization Module <Visualization/index>
-   Configuration and customization <Customization/index>
-   Test suite <TestSuite/index>
+   Visualization Module <visualization/index>
+   Configuration and customization <customization/index>
+   Test suite <test_suite/index>
 
 
 
@@ -247,8 +247,8 @@ Table of Contents
    :maxdepth: 3
    :caption: Implementation notes
 
-   Implementation I: Physics and math  <Implementation/MathAndPhysicsOfAdjoints>
-   Implementation II: Class hierarchy <Implementation/ClassHierarchy>
+   Implementation I: Physics and math  <implementation/MathAndPhysicsOfAdjoints>
+   Implementation II: Class hierarchy <implementation/ClassHierarchy>
 
 
 .. toctree::
@@ -285,8 +285,8 @@ Indices and tables
        derivatives by numerical finite-differencing and compare to
        components of the adjoint-method gradient. This is the basis
        of one of the tests in the :obj:`meep_adjoint` unit-test suite,
-       and also of the :doc:`holey waveguide <Examples/holey_waveguide>`
-       example in the :doc:`example gallery.<Examples/index>`
+       and also of the :doc:`holey waveguide <example_gallery/holey_waveguide>`
+       example in the :doc:`example gallery.<example_gallery/index>`
 
 
 .. |meep| raw:: html
@@ -296,9 +296,4 @@ Indices and tables
 
 .. |mpadj| raw:: html
 
-   <a class="codename" href="https://homerreid.github.io/meep-adjoint-documentation/Tutorial/index.html">meep_adjoint</a>
-
-
-.. |TopNavbarEntry| raw:: html
-
-    howdage foryaf
+   <a href="https://homerreid.github.io/meep-adjoint-documentation/index.html"><code xref>meep_adjoint</code></a>

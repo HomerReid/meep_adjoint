@@ -1,6 +1,0 @@
-name: pymeep
-channels:
-  - conda-forge
-dependencies:
-  - pymeep
-
