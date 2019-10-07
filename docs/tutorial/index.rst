@@ -50,8 +50,7 @@ on two particular design tasks:
       emissions from the three output ports.
 
 
-The driver script for this problem is 
-:doc:`|router-py|<example_gallery/router>`
+The driver script for this problem is :mod:`router.py`,
 which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution. Click below for a sneak peak at this
 script, or read on for a step-by-step discussion.
@@ -203,8 +202,9 @@ will typically occupy a straightforward but somewhat lengthy chunk
 of your driver script. You will find documentation for the full set
 of arguments in the :ref:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
-code from :ref:`router.py<tutorial-router-py>`
-or one of the other :ref:`worked examples <example_gallery/index>` and modify as appropriate
+code from :mod:`router.py` or one of the other
+:ref:`worked examples <example_gallery/index>` and modify as appropriate
+:doc:`worked examples <example_gallery/index>` and modify as appropriate
 for your problem. 
 Roughly speaking, the inputs needed to instantiate an 
 :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>`
