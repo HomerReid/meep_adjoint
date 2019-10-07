@@ -78,7 +78,7 @@ source distribution.
             **Show/Hide Code**
 
 
-           .. literalinclude:: Examples/Router.py
+           .. literalinclude:: /Examples/Router.py
                :linenos:
                :caption: `Examples/Router.py`
 
