@@ -256,7 +256,7 @@ Table of Contents
    :caption: API Reference
 
     High-level (public) API <API/high_level>
-    Low-level (internal) API <API/>
+    Low-level (internal) API <API/low_level>
 
 
 
