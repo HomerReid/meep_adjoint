@@ -188,7 +188,7 @@ quick rundown:
 1) *Initialization and Problem Definition:*
 You begin by creating an instance of :class:`optimization_problem`
 This is the top-level python class exported by :obj:`meep_adjoint`,
-analogous to the |simulation
+analogous to the |simulation|
 class in the core :obj:`meep` module; it stores all data and state
 relevant to the progress of a design optimization, and
 you will access most :obj:`meep_adjoint` functionality
@@ -225,9 +225,9 @@ Table of Contents
    :maxdepth: 3
    :caption: Overview and Invitation
 
-   Overview <Overview/index>
-   Tutorial <Tutorial/index>
-   Example Gallery <Examples/index>
+   Overview <overview/index>
+   Tutorial <tutorial/index>
+   Example Gallery <example_gallery/index>
 
 
 
@@ -235,8 +235,8 @@ Table of Contents
    :maxdepth: 3
    :caption: Reference
 
-   Installation <Installation/index>
-   Basis sets <Visualization/index>
+   Installation <installation/index>
+   Basis sets <visualization/index>
    Visualization Module <Visualization/index>
    Configuration and customization <Customization/index>
    Test suite <TestSuite/index>
