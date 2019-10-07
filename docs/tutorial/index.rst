@@ -50,7 +50,7 @@ on two particular design tasks:
       emissions from the three output ports.
 
 
-The driver script for this problem is 'Router.py',
+The driver script for this problem is 'router.py',
 which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution.
 
@@ -58,7 +58,7 @@ source distribution.
 .. admonition:: |RouterPyTitle|
    :class: code-listing
 
-   .. literalinclude:: /Examples/Router.py
+   .. literalinclude:: /examples/router.py
        :linenos:
        :name:    `router-py-listing`
        :class:   `code-listing`
@@ -66,7 +66,7 @@ source distribution.
 
 .. |RouterPyTitle| raw:: html
 
-       File: <code xref>examples/Router.py</code>
+       File: <code xref>examples/router.py</code>
       <a href="javascript:showhide(document.getElementById('router-py-listing'))">   (Click to show/hide)   </a>
 
 
@@ -196,7 +196,7 @@ will typically occupy a straightforward but somewhat lengthy chunk
 of your driver script. You will find documentation for the full set
 of arguments in the :ref:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
-code from :mod:`Router.py`
+code from :mod:`router.py`
 or one of the other :ref:`worked examples <Examples/index>` and modify as appropriate
 for your problem. 
 Roughly speaking, the inputs needed to instantiate an :class:`OptimizationProblem`
