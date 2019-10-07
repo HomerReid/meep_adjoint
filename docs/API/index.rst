@@ -5,23 +5,8 @@ API reference
 .. toctree::
     :maxdepth: 3
 
-        High-level API: Public classes
-        The `OptimizationProblem` class <
+    High-level (public) API </API/high_level>
+        Howdage, this is the description foryaf.
 
-        Visualization Module <Visualization/index>
-
-        PublicAPI
-
-
-.. toctree::
-    :maxdepth: 3
-    :caption: Lower-level classes
-
-        LowLevel
-
-
-.. toctree::
-    :maxdepth: 3
-    :caption: The ``Basis`` class:
-
-        LowLevel
+    Low-level (internal) API </API/low_level>
+        Righty-ho, this is the text.
