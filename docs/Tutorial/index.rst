@@ -54,15 +54,12 @@ The driver script for this problem is 'Router.py',
 which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution.
 
-.. note:: Howdage foryaf
-
-    This is the content of the note foryaf.
-
 
 |howdage|
 
 
 .. |howdage| raw:: html
+
 
    <div class="admonition">
      <p class="admonition-title">
@@ -70,42 +67,21 @@ source distribution.
        <a href="javascript:showhide(document.getElementById('howdage'))"> (Show/hide) </a>
      </p>
      <div id="howdage" style "display: none">
-        <p>Hello
-        <p>Howdage
+
+         Howdage, the hidable code goes here foryaf.
+
      </div>
    </div>
 
-.. hidden-code-block:: python
-    :starthidden: True
-
-    a = 10
-    b = a + 5
-
-.. hidden-code-block:: python
-    :label: --- SHOW/HIDE ---
-
-    .. literalinclude:: Examples/Router.py
-        :linenos:
-        :caption: `Examples/Router.py`
 
 
-.. admonition:: Router.py
+.. admonition:: `Router.py`
+
+   .. literalinclude:: /Examples/Router.py
+       :linenos:
+       :caption: `Examples/Router.py`
 
 
-    .. container:: toggle
-
-        .. container:: header
-            
-            show/hide
-
-
-            Hello 
-            Howdage
-
-
-.. literalinclude:: /Examples/Router.py
-    :linenos:
-    :caption: `Examples/Router.py`
 
 
 ======================================================================
