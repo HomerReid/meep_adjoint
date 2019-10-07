@@ -211,59 +211,55 @@ may be grouped into three categories:
 
 
 .. admonition:: |Parms1|
-   :name: parms1-content
+   :class: collapsible
+
+    .. container:: parms1
+
+       :`cell_size`:
+
+           List or `numpy` array of computational cell dimensions,
+           identical to the parameter of the same name passed to the
+           |simulation| constructor.
+           
+
+       :`background_geometry`:
+       :`foreground_geometry`:
+
+           List of |MeepGeometricObject| structures describing material
+           bodies in the geometry, *not* including the design region,
+           for which :mod:`meep_adjoint` automatically creates an
+           appropriate object internally. The "background" and "foreground"
+           lists contain objects that logically lie "beneath" and "above"
+           the design region; internally, these lists are concatenated,
+           with the automatically-created design object in between,
+           to form the list of objects passed as the `geometry` parameter
+           of |simulation|.
 
 
-    :`cell_size`:
+       :`sources`:
 
-        List or `numpy` array of computational cell dimensions,
-        identical to the parameter of the same name passed to the
-        |simulation| constructor.
-        
-
-    :`background_geometry`:
-    :`foreground_geometry`:
-
-        List of |MeepGeometricObject| structures describing material
-        bodies in the geometry, *not* including the design region,
-        for which :mod:`meep_adjoint` automatically creates an
-        appropriate object internally. The "background" and "foreground"
-        lists contain objects that logically lie "beneath" and "above"
-        the design region; internally, these lists are concatenated,
-        with the automatically-created design object in between,
-        to form the list of objects passed as the `geometry` parameter
-        of |simulation|.
+           List of |MeepSource| structures describing excitation sources,
+           passed without modification as the parameter of the same name
+           to the |simulation| constructor. [#f1]_
 
 
-    :`sources`:
+       :`source_region`:
 
-        List of |MeepSource| structures describing excitation sources,
-        passed without modification as the parameter of the same name
-        to the |simulation| constructor. [#f1]_
-
-
-    :`source_region`:
-
-        This is a convenience argument that may be used instead of
-        `sources` for problems with only a single excitation source.
-        If present, `source_region` should be a 
-        :class:`Subregion <meep_adjoint.dft_cell.Subregion>`
-        (or a |MeepVolume|) specifying the spatial extent of
-        the source, which :obj:`meep_adjoint` will use together
-        with the values of 
-        :doc:`configuration options</customization/index>` [#f2]_
-        to construct a single-element list passed as the
-        `sources` parameter to the |simulation| constructor.
-    .. literalinclude:: /example_gallery/router.py
-       :linenos:
-       :name: router-py-listing
-       :class: code-listing
-
+           This is a convenience argument that may be used instead of
+           `sources` for problems with only a single excitation source.
+           If present, `source_region` should be a 
+           :class:`Subregion <meep_adjoint.dft_cell.Subregion>`
+           (or a |MeepVolume|) specifying the spatial extent of
+           the source, which :obj:`meep_adjoint` will use together
+           with the values of 
+           :doc:`configuration options</customization/index>` [#f2]_
+           to construct a single-element list passed as the
+           `sources` parameter to the |simulation| constructor.
 
 
 .. |Parms1| raw:: html
 
-      <a href="javascript:showhide(document.getElementById('parms1-content'))">
+      <a href="javascript:showhide(document.getElementById('parms1'))">
       <b>Parameters describing the underlying FDTD simulation geometry</b>
       </a>
 
