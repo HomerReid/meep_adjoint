@@ -1,3 +1,5 @@
+.. module:: meep_adjoint
+
 ***********************************************************************************
 :obj:`meep_adjoint`: A python module for adjoint sensitivity analysis in MEEP
 ***********************************************************************************
@@ -8,7 +10,7 @@ or read on for a quick-start summary.
 =========================
 What does this module do?
 =========================
-You'll find a longer answer in the :doc:`Overview <Overview/index>`
+You'll find a longer answer in the :doc:`Overview <overview/index>`
 (and a more succinct one in the :doc:`API Reference <API/index>`),
 but, in a nutshell: It extends the computational capabilities of the
 core |meep| solver in a particular way that facilitates interaction
@@ -23,9 +25,9 @@ given performance specifications.
         :obj:`meep_adjoint` does. Consider a typical design problem
         in which we seek to tune a device geometry to optimize some
         performance metric.
-        For example, in the :doc:`right-angle router <Examples/router>`
+        For example, in the :doc:`right-angle router <example_gallery/router>`
         example in the :obj:`meep_adjoint`
-        :doc:`example gallery <Examples/index>`,
+        :doc:`example gallery <example_gallery/index>`,
         we are designing a four-waveguide interconnect for an optical network,
         and our goal is to choose the permittivity distribution
         :math:`\epsilon(\mathbf{x})` in the junction region to steer
@@ -178,15 +180,15 @@ What does a typical workflow look like?
 =======================================
 
 You'll find a full step-by-step walkthrough in the
-:doc:`Tutorial <Tutorial/index>` and additional guided case studies
-in the :doc:`Example gallery <Examples/index>`, but here is a
+:doc:`Tutorial <tutorial/index>` and additional guided case studies
+in the :doc:`Example gallery <example_gallery/index>`, but here is a
 quick rundown:
 
 
 1) *Initialization and Problem Definition:*
 You begin by creating an instance of :class:`optimization_problem`
 This is the top-level python class exported by :obj:`meep_adjoint`,
-analogous to the `Simulation <Simulation_>`_
+analogous to the |simulation
 class in the core :obj:`meep` module; it stores all data and state
 relevant to the progress of a design optimization, and
 you will access most :obj:`meep_adjoint` functionality
