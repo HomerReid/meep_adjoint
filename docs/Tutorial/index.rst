@@ -54,16 +54,18 @@ The driver script for this problem is 'Router.py',
 which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution.
 
-.. rubric:: `examples/Router.py`
+.. container:: toggle
 
-    .. container:: toggle
+    .. container:: header
 
-        .. container:: header
+        **Show/Hide Code**
 
-             **Show/Hide Code**
 
-        .. literalinclude:: Examples/Router.py
+    .. admonition:: Router.py
+
+       .. literalinclude:: Examples/Router.py
            :linenos:
+              :caption: `Examples/Router.py`
 
 
 ======================================================================
