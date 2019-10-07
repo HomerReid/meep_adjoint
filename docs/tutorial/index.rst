@@ -75,6 +75,11 @@ source distribution.
 
 
 
+
+.. literalinclude:: /example_gallery/router.py
+
+
+
 ======================================================================
 Phases of a :obj:`meep_adjoint` session
 ======================================================================
