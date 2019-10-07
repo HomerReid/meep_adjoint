@@ -293,4 +293,12 @@ Phase 3: Automated optimization
 .. [#f1] To clarify, these are the sources for the *forward* simulation; sources for the *adjoint* simulation are determined automatically within :obj:`meep_adjoint`.
 
 .. [#f2] More specifically, the following configuration options
-         are referenced: `fcen`, `df`, `source_component`, and `source_mode`.
+         are referenced: `fcen`, `df`, `source_mode`, and `source_component`.
+
+         If `source_mode>=1`, the source is an |MeepEigenmodeSource|
+         for the eigenmode of the given index; in this case the 
+         `source_component` option is not referenced.
+
+         Otherwise (i.e. `source_mode==0`), the source is an ordinary
+         |MeepSource| with component determined by the value of
+         `source_component` (which should be a string like ``Ex`` or ``Hy``).

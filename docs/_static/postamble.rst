@@ -67,6 +67,9 @@
 .. |MeepEigenmodeSource| replace:: ``EigenmodeSource``
 .. _MeepEigenmodeSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#eigenmodesource
 
+.. |MeepSource| replace:: ``VolumeSource``
+.. _MeepSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#source
+
 .. |MeepGeometricObject| replace:: ``GeometricObject``
 .. _MeepGeometricObject: https://meep.readthedocs.io/en/latest/Python_User_Interface/#geometricobject
 
