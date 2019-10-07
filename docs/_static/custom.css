@@ -239,8 +239,8 @@ h1 {
 /****************************************************/
 .rst-content .collapsible .admonition-title {
     background-color: #FFC99D;
-    background-color: #DB6153;
-    color:      #000000;
+    background-color: #D3DBE9;
+/*    color:      #000000;*/
 }
 
 .rst-content .collapsible .admonition-title:before {

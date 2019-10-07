@@ -265,18 +265,25 @@ may be grouped into three categories:
       </a>
 
 
+
+.. admonition:: |Parms2|
+    :class: collapsible
+
+    .. container:: default-hidden
+        :name: parms1
+
+        :`objective`:
+
+
+        :`objective_regions`:
+
+            List of :class:`Subregion` structures
+
+
 .. topic:: Parameters describing the underlying FDTD simulation geometry:
         
 
 .. topic:: Parameters describing the objective function and how it is computed
-
-    :`objective`:
-
-
-    :`objective_regions`:
-
-        List of :class:`Subregion` structures
-
 
 .. topic:: Parameters describing the design space and the tweakable degrees of freedom
 
