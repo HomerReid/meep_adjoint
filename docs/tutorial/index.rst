@@ -52,12 +52,12 @@ on two particular design tasks:
 
 The driver script for this problem is 'router.py',
 which lives in the `examples` subdirectory of the `meep_adjoint`
-source distribution.
+source distribution. Click below for a sneak peak at this
+script, or read on for a step-by-step discussion.
 
 
 .. admonition:: |RouterPyTitle|
    :class: code-listing
-   :name: router-py
 
 
     .. literalinclude:: /example_gallery/router.py
@@ -73,15 +73,6 @@ source distribution.
 
        File: <code xref>examples/router.py</code>
       <a href="javascript:showhide(document.getElementById('router-py-listing'))">   (Click to show/hide)   </a>
-
-
-.. note:: 
-
-    .. literalinclude:: /example_gallery/router.py
-       :linenos:
-       :name: hello-py-listing
-       :class: my-listing
-
 
 
 ======================================================================
@@ -210,7 +201,7 @@ of your driver script. You will find documentation for the full set
 of arguments in the :ref:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
 code from :mod:`router.py`
-or one of the other :ref:`worked examples <Examples/index>` and modify as appropriate
+or one of the other :doc:`worked examples <example_gallery/index>` and modify as appropriate
 for your problem. 
 Roughly speaking, the inputs needed to instantiate an :class:`OptimizationProblem`
 may be grouped into three categories:
