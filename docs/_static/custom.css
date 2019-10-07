@@ -240,3 +240,20 @@ h1 {
 #router-py-listing {
     display: none;
 }
+
+#parms1-content {
+    display: block;
+}
+
+#parms1-content .admonition-title {
+    display: block;
+}
+
+
+#parms2-content {
+    display: none;
+}
+
+#parms3-content {
+    display: none;
+}

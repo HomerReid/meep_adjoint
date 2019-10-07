@@ -211,8 +211,7 @@ may be grouped into three categories:
 
 
 .. admonition:: |Parms1|
-   :class: code-listing
-
+   :name: parms1-content
 
 
     :`cell_size`:
@@ -264,14 +263,10 @@ may be grouped into three categories:
 
 .. |Parms1| raw:: html
 
-      <a href="javascript:showhide(document.getElementById('parms1'))">
+      <a href="javascript:showhide(document.getElementById('parms1-content'))">
       <b>Parameters describing the underlying FDTD simulation geometry</b>
       </a>
 
-
-    * parameters describing the objective function and how it is computed
-
-    * parameters describing the design space and the tweakable degrees of freedom
 
 .. topic:: Parameters describing the underlying FDTD simulation geometry:
         
