@@ -77,6 +77,7 @@
 .. |get_array_metadata| replace:: ``get_array_metadata``
 .. _get_array_metadata: https://meep.readthedocs.io/en/latest/Python_User_Interface/#array-metadata
 
+.. |mpadj| replace:: :mod:`meep_adjoint`
 
 
 .. |thickline| raw:: html

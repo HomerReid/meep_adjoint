@@ -50,7 +50,8 @@ on two particular design tasks:
       emissions from the three output ports.
 
 
-The driver script for this problem is 'router.py',
+The driver script for this problem is 
+:doc:`|router-py|<example_gallery/router>`
 which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution. Click below for a sneak peak at this
 script, or read on for a step-by-step discussion.
