@@ -234,9 +234,31 @@ h1 {
     overflow-x: auto;
 }
 
+/****************************************************/
+/****************************************************/
+/****************************************************/
+.rst-content .collapsible .admonition-title {
+    background-color: #FFC99D;
+    background-color: #DB6153;
+    color:      #000000;
+}
+
+.rst-content .collapsible .admonition-title:before {
+    content: "\f06E";
+}
+
+.rst-content .collapsible {
+    background-color: #F2DBB7;
+    overflow-x: auto;
+}
+
 /***************************************************/
 /***************************************************/
 /***************************************************/
 #router-py-listing {
+    display: none;
+}
+
+.default-hidden {
     display: none;
 }
