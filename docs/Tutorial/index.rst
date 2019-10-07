@@ -52,17 +52,18 @@ on two particular design tasks:
 
 The driver script for this problem is 'Router.py',
 which lives in the `examples` subdirectory of the `meep_adjoint`
-eource distribution.
+source distribution.
 
-.. container:: toggle
+.. rubric:: `examples/Router.py`
 
-   Hello, how are you?
+    .. container:: toggle
 
+        .. container:: header
 
-.. container:: toggle
-   
-    .. literalinclude:: examples/Router.py
+             **Show/Hide Code**
 
+        .. literalinclude:: Examples/Router.py
+           :linenos:
 
 
 ======================================================================
