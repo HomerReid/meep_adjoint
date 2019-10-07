@@ -59,10 +59,10 @@ source distribution.
    :class: code-listing
 
 
-   .. literalinclude:: /examples/router.py
+    .. literalinclude:: /example_gallery/router.py
        :linenos:
-       :name:    `router-py-listing`
-       :class:   `code-listing`
+       :name: router-py-listing
+       :class: code-listing
 
 
 
