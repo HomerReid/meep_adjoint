@@ -54,6 +54,10 @@ The driver script for this problem is 'Router.py',
 which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution.
 
+.. note:: Howdage foryaf
+
+    This is the content of the note foryaf.
+
 
 |howdage|
 
@@ -65,10 +69,9 @@ source distribution.
        <code>Router.py</code>
        <a href="javascript:showhide(document.getElementById('howdage'))"> (Show/hide) </a>
      </p>
-     <div class="toggle docutils container" id="howdage">
-       <p>Hello
-          Howdage
-       </p>
+     <div id="howdage" style "display: none">
+        <p>Hello
+        <p>Howdage
      </div>
    </div>
 
