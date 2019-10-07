@@ -203,20 +203,17 @@ of your driver script. You will find documentation for the full set
 of arguments in the :ref:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
 code from :mod:`router.py` or one of the other
-:ref:`worked examples <example_gallery/index>` and modify as appropriate
-:doc:`worked examples <example_gallery/index>` and modify as appropriate
+:ref:`worked examples </example_gallery/index>` and modify as appropriate
 for your problem. 
 Roughly speaking, the inputs needed to instantiate an 
 :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>`
 may be grouped into three categories:
 
-    * parameters describing the underlying FDTD simulation geometry
 
-    * parameters describing the objective function and how it is computed
+.. admonition:: |Parms1|
+   :class: code-listing
 
-    * parameters describing the design space and the tweakable degrees of freedom
 
-.. topic:: Parameters describing the underlying FDTD simulation geometry:
 
     :`cell_size`:
 
@@ -258,6 +255,25 @@ may be grouped into three categories:
         :doc:`configuration options</customization/index>` [#f2]_
         to construct a single-element list passed as the
         `sources` parameter to the |simulation| constructor.
+    .. literalinclude:: /example_gallery/router.py
+       :linenos:
+       :name: router-py-listing
+       :class: code-listing
+
+
+
+.. |Parms1| raw:: html
+
+      <a href="javascript:showhide(document.getElementById('parms1'))">
+      <b>Parameters describing the underlying FDTD simulation geometry</b>
+      </a>
+
+
+    * parameters describing the objective function and how it is computed
+
+    * parameters describing the design space and the tweakable degrees of freedom
+
+.. topic:: Parameters describing the underlying FDTD simulation geometry:
         
 
 .. topic:: Parameters describing the objective function and how it is computed
