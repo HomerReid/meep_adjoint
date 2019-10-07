@@ -55,18 +55,10 @@ which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution.
 
 
-.. hidden-code-block:: python
+|RouterPyListing|
 
 
-    Howdage foryaf!
-
-
-
-
-|howdage|
-
-
-.. |howdage| raw:: html
+.. |RouterPy| raw:: html
 
 
    <div class="admonition">
@@ -87,7 +79,9 @@ source distribution.
 
    .. literalinclude:: /Examples/Router.py
        :linenos:
-       :caption: `Examples/Router.py`
+       :caption: `examples/Router.py`
+       :name:    `examples_Router_py`
+       :class:   `code_listing`
 
 
 
