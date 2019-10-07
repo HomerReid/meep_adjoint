@@ -235,14 +235,15 @@ may be grouped into three categories:
 
         List of |MeepSource| structures describing excitation sources,
         passed without modification as the parameter of the same name
-        to the |simulation| constructor.[#f1]_
+        to the |simulation| constructor. [#f1]_
 
 
     :`source_region`:
 
         This is a convenience argument that may be used instead of
         `sources` for problems with only a single excitation source.
-        If present, `source_region` should be a :class:`Subregion`
+        If present, `source_region` should be a 
+        :class:`Subregion <meep_adjoint.dft_cell.Subregion>`
         (or a |MeepVolume|) specifying the spatial extent of
         the source, which :obj:`meep_adjoint` will use together
         with the values of :ref:`configuration options</Customization/index>`[#f2]_
