@@ -55,6 +55,14 @@ which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution.
 
 
+.. hidden-code-block:: python
+
+
+    Howdage foryaf!
+
+
+
+
 |howdage|
 
 
@@ -66,7 +74,7 @@ source distribution.
        <code>Router.py</code>
        <a href="javascript:showhide(document.getElementById('howdage'))"> (Show/hide) </a>
      </p>
-     <div id="howdage" style "display: none">
+     <div id="howdage" style="display: none;">
 
          Howdage, the hidable code goes here foryaf.
 
@@ -80,7 +88,6 @@ source distribution.
    .. literalinclude:: /Examples/Router.py
        :linenos:
        :caption: `Examples/Router.py`
-
 
 
 
