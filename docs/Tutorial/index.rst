@@ -55,8 +55,6 @@ which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution.
 
 
-|RouterPyListing|
-
 
 .. |RouterPy| raw:: html
 
@@ -75,13 +73,20 @@ source distribution.
 
 
 
-.. admonition:: `Router.py`
+.. admonition:: |RouterPyTitle|
+       :class:   `code_listing`
 
    .. literalinclude:: /Examples/Router.py
        :linenos:
        :caption: `examples/Router.py`
-       :name:    `examples_Router_py`
+       :name:    `router-py-listing`
        :class:   `code_listing`
+
+
+.. |RouterPyTitle| raw:: html
+
+       <code>Router.py</code>
+       <a href="javascript:showhide(document.getElementById('router-py-listing'))"> (Show/hide) </a>
 
 
 
