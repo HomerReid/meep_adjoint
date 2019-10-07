@@ -33,8 +33,6 @@ templates_path = ['_templates']
 source_suffix = ['.rst', '.md']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'Shorthand.rst']
 
-sys.path.insert(0,os.path.abspath('./_extensions'))
-
 extensions = [
  'recommonmark',
  'sphinx.ext.autodoc',
@@ -47,8 +45,7 @@ extensions = [
  'sphinx.ext.todo',
  'sphinx_rtd_theme',
  'IPython.sphinxext.ipython_console_highlighting',
- 'IPython.sphinxext.ipython_directive',
- 'hidden_code_block'
+ 'IPython.sphinxext.ipython_directive'
 ]
 
 default_role = 'py:obj'
@@ -81,8 +78,8 @@ inline_highlight_literals = True
 ######################################################################
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = ["."]
-html_css_files = ['custom.css', 'toggle_view.css']
-html_js_files = ['
+html_css_files = ['custom.css']
+html_js_files = ['toggle_visibility.js']
 html_static_path = ['_static']
 html_compact_lists = False
 #html_logo =
