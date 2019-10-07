@@ -238,5 +238,5 @@ h1 {
 /***************************************************/
 #router-py-listing {
 /*    display: block;*/
-  visibility: hidden;
+  visibility: visible;
 }
