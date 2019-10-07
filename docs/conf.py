@@ -82,6 +82,7 @@ inline_highlight_literals = True
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = ["."]
 html_css_files = ['custom.css', 'toggle_view.css']
+html_js_files = ['
 html_static_path = ['_static']
 html_compact_lists = False
 #html_logo =
