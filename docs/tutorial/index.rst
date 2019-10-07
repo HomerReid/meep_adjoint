@@ -211,6 +211,7 @@ may be grouped into three categories:
 
 
 .. admonition:: |Parms1|
+    :class: collapsible
 
     .. container:: default-hidden
         :name: parms1
