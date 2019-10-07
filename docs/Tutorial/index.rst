@@ -74,7 +74,7 @@ source distribution.
 
 
 .. admonition:: |RouterPyTitle|
-       :class:   `code_listing`
+   :class: code_listing
 
    .. literalinclude:: /Examples/Router.py
        :linenos:
