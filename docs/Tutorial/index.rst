@@ -74,13 +74,17 @@ source distribution.
     .. container:: toggle
 
         .. container:: header
+            
+            show/hide
 
-            **Show/Hide Code**
+
+            Hello 
+            Howdage
 
 
-           .. literalinclude:: /Examples/Router.py
-               :linenos:
-               :caption: `Examples/Router.py`
+.. literalinclude:: /Examples/Router.py
+    :linenos:
+    :caption: `Examples/Router.py`
 
 
 ======================================================================
