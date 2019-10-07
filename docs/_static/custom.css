@@ -215,3 +215,14 @@ h1 {
     border: 1px dashed;
     border-radius: 3px;
 }
+
+/****************************************************/
+/****************************************************/
+/****************************************************/
+.rst-content .code-listing .admonition-title {
+    background: #FFC99D;
+}
+
+.rst-content .code-listing {
+    background: #F0F0F0;
+}

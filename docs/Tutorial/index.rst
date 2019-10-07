@@ -74,13 +74,13 @@ source distribution.
 
 
 .. admonition:: |RouterPyTitle|
-   :class: code_listing
+   :class: code-listing
 
    .. literalinclude:: /Examples/Router.py
        :linenos:
        :caption: `examples/Router.py`
        :name:    `router-py-listing`
-       :class:   `code_listing`
+       :class:   `code-listing`
 
 
 .. |RouterPyTitle| raw:: html
