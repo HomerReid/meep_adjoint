@@ -237,5 +237,6 @@ h1 {
 /* FIXME *******************************************/
 /***************************************************/
 #router-py-listing {
-    display: none;
+/*    display: block;*/
+  visibility: hidden;
 }
