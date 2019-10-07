@@ -56,11 +56,11 @@ nitpicky = True    # issue warnings for all broken links
 # text to be automatically included at top and bottom of all .rst files
 ######################################################################
 rst_prolog = """
-.. include:: /Preamble.rst
+.. include:: /_static/preamble.rst
 """
 
 rst_epilog = """
-.. include:: /Postamble.rst
+.. include:: /_static/postamble.rst
 """
 
 ######################################################################
@@ -79,7 +79,7 @@ inline_highlight_literals = True
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = ["."]
 html_css_files = ['custom.css']
-html_js_files = ['toggle_visibility.js']
+#html_js_files = ['toggle_visibility.js']
 html_static_path = ['_static']
 html_compact_lists = False
 #html_logo =
@@ -119,7 +119,6 @@ def post_build_hook(app, exception):
         for file in files:
             if file.endswith(".html"):
                 cleanup_html_file(root + '/' + file)
-
 
 def setup(app):
     app.connect('build-finished',post_build_hook)
