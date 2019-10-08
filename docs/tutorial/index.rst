@@ -336,10 +336,22 @@ may be grouped into three categories:
 .. router_py_walkthrough::
 
 ----------------------------------------------------------------------
-:mod:`router.py` code walkthrough
+Annotated walkthrough of `router.py` initialization and setup code
 ----------------------------------------------------------------------
 
-Fetch
+In :mod:`router.py,` the setup and initialization code lives
+in a function called `init_problem`, which accepts no arguments
+and returns a new instance of 
+:class:`OptimizationProblem <meep_adjoint.OptimizationProblem>`,
+referring both to `router.py`-specific command-line arguments
+and `meep_adjoint`-wide
+:doc:`configuration options </configuration/index>`
+for various pieces of information.
+
+script contains a function
+
+We begin by parsing command-line arguments to `router.py`,
+and also 
 
 Determine dimensions for the computational cell:
 referring both to script-specific command-line arguments
@@ -354,13 +366,13 @@ and :obj:`meep_adjoint`
    cell_size     = [sx, sy, sz]
         
 
-|thickline|
-
 .. _Phase2:
 
 ==================================================
 Phase 2: Interactive exploration
 ==================================================
+
+As discussed above, the 
 
 
 .. _Phase3:
