@@ -204,7 +204,12 @@ of arguments in the :ref:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
 code from :mod:`router.py` or one of the other
 :ref:`worked examples </example_gallery/index>` and modify as appropriate
-for your problem. The following section
+for your problem. 
+The :ref:`following section<router_py_walkthrough>`
+provides an annotated walkthrough of the initialization code
+in :mod:`router.py`; for now, here's some quick-reference documentation
+describing the primary constructor input parameters.
+
 Roughly speaking, the inputs needed to instantiate an 
 :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>`
 may be grouped into three categories:
