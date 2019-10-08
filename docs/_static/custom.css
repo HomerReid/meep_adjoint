@@ -245,10 +245,11 @@ h1 {
 
 .rst-content .collapsible .admonition-title:before {
     content: "\f06E";
+    color:   #FF00FF;
 }
 
 .rst-content .collapsible {
-    background-color: #F2DBB7;
+    background-color: #F0F0F0;
     overflow-x: auto;
 }
 

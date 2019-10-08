@@ -196,6 +196,10 @@ capabilities of the solver, and its internal data fields
 keep track of all data and state needed to track the
 progress of a computational session.
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+class:`OptimizationProblem` constructor arguments
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 The :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>` constructor accepts a
 large number of required and optional input arguments, whose setup
 will typically occupy a straightforward but somewhat lengthy chunk
