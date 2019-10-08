@@ -285,10 +285,14 @@ may be grouped into three categories:
 
         :`objective`:
 
+            Character string specifying a mathematical expression
+            involving one or more objective quantities.
+
 
         :`objective_regions`:
 
-            List of :class:`Subregion` structures
+            List of :class:`Subregion` structures for all
+            objective regions.
 
 
 .. |Parms2| raw:: html
