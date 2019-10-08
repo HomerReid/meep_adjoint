@@ -180,12 +180,8 @@ stages of a typical :obj:`meep_adjoint` session:
 .. _Phase1:
 
 ==================================================
-Phase 1: Problem definition and initialization
+Phase 1: Problem definition and initialization: |br| Creating an :class:`OptimizationProblem`
 ==================================================
-
---------------------------------------------------
-Creating an :class:`OptimizationProblem`
---------------------------------------------------
 
 The first step in every `meep_adjoint` workflow is
 to create an instance of :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>`.
@@ -196,9 +192,9 @@ capabilities of the solver, and its internal data fields
 keep track of all data and state needed to track the
 progress of a computational session.
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+----------------------------------------------------------------------
 :class:`OptimizationProblem` constructor arguments: quick reference
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+----------------------------------------------------------------------
 
 The :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>` constructor accepts a
 large number of required and optional input arguments, whose setup
@@ -332,10 +328,26 @@ may be grouped into three categories:
       </a>
 
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+----------------------------------------------------------------------
 :mod:`router.py` code walkthrough
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        
+----------------------------------------------------------------------
+
+We begin by
+
+.. sidebar:: howdage
+
+    #----------------------------------------
+    # computational cell
+    #----------------------------------------
+    lcen          = 1.0/fcen
+    dpml          = 0.5*lcen if dpml==-1.0 else dpml
+    design_length = args.l_design
+    sx = sy       = dpml + args.l_stub + design_length + args.l_stub + dpml
+    sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
+    cell_size     = [sx, sy, sz]
+  
+
+
 
 
 .. code-block:: python

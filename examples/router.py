@@ -37,13 +37,8 @@ def init_problem():
         New instance of meep_adjoint.OptimizationProblem()
     """
 
-    # fetch values of meep_adjoint options that we will use below
-    fcen = adj_opt('fcen')
-    dpml = adj_opt('dpml')
-    dair = adj_opt('dair')
-
     ######################################################################
-    # handle problem-specific command-line arguments
+    # process script-specific command-line arguments...
     ######################################################################
     parser = argparse.ArgumentParser()
 
@@ -67,6 +62,13 @@ def init_problem():
     parser.add_argument('--e_weight', type=float, default=0.00, help='')
 
     args = parser.parse_args()
+
+    ######################################################################
+    # ... and fetch values of some meep_adjoint options we will use
+    ######################################################################
+    fcen = adj_opt('fcen')
+    dpml = adj_opt('dpml')
+    dair = adj_opt('dair')
 
 
     ##################################################
