@@ -332,20 +332,27 @@ may be grouped into three categories:
 :mod:`router.py` code walkthrough
 ----------------------------------------------------------------------
 
-We begin by
+.. sidebar:: howdage
+
+    Determine dimensions for the computational cell,
+    referring both to script-specific command-line arguments
+    and :obj:`meep_adjoint` :doc:`configuration options </configuration/index>`:
 
 .. sidebar:: howdage
 
-    #----------------------------------------
-    # computational cell
-    #----------------------------------------
-    lcen          = 1.0/fcen
-    dpml          = 0.5*lcen if dpml==-1.0 else dpml
-    design_length = args.l_design
-    sx = sy       = dpml + args.l_stub + design_length + args.l_stub + dpml
-    sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
-    cell_size     = [sx, sy, sz]
-  
+    .. codeblock:: python
+       :linenos:
+
+       #----------------------------------------
+       # computational cell
+       #----------------------------------------
+       lcen          = 1.0/fcen
+       dpml          = 0.5*lcen if dpml==-1.0 else dpml
+       design_length = args.l_design
+       sx = sy       = dpml + args.l_stub + design_length + args.l_stub + dpml
+       sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
+       cell_size     = [sx, sy, sz]
+     
 
 
 
