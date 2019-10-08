@@ -297,7 +297,7 @@ may be grouped into three categories:
 
 .. |Parms2| raw:: html
 
-      <a href="javascript:showhide(document.getElementsByClassName('parms2')[0])">
+      <a href="javascript:showhide(document.getElementById('parms2'))">
       <b>Parameters describing the objective function and how it is computed</b>
       </a>
 
@@ -314,15 +314,20 @@ may be grouped into three categories:
 
         :`design_region`:
 
+            `Subregion` (or |MeepVolume|) specifying the
+            design region.
+
 
         :`basis`:
 
-            List of :class:`Subregion` structures
+            Instance of :class:`Basis <meep_adjoint.basis.Basis>`
+            describing the space of design permittivity
+            functions.
 
 
 .. |Parms3| raw:: html
 
-      <a href="javascript:showhide(document.getElementsByClassName('parms3')[0])">
+      <a href="javascript:showhide(document.getElementById('parms3'))">
       <b> Parameters describing the design space and the tweakable degrees of freedom </b>
       </a>
 
