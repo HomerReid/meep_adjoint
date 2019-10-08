@@ -334,13 +334,7 @@ may be grouped into three categories:
 
 .. sidebar:: howdage
 
-    Determine dimensions for the computational cell,
-    referring both to script-specific command-line arguments
-    and :obj:`meep_adjoint` :doc:`configuration options </configuration/index>`:
-
-.. sidebar:: howdage
-
-    .. codeblock:: python
+    .. code-block:: python
        :linenos:
 
        #----------------------------------------
@@ -354,17 +348,12 @@ may be grouped into three categories:
        cell_size     = [sx, sy, sz]
      
 
+Determine dimensions for the computational cell,
+referring both to script-specific command-line arguments
+and :obj:`meep_adjoint` :doc:`configuration options </configuration/index>`:
 
 
-
-.. code-block:: python
-   :linenos:
-   :emphasize-lines: 3,5
-   :caption: this.py
-   :name: this-py
-
-   print 'Explicit is better than implicit.'
-
+|thickline|
 
 .. _Phase2:
 
