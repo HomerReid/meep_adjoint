@@ -204,7 +204,7 @@ of arguments in the :ref:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
 code from :mod:`router.py` or one of the other
 :ref:`worked examples </example_gallery/index>` and modify as appropriate
-for your problem. 
+for your problem. The following section
 Roughly speaking, the inputs needed to instantiate an 
 :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>`
 may be grouped into three categories:
@@ -328,11 +328,15 @@ may be grouped into three categories:
       </a>
 
 
+.. router_py_walkthrough::
+
 ----------------------------------------------------------------------
 :mod:`router.py` code walkthrough
 ----------------------------------------------------------------------
 
-Determine dimensions for the computational cell,
+Fetch
+
+Determine dimensions for the computational cell:
 referring both to script-specific command-line arguments
 and :obj:`meep_adjoint` 
 :doc:`configuration options </configuration/index>`::
@@ -344,7 +348,6 @@ and :obj:`meep_adjoint`
    sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
    cell_size     = [sx, sy, sz]
         
-
 
 |thickline|
 
