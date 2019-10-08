@@ -196,9 +196,9 @@ capabilities of the solver, and its internal data fields
 keep track of all data and state needed to track the
 progress of a computational session.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
-class:`OptimizationProblem` constructor arguments
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+:class:`OptimizationProblem` constructor arguments: quick reference
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>` constructor accepts a
 large number of required and optional input arguments, whose setup
@@ -281,7 +281,7 @@ may be grouped into three categories:
     :class: collapsible
 
     .. container:: default-hidden
-        :name: parms1
+        :name: parms2
 
         :`objective`:
 
@@ -302,12 +302,30 @@ may be grouped into three categories:
 .. **********************************************************************
 .. **********************************************************************
 
-.. topic:: Parameters describing the underlying FDTD simulation geometry:
-        
+.. admonition:: |Parms3|
+    :class: collapsible
+
+    .. container:: default-hidden
+        :name: parms3
+
+        :`design_region`:
 
 
-.. topic:: Parameters describing the design space and the tweakable degrees of freedom
+        :`basis`:
 
+            List of :class:`Subregion` structures
+
+
+.. |Parms3| raw:: html
+
+      <a href="javascript:showhide(document.getElementsByClassName('parms3')[0])">
+      <b> Parameters describing the design space and the tweakable degrees of freedom </b>
+      </a>
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+:mod:`router.py` code walkthrough
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         
 
 
