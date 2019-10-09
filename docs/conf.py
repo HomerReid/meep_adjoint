@@ -1,15 +1,12 @@
-# Sphinx configuration file for meep_adjoint documentation
+"""Sphinx configuration file for meep_adjoint documentation."""
 
 import os
 import sys
 import re
 
 import numpy as np
-
-import sphinx_rtd_theme
-
 import meep as mp
-sys.path.insert(0,os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('..'))
 import meep_adjoint
 
 ######################################################################
@@ -107,12 +104,12 @@ modindex_common_prefix = ['meep_adjoint.']
 OLD = 'meep_adjoint: A python module for adjoint sensitivity analysis in MEEP'
 NEW = '<code class=xref>meep_adjoint</code>: A python module for adjoint sensitivity analysis in <span class="codename">meep</span>'
 def cleanup_html_file(file):
-     with open(file,'r') as f:
-         lines = f.readlines()
-     with open(file,'w') as f:
-          for line in lines:
-              line = line.replace(OLD,NEW)
-              f.write(line)
+    with open(file,'r') as f:
+        lines = f.readlines()
+    with open(file,'w') as f:
+        for line in lines:
+            line = line.replace(OLD,NEW)
+            f.write(line)
 
 def post_build_hook(app, exception):
     for root, dirs, files in os.walk(app.outdir):
