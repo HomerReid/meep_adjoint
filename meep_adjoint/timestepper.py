@@ -1,24 +1,4 @@
-""" TimeStepper.py: MEEP timestepping for forward and adjoint runs
-
-  TimeStepper is a class that knows how to run a time-domain MEEP
-  calculation to accumulate frequency-domain (DFT) field components
-  in objective regions, from which may be computed the values of
-  objective quantities, from which may be computed the objective
-  function.
-
-  TimeStepper monitors the convergence of DFT components and
-  the associated objective quantities, and continues timestepping
-  until the relevant output quantities have stopped changing.
-
-  More specifically, it knows about two different types of
-  timestepping runs: (1) forward runs, in which the sources are
-  pre-specified by the caller and the outputs are objective
-  quantities and the objective function, and (2) adjoint runs,
-  for which TimeStepper itself determines the source
-  distribution (see place_adjoint_sources below) and the
-  output is the gradient df/dEps (more specifically, its
-  projection onto the design basis).
-"""
+"""Implementation of TimeStepper class """
 
 import os
 import sys
@@ -42,6 +22,7 @@ from . import get_adjoint_option as adj_opt
 mt0, wt0, wtdb, wtcpu = 0, 0, 0, 0
 update_interval, cpu_interval, proc = 1, 2, psutil.Process(os.getpid())
 def dashboard_sf(sim):
+    """provisional implementation of step function to update GUI dashboard"""
     global mt0, wt0, wtdb, wtcpu, update_interval, cpu_interval, proc
     mt, wt = sim.round_time(), time.time()
     if mt>mt0 and (wt-wtdb)>=update_interval:
@@ -58,11 +39,61 @@ def dashboard_sf(sim):
 
 
 class TimeStepper(object):
+""" Abstraction of low-level FDTD engine.
+
+    TimeStepper is a class that knows how to invoke an FDTD solver
+    to execute a time-domain calculation to obtain frequency-domain 
+    (DFT) field components in objective regions, from which may be 
+    computed (a) the values of objective quantities and objective functions,
+    or (b) permittivity derivatives of the objective function, from which
+    may be computed the objective-function gradient. 
+
+    This class lies between the top-level `OptimizationProblem` session-manager class
+    and lower-level classes like `ObjectiveFunction`. It exports a single method
+    (``__call__``) which prepares and executes one complete FDTD timestepping run to
+    compute frequency-domain fields, returning numerical quantities of interest 
+    computed from these fields. ``__call__`` accepts one `str`-valued argument `job`, 
+    for which the recognized values are `forward` or `adjoint`. For `job`==`forward`, the 
+    excitation sources for the FDTD problem are the user-defined sources passed to the
+    `OptimizationProblem` constructor and the result of the calculation is the 
+    objective-function value (plus the values of any additional requested objective quantities).
+    For `job`==`adjoint`, the excitation sources are automatically determined internally 
+    and the result of the calculation is the objective-function gradient.
+    
+    `TimeStepper` automatically determines when to terminate a timestepping run by 
+    monitoring the numerical convergence of the output quantities. The details of this process
+    may be customized using configuration options. `TimeStepper` does not itself know how
+    to evaluate its output quantities, but rather outsources these calculations to public 
+    methods of `ObjectiveFunction` and other low-level classes.
+
+
+    Methods
+    -------
+    __call__(job)
+        Populate the FDTD grid with an appropriate source distribution, initialize DFT cells for
+        tabulating frequency-domain fields, then execute FDTD timestepping until the output quantity
+        converges and return that quantity.
+"""
 
     #########################################################
     #########################################################
     #########################################################
     def __init__(self, obj_func, dft_cells, basis, sim, fwd_sources):
+        """
+    
+        Parameters
+        ----------
+        
+        obj_func : [type]
+            [description]
+        dft_cells : [type]
+            [description]
+        basis : [type]
+            [description]
+        sim : [type]
+            [description]
+        fwd_sources : [type]
+            [description]
         """
         Args:
             obj_func  (ObjectiveFunction)
