@@ -198,12 +198,16 @@ progress of a computational session.
 The :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>` constructor accepts a
 large number of required and optional input arguments, whose setup
 will typically occupy a straightforward but somewhat lengthy chunk
-of your driver script. You will find exhaustive auto-generated documentation
+of your driver script. You will find detailed auto-generated documentation
 for the full set of arguments in the :doc:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
 code from :mod:`router.py` or one of the other
 :doc:`worked examples </example_gallery/index>` and modify as appropriate
 for your problem.
+
+The next section offers a quick survey of the most important
+constructor arguments (again deferring the exhaustive documentation
+to the :doc:`API reference </API/HighLevel>`), and 
 
 To this end, the :ref:`following section <router_py_walkthrough>`
 provides an annotated walkthrough of the initialization code
