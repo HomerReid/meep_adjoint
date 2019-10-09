@@ -87,17 +87,12 @@
 .. |MeepEigenmodeSource| replace:: ``EigenmodeSource``
 .. _MeepEigenmodeSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#eigenmodesource
 
-.. |MeepSource| replace:: ``VolumeSource``
-.. _MeepSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#source
-
 .. |MeepGeometricObject| replace:: ``GeometricObject``
 .. _MeepGeometricObject: https://meep.readthedocs.io/en/latest/Python_User_Interface/#geometricobject
 
 
 .. |get_array_metadata| replace:: ``get_array_metadata``
 .. _get_array_metadata: https://meep.readthedocs.io/en/latest/Python_User_Interface/#array-metadata
-
-.. |mpadj| replace:: :mod:`meep_adjoint`
 
 
 .. |thickline| raw:: html
