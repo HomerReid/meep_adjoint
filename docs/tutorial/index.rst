@@ -205,23 +205,24 @@ code from :mod:`router.py` or one of the other
 :doc:`worked examples </example_gallery/index>` and modify as appropriate
 for your problem.
 
-The next section offers a quick survey of the most important
+The :ref:`next section <constructor_quick_reference>`
+offers a quick list of the most important
 constructor arguments (again deferring the exhaustive documentation
-to the :doc:`API reference </API/HighLevel>`), and 
-
-To this end, the :ref:`following section <router_py_walkthrough>`
-provides an annotated walkthrough of the initialization code
-in :mod:`router.py`; for now, here's some quick-reference documentation
-describing the primary constructor input parameters.
+to the :doc:`API reference </API/HighLevel>`), and the
+:ref:`following section <router_py_walkthrough>` illustrates
+their use in practice via an annotated walkthrough
+of the :mod:`router.py` initialization code.
 
 
+.. _constructor_quick_reference:
 
 ----------------------------------------------------------------------
 :class:`OptimizationProblem` constructor arguments: quick reference
 ----------------------------------------------------------------------
-Roughly speaking, the inputs needed to instantiate an 
+Roughly speaking, the inputs needed to instantiate an
 :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>`
-may be grouped into three categories:
+may be grouped into three categories (click the title headers below 
+to expand/collapse content):
 
 
 .. **********************************************************************
@@ -251,8 +252,8 @@ may be grouped into three categories:
            lists contain objects that logically lie "beneath" and "above"
            the design region; internally, these lists are concatenated,
            with the automatically-created design object in between,
-           to form the list of objects passed as the `geometry` parameter
-           of |simulation|.
+           to form the list of objects passed as the `geometry` input
+           to the |simulation| constructor.
 
 
        :`sources`:
