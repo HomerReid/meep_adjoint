@@ -1,4 +1,4 @@
-"""Implementation of TimeStepper class """
+"""Implementation of TimeStepper class."""
 
 import os
 import sys
@@ -7,6 +7,7 @@ import time
 import numpy as np
 import meep as mp
 
+import warnings
 from datetime import datetime as dt2
 
 from . import (ObjectiveFunction, Basis, v3, V3, E_CPTS, log, update_dashboard)
@@ -22,7 +23,7 @@ from . import get_adjoint_option as adj_opt
 mt0, wt0, wtdb, wtcpu = 0, 0, 0, 0
 update_interval, cpu_interval, proc = 1, 2, psutil.Process(os.getpid())
 def dashboard_sf(sim):
-    """provisional implementation of step function to update GUI dashboard"""
+    """Provisional implementation of step function to update GUI dashboard."""
     global mt0, wt0, wtdb, wtcpu, update_interval, cpu_interval, proc
     mt, wt = sim.round_time(), time.time()
     if mt>mt0 and (wt-wtdb)>=update_interval:
@@ -39,7 +40,7 @@ def dashboard_sf(sim):
 
 
 class TimeStepper(object):
-    """ Abstraction of low-level FDTD engine.
+   """Abstraction of low-level FDTD engine.
     
         TimeStepper is a class that knows how to invoke an FDTD solver
         to execute a time-domain calculation to obtain frequency-domain 
@@ -85,23 +86,24 @@ class TimeStepper(object):
         Parameters
         ----------
         
-        obj_func : [type]
-            [description]
-        dft_cells : [type]
-            [description]
-        basis : [type]
-            [description]
-        sim : [type]
-            [description]
-        fwd_sources : [type]
-            [description]
-        """
-        Args:
-            obj_func  (ObjectiveFunction)
-            dft_cells (list of DFTCell)
-            basis     (subclass of Basis)
-            sim       (mp.Simulation object)
-            fwd_sources (list of mp.Source or mp.EigenModeSource):
+        obj_func : ObjectiveFunction
+            The function whose value or gradient we compute (copied from OptimizationProblem)
+        dft_cells : list of `DFTCell`
+            List of `DFTCell` structures, assumed to be ordered with objective cells *first* and the 
+            design cell *last* (so any `extra` cells are in the interior of the list).
+        basis : Basis
+            Function space (copied from OptimizationProblem). 
+            Logically this is not a necessary input for this calculation---it is used only in a 
+            post-processing step to compute the objective-function gradient by projecting df/dEps
+            onto the function space. It might make more sense to define the output of TimeStepper
+            to be the raw df/dEps matrix, with the projection step done at a higher level, in which
+            case this parameter could be omitted. But then the convergence of the adjoint timestepping
+            run would have to consider the full raw df/dEps matrix instead of the lower-dimensional
+            gradient vector.
+        sim : `meep.Simulation`
+            Simulation object, copied from OptimizationProblem.
+        fwd_sources : list of `meep.Source`
+            User-specified sources for the forward calculation.
         """
 
         self.obj_func    = obj_func
