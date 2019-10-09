@@ -14,6 +14,7 @@ QRule = namedtuple('QRule', 'code mode ncell')
 
 from . import dft_cell_names
 
+
 def make_qrule(qname):
     """
     Decode objective-quantity name to yield rule for computing it.
@@ -39,7 +40,7 @@ def make_qrule(qname):
         Rule for computing the quantity.
 
     """
-    tokens = re.sub(r'([A-Za-z]+)([\d]*)_([\w]+)',r'\1 \2 \3',qname).split()
+    tokens = re.sub(r'([A-Za-z]+)([\d]*)_([\w]+)', r'\1 \2 \3',hqname).split()
     if len(tokens)==3:
         code, mode, cellstr = tokens
         mode = int(mode)
