@@ -18,7 +18,7 @@ def make_qrule(qname):
     """
     Decode objective-quantity name to yield rule for computing it.
 
-    A 'qrule' is a recipe for computing a single objective quantity,
+    A "qrule" is a recipe for computing a single objective quantity,
     comprised of three elements: a code string identifying the physical
     quantity (i.e. 'S' for poynting flux, 'UE' for electric-field energy,
     etc), the integer index of the DFTCell whose fields are used to
@@ -27,6 +27,16 @@ def make_qrule(qname):
 
     qrules are constructed from the string names of
     objective variables like 'P2_3' or 'M1_north' or 's_0'.
+
+    Parameters
+    ----------
+    qname : str
+        Name of objective quantity
+    
+    Returns
+    -------
+    qrule : QRule
+        Rule for computing the quantity.
 
     """
     tokens = re.sub(r'([A-Za-z]+)([\d]*)_([\w]+)',r'\1 \2 \3',qname).split()
@@ -69,60 +79,67 @@ def make_qrule(qname):
 #
 #     def __call__(self, nf=0):
 #         return self.cell(self.code,mode=self.mode, nf=nf)
-
-
-
+                      
 
 class ObjectiveFunction(object):
-    """Multivariate scalar-valued function defined by string expression.
-
-        An ObjectiveFunction is a scalar function :math:`f({q_n})`
-        of :math:`N` scalar variables :math:`\{ q_0, q_1, ..., q_{N-1}\}`,
-        where the :math:`{q_n}` are complex-valued in general and
-        f may be real- or complex-valued.
-
-        An instance of ObjectiveFunction is specified by a
-        character string (the fstr input to the constructor)
-        that, upon parsing by sympy.sympify, is identified as
-        a mathematical expression depending on :math:`N` unknown
-        variables (which we call "objective quantities").
-        The strings identified by numpy as the names of the variables
-        should obey meep_adjoint syntax rules for the naming
-        of objective quantities (in particular, they should
-        be parsable by `make_qrule` to yield a valid qrule).
-
-        Class instances store the following data:
-
-        fexpr: sympy expression constructed from fstr
-
-        qsyms: list of sympy.Symbols identified by sympy
-               as the objective quantities, i.e. the inputs
-               on which f depends
-
-        qnames: list of strs giving the names of the objective
-                quantitiesrs giving the names of the objective
-
-        qrules: list of 'qrule' objects specifying how the
-                objective quantities are to be computed
-                from MEEP data (specifically, from frequency-
-                domain field data stored in DFTCells)
-
-        qvals: numpy array storing most recent updates of
-               objective-quantity values
-
-        riqsyms, riqvals: the same data content as
-              qsyms and qvalues, but with each complex-valued
-              'q' quantity split up into real-valued 'r' and 'i'
-              components. We do this to facilitate symbolic
-              differentiation of non-analytic functions
-              of the objective quantities such as :math:`|q_i|^2`
-              ---which, incidentally, would be written within fstr
-                like this: 'Abs(q_i)**2'
     """
+    Multivariate scalar-valued function defined by string expression.
 
+    An ObjectiveFunction is a scalar function :math:`f({q_n})`
+    of :math:`N` scalar variables :math:`\{ q_0, q_1, ..., q_{N-1}\}`,
+    where the :math:`{q_n}` are complex-valued in general and
+    f may be real- or complex-valued.
+
+    An instance of ObjectiveFunction is specified by a
+    character string (the fstr input to the constructor)
+    that, upon parsing by sympy.sympify, is identified as
+    a mathematical expression depending on :math:`N` unknown
+    variables (which we call "objective quantities").
+    The strings identified by numpy as the names of the variables
+    should obey meep_adjoint syntax rules for the naming
+    of objective quantities (in particular, they should
+    be parsable by `make_qrule` to yield a valid qrule).
+
+    Class instances store the following data:
+
+    fexpr: sympy expression constructed from fstr
+
+    qsyms: list of sympy.Symbols identified by sympy
+           as the objective quantities, i.e. the inputs
+           on which f depends
+
+    qnames: list of strs giving the names of the objective
+            quantitiesrs giving the names of the objective
+
+    qrules: list of 'qrule' objects specifying how the
+            objective quantities are to be computed
+            from MEEP data (specifically, from frequency-
+            domain field data stored in DFTCells)
+
+    qvals: numpy array storing most recent updates of
+           objective-quantity values
+
+    riqsyms, riqvals: the same data content as
+                      qsyms and qvalues, but with each complex-valued
+                      'q' quantity split up into real-valued 'r' and 'i'
+                      components. We do this to facilitate symbolic
+                      differentiation of non-analytic functions
+                      of the objective quantities such as :math:`|q_i|^2`
+                      ---which, incidentally, would be written within fstr
+                      like this: 'Abs(q_i)**2'
+
+    
+    """
+    
     def __init__(self, fstr='S_0', extra_quantities=[]):
         """
-        Try to create a sympy expression from the given string and determine
+
+        
+
+        """
+        Constructor.
+
+
         names for all input variables (objective quantities) needed to
         evaluate it.
         """
