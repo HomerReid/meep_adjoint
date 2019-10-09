@@ -236,7 +236,7 @@ Table of Contents
    :caption: Reference
 
    Installation <installation/index>
-   Basis sets <visualization/index>
+   General reference <reference/index>
    Visualization Module <visualization/index>
    Configuration and customization <customization/index>
    Test suite <test_suite/index>
