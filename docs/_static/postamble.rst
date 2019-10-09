@@ -5,6 +5,13 @@
 .. |mpadj| replace:: :mod:`meep_adjoint`
 
 
+.. |meep| raw:: html
+
+   <a href="https://github.com/NanoComp/meep"> 
+   <font style="font-variant: small-caps; font-size: 100%">meep</font>
+   </a>
+
+
 .. |pymeep| raw:: html
 
    <a href="https://meep.readthedocs.io/en/latest/Python_User_Interface/">
