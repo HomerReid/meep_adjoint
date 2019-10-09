@@ -59,25 +59,25 @@ which lives in the `examples` subdirectory of the `meep_adjoint`
 source distribution. Click below for a sneak peak at this
 script, or read on for a step-by-step discussion.
 
-.. tutorial-router-py::
+   .. tutorial-router-py::
 
-.. admonition:: |RouterPyTitle|
-   :class: code-listing
-
-
-    .. literalinclude:: /example_gallery/router.py
-       :linenos:
-       :name: router-py-listing
-       :class: code-listing
+   .. admonition:: |RouterPyTitle|
+      :class: code-listing
 
 
+       .. literalinclude:: /example_gallery/router.py
+          :linenos:
+          :name: router-py-listing
+          :class: code-listing
 
 
-.. |RouterPyTitle| raw:: html
 
 
-       File: <code xref>examples/router.py</code>
-      <a href="javascript:showhide(document.getElementById('router-py-listing'))">   (Click to show/hide)   </a>
+   .. |RouterPyTitle| raw:: html
+
+
+          File: <code xref>examples/router.py</code>
+         <a href="javascript:showhide(document.getElementById('router-py-listing'))">   (Click to show/hide)   </a>
 
 
 ======================================================================
@@ -201,13 +201,16 @@ progress of a computational session.
 The :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>` constructor accepts a
 large number of required and optional input arguments, whose setup
 will typically occupy a straightforward but somewhat lengthy chunk
-of your driver script. You will find documentation for the full set
-of arguments in the :ref:`API reference </API/HighLevel>`,
+of your driver script. You will find exhaustive auto-generated documentation
+for the full set of arguments in the :doc:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
 code from :mod:`router.py` or one of the other
-:ref:`worked examples </example_gallery/index>` and modify as appropriate
+:doc:`worked examples </example_gallery/index>` and modify as appropriate
 for your problem. 
-The :ref:`following section<router_py_walkthrough>`
+
+To this end, the 
+:ref:`following section <router_py_walkthrough>`
+:ref:`router_py_walkthrough`
 provides an annotated walkthrough of the initialization code
 in :mod:`router.py`; for now, here's some quick-reference documentation
 describing the primary constructor input parameters.
@@ -335,7 +338,7 @@ may be grouped into three categories:
       </a>
 
 
-.. router_py_walkthrough::
+.. _router_py_walkthrough::
 
 ----------------------------------------------------------------------
 Annotated walkthrough of `router.py` initialization and setup code
