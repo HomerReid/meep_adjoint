@@ -1,7 +1,6 @@
-***************************************************************************************
+***********************************************************************************************
 Low-level (private) API: Classes and functions intended for use within :obj: `meep_adjoint`
-***************************************************************************************
-
+***********************************************************************************************
 
 ============================================================================================================
 :class:`TimeStepper`: Interface to computational back-end provided by :codename:`meep` or other FDTD solver
@@ -9,7 +8,7 @@ Low-level (private) API: Classes and functions intended for use within :obj: `me
 
 .. _TheTimeStepperClass:
 
-.. autoclass:: TimeStepper
+.. autoclass:: meep_adjoint.TimeStepper
    :inherited-members:
 
 
@@ -19,5 +18,5 @@ Low-level (private) API: Classes and functions intended for use within :obj: `me
 
 .. _TheObjectiveFunctionClass:
 
-.. autoclass:: ObjectiveFunction
+.. autoclass:: meep_adjoint.ObjectiveFunction
    :inherited-members:
