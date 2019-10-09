@@ -83,10 +83,10 @@ class TimeStepper(object):
     #########################################################
     def __init__(self, obj_func, dft_cells, basis, sim, fwd_sources):
         """
-        
+        Constructor.
+
         Parameters
-        ----------
-        
+        ----------      
         obj_func : ObjectiveFunction
             The function whose value or gradient we compute (copied from OptimizationProblem)
         dft_cells : list of `DFTCell`"
@@ -105,8 +105,8 @@ class TimeStepper(object):
             Simulation object, copied from OptimizationProblem.
         fwd_sources : list of `meep.Source`
             User-specified sources for the forward calculation.
-        """
 
+        """
         self.obj_func    = obj_func
         self.dft_cells   = dft_cells
         self.design_cell = dft_cells[-1]
@@ -129,15 +129,13 @@ class TimeStepper(object):
         sources have died down.
 
         Parameters
-        ----------
-        
+        ----------      
         job : str
             'forward' or 'adjoint'
 
 
         Returns
         -------
-
         ** If job==`forward`: **
         fq: numpy array of length N+1 storing values of the objective
             function and the N objective quantities [F, Q0, Q1, ... QN]
@@ -145,8 +143,8 @@ class TimeStepper(object):
         ** If job==`adjoint`: **
         df: numpy array of length `basis.dim` storing components of the
             objective-function gradient
-        """
 
+        """
         if job=='forward':
             retvals = self.obj_func(self.dft_cells)
             log('   ** {:10s}={:.5f}  ** '.format('t',self.sim.round_time()))
@@ -167,10 +165,7 @@ class TimeStepper(object):
     # relevant output quantity has converged
     #########################################################
     def run(self, job):
-        """
-        Execute a forward or adjoint FDTD timestepping run and return results.
-        """
-
+        """Execute a forward or adjoint FDTD timestepping run and return results."""
         self.prepare(job)
 
         last_source_time = self.fwd_sources[0].src.swigobj.last_time()
@@ -337,6 +332,6 @@ class TimeStepper(object):
 
 
 def rel_diff(a,b):
-    """Returns value in range [0,2] quantifying error relative to magnitude."""
+    """Return value in range [0,2] quantifying error relative to magnitude."""
     diff, scale = np.abs(a-b), np.amax([np.abs(a),np.abs(b)])
     return 2. if np.isinf(scale) else 0. if scale==0. else diff/scale
