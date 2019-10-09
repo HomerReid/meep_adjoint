@@ -71,9 +71,10 @@ class TimeStepper(object):
     -------
     __call__(job)
         Populate the FDTD grid with an appropriate source distribution, initialize DFT cells for
-        tabulating frequency-domain fields, then execute FDTD timestepping until the output quantity
-        converges and return that quantity.
-"""
+        tabulating frequency-domain fields, then execute FDTD timestepping until the output quantities
+        converges and return those quantities.
+
+""" 
 
     #########################################################
     #########################################################
