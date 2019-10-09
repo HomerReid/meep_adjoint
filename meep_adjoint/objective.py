@@ -32,7 +32,7 @@ def make_qrule(qname):
     ----------
     qname : str
         Name of objective quantity
-    
+
     Returns
     -------
     qrule : QRule
@@ -79,7 +79,7 @@ def make_qrule(qname):
 #
 #     def __call__(self, nf=0):
 #         return self.cell(self.code,mode=self.mode, nf=nf)
-                      
+
 
 class ObjectiveFunction(object):
     """
@@ -128,13 +128,13 @@ class ObjectiveFunction(object):
                       ---which, incidentally, would be written within fstr
                       like this: 'Abs(q_i)**2'
 
-    
+
     """
-    
+
     def __init__(self, fstr='S_0', extra_quantities=[]):
         """
 
-        
+
 
         """
         Constructor.
