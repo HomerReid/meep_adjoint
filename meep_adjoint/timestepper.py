@@ -166,8 +166,8 @@ class TimeStepper(object):
     # relevant output quantity has converged
     #########################################################
     def run(self, job):
-        """Execute the full MEEP timestepping run for a forward
-           or adjoint calculation and return the results.
+        """
+        Execute a forward or adjoint FDTD timestepping run and return results.
         """
 
         self.prepare(job)
