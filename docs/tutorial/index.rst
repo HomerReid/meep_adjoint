@@ -15,6 +15,7 @@ could hope to design by hand.
 ======================================================================
 The problem: optimal routing of optical power flows
 ======================================================================
+
 The engineering problem we will be considering is the design of
 *interconnect router* devices for optical networks. For our purposes,
 a router is a hunk of lossless dielectric material, confined within
@@ -49,6 +50,9 @@ on two particular design tasks:
       output power, but rather maximal *uniformity* of power
       emissions from the three output ports.
 
+======================================================================
+The driver script: :mod:`router.py`
+======================================================================
 
 The driver script for this problem is :mod:`router.py`,
 which lives in the `examples` subdirectory of the `meep_adjoint`
@@ -56,7 +60,6 @@ source distribution. Click below for a sneak peak at this
 script, or read on for a step-by-step discussion.
 
 .. tutorial-router-py::
-
 
 .. admonition:: |RouterPyTitle|
    :class: code-listing
@@ -78,8 +81,9 @@ script, or read on for a step-by-step discussion.
 
 
 ======================================================================
-Phases of a :obj:`meep_adjoint` session
+The phases of a :obj:`meep_adjoint` session and the structure of this tutorial
 ======================================================================
+
 This tutorial consists of three parts, corresponding to the three
 stages of a typical :obj:`meep_adjoint` session:
 
@@ -100,12 +104,10 @@ stages of a typical :obj:`meep_adjoint` session:
            and its performance.
 
            The initialization phase also typically involves setting appropriate
-           customized values for the many :ref:`configuration options </Configuration/index>`
+           customized values for the many :doc:`configuration options </customization/index>`
            affecting the behavior of :obj:`meep_adjoint`.
 
-
            |br|
-
 
 
 
