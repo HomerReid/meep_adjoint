@@ -133,17 +133,9 @@ class ObjectiveFunction(object):
 
     def __init__(self, fstr='S_0', extra_quantities=[]):
         """
-
-
-
-        """
         Constructor.
 
-
-        names for all input variables (objective quantities) needed to
-        evaluate it.
         """
-
         # try to parse the function string to yield a sympy expression
         try:
             fexpr = sympy.sympify(fstr)

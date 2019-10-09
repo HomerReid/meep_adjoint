@@ -1,5 +1,5 @@
 """
-KeepABrowst.py: variation on the theme of sphinx-autobuild
+KeepABrowst.py: variation on the theme of sphinx-autobuild.
 
 This is a utility script to assist in writing sphinx documentation
 for a python package. It uses the selenium webdriver to open
