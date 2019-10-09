@@ -60,6 +60,12 @@
 .. |MeepVolume| replace:: ``Volume``
 .. _MeepVolume: https://meep.readthedocs.io/en/latest/Python_User_Interface/#volume
 
+.. |MeepFluxRegion| replace:: ``FluxRegion``
+.. _MeepFluxRegion: https://meep.readthedocs.io/en/latest/Python_User_Interface/#fluxregion
+
+
+.. |MeepEnergySpectra| replace:: ``EnergySpectra``
+.. _MeepEnergySpectra: https://meep.readthedocs.io/en/latest/Python_User_Interface/#energy-density-spectra
 
 .. |MeepGaussianSource| replace:: ``GaussianSource``
 .. _MeepGaussianSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#gaussiansource
