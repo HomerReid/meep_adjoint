@@ -1,5 +1,4 @@
-"""handling of objective functions and objective quantitieshj
-"""
+"""Handling of objective functions and objective quantities."""
 
 import sys
 import os
@@ -16,17 +15,18 @@ QRule = namedtuple('QRule', 'code mode ncell')
 from . import dft_cell_names
 
 def make_qrule(qname):
-    """Decode objective-quantity name to yield rule for computing it.
+    """
+    Decode objective-quantity name to yield rule for computing it.
 
-       A 'qrule' is a recipe for computing a single objective quantity,
-       comprised of three elements: a code string identifying the physical
-       quantity (i.e. 'S' for poynting flux, 'UE' for electric-field energy,
-       etc), the integer index of the DFTCell whose fields are used to
-       compute the quantity, and an optional mode index for objective
-       quantities that involve eigenmodes.
+    A 'qrule' is a recipe for computing a single objective quantity,
+    comprised of three elements: a code string identifying the physical
+    quantity (i.e. 'S' for poynting flux, 'UE' for electric-field energy,
+    etc), the integer index of the DFTCell whose fields are used to
+    compute the quantity, and an optional mode index for objective
+    quantities that involve eigenmodes.
 
-       qrules are constructed from the string names of
-       objective variables like 'P2_3' or 'M1_north' or 's_0'.
+    qrules are constructed from the string names of
+    objective variables like 'P2_3' or 'M1_north' or 's_0'.
 
     """
     tokens = re.sub(r'([A-Za-z]+)([\d]*)_([\w]+)',r'\1 \2 \3',qname).split()
