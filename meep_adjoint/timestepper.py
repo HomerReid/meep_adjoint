@@ -82,12 +82,12 @@ class TimeStepper(object):
     #########################################################
     def __init__(self, obj_func, dft_cells, basis, sim, fwd_sources):
         """
-        Parameters
+ "       Parameters
         ----------
         
         obj_func : ObjectiveFunction
             The function whose value or gradient we compute (copied from OptimizationProblem)
-        dft_cells : list of `DFTCell`
+        dft_cells : list of `DFTCell`"
             List of `DFTCell` structures, assumed to be ordered with objective cells *first* and the 
             design cell *last* (so any `extra` cells are in the interior of the list).
         basis : Basis
@@ -116,25 +116,36 @@ class TimeStepper(object):
 
 
     def __update__(self, job):
-        """Recompute output quantities using most recent values
-           of frequency-domain fields.
-           This is an internal helper method for run() that computes
-           the objective function value (forward run) or gradient (adjoint run)
-           using the latest values of the frequency-domain fields
-           stored in the DFT cells. During timestepping it is called
-           every check_interval units of MEEP time once the excitation
-           sources have died down.
-           Args:
-               job = 'forward' or 'adjoint'
-           Return values:
-               If job=='forward':
-                   numpy array of length N+1 storing values of the objective
-                   function and the N objective quantities [F, Q0, Q1, ... QN]
-                   as returned by ObjectiveFunction.__call__
-               If job=='adjoint':
-                   numpy array of length basis.dim storing components of
-                   the objective-function gradient
         """
+
+        Recompute output quantities using most recent values of frequency-domain fields.
+           
+        This is an internal helper method for run() that computes
+        the objective function value (forward run) or gradient (adjoint run)
+        using the latest values of the frequency-domain fields
+        stored in the DFT cells. During timestepping it is called
+        every check_interval units of MEEP time once the excitation
+        sources have died down.
+
+        Parameters
+        ----------
+        
+        job : str
+            'forward' or 'adjoint'
+
+
+        Returns
+        -------
+
+        ** If job==`forward`: **
+        fq: numpy array of length N+1 storing values of the objective
+            function and the N objective quantities [F, Q0, Q1, ... QN]
+
+        ** If job==`adjoint`: **
+        df: numpy array of length `basis.dim` storing components of the
+            objective-function gradient
+        """
+
         if job=='forward':
             retvals = self.obj_func(self.dft_cells)
             log('   ** {:10s}={:.5f}  ** '.format('t',self.sim.round_time()))
