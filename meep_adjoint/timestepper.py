@@ -40,41 +40,41 @@ def dashboard_sf(sim):
 
 
 class TimeStepper(object):
-   """Abstraction of low-level FDTD engine.
+    """
+    Abstraction of low-level FDTD engine.
     
-        TimeStepper is a class that knows how to invoke an FDTD solver
-        to execute a time-domain calculation to obtain frequency-domain 
-        (DFT) field components in objective regions, from which may be 
-        computed (a) the values of objective quantities and objective functions,
-        or (b) permittivity derivatives of the objective function, from which
-        may be computed the objective-function gradient. 
+    TimeStepper is a class that knows how to invoke an FDTD solver
+    to execute a time-domain calculation to obtain frequency-domain 
+    (DFT) field components in objective regions, from which may be 
+    computed (a) the values of objective quantities and objective functions,
+    or (b) permittivity derivatives of the objective function, from which
+    may be computed the objective-function gradient. 
     
-        This class lies between the top-level `OptimizationProblem` session-manager class
-        and lower-level classes like `ObjectiveFunction`. It exports a single method
-        (``__call__``) which prepares and executes one complete FDTD timestepping run to
-        compute frequency-domain fields, returning numerical quantities of interest 
-        computed from these fields. ``__call__`` accepts one `str`-valued argument `job`, 
-        for which the recognized values are `forward` or `adjoint`. For `job`==`forward`, the 
-        excitation sources for the FDTD problem are the user-defined sources passed to the
-        `OptimizationProblem` constructor and the result of the calculation is the 
-        objective-function value (plus the values of any additional requested objective quantities).
-        For `job`==`adjoint`, the excitation sources are automatically determined internally 
-        and the result of the calculation is the objective-function gradient.
+    This class lies between the top-level `OptimizationProblem` session-manager class
+    and lower-level classes like `ObjectiveFunction`. It exports a single method
+    (``__call__``) which prepares and executes one complete FDTD timestepping run to
+    compute frequency-domain fields, returning numerical quantities of interest 
+    computed from these fields. ``__call__`` accepts one `str`-valued argument `job`, 
+    for which the recognized values are `forward` or `adjoint`. For `job`==`forward`, the 
+    excitation sources for the FDTD problem are the user-defined sources passed to the
+    `OptimizationProblem` constructor and the result of the calculation is the 
+    objective-function value (plus the values of any additional requested objective quantities).
+    For `job`==`adjoint`, the excitation sources are automatically determined internally 
+    and the result of the calculation is the objective-function gradient.
         
-        `TimeStepper` automatically determines when to terminate a timestepping run by 
-        monitoring the numerical convergence of the output quantities. The details of this process
-        may be customized using configuration options. `TimeStepper` does not itself know how
-        to evaluate its output quantities, but rather outsources these calculations to public 
-        methods of `ObjectiveFunction` and other low-level classes.
+    `TimeStepper` automatically determines when to terminate a timestepping run by 
+    monitoring the numerical convergence of the output quantities. The details of this process
+    may be customized using configuration options. `TimeStepper` does not itself know how
+    to evaluate its output quantities, but rather outsources these calculations to public 
+    methods of `ObjectiveFunction` and other low-level classes.
     
     
-        Methods
-        -------
-        __call__(job):
-            Populate the FDTD grid with an appropriate source distribution, initialize DFT cells for
-            tabulating frequency-domain fields, then execute FDTD timestepping until the output quantities
-            converges and return those quantities.
-    
+    Methods
+    -------
+    __call__(job):
+        Populate the FDTD grid with an appropriate source distribution, initialize DFT cells for
+        tabulating frequency-domain fields, then execute FDTD timestepping until the output quantities
+        converges and return those quantities.   
     """ 
 
     #########################################################
@@ -82,7 +82,6 @@ class TimeStepper(object):
     #########################################################
     def __init__(self, obj_func, dft_cells, basis, sim, fwd_sources):
         """
-    
         Parameters
         ----------
         
