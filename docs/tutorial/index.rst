@@ -194,9 +194,6 @@ capabilities of the solver, and its internal data fields
 keep track of all data and state needed to track the
 progress of a computational session.
 
-----------------------------------------------------------------------
-:class:`OptimizationProblem` constructor arguments: quick reference
-----------------------------------------------------------------------
 
 The :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>` constructor accepts a
 large number of required and optional input arguments, whose setup
@@ -206,15 +203,18 @@ for the full set of arguments in the :doc:`API reference </API/HighLevel>`,
 but in most cases you'll probably be able simply to copy the initialization 
 code from :mod:`router.py` or one of the other
 :doc:`worked examples </example_gallery/index>` and modify as appropriate
-for your problem. 
+for your problem.
 
-To this end, the 
-:ref:`following section <router_py_walkthrough>`
-:ref:`router_py_walkthrough`
+To this end, the :ref:`following section <router_py_walkthrough>`
 provides an annotated walkthrough of the initialization code
 in :mod:`router.py`; for now, here's some quick-reference documentation
 describing the primary constructor input parameters.
 
+
+
+----------------------------------------------------------------------
+:class:`OptimizationProblem` constructor arguments: quick reference
+----------------------------------------------------------------------
 Roughly speaking, the inputs needed to instantiate an 
 :class:`OptimizationProblem<meep_adjoint.OptimizationProblem>`
 may be grouped into three categories:
