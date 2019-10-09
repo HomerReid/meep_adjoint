@@ -338,7 +338,7 @@ may be grouped into three categories:
       </a>
 
 
-.. _router_py_walkthrough::
+.. _router_py_walkthrough:
 
 ----------------------------------------------------------------------
 Annotated walkthrough of `router.py` initialization and setup code
