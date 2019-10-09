@@ -253,7 +253,7 @@ to expand/collapse content):
            the design region; internally, these lists are concatenated,
            with the automatically-created design object in between,
            to form the list of objects passed as the `geometry` input
-           to the |simulation| constructor.
+           to the |simulation| constructor
 
 
        :`sources`:
