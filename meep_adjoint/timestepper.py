@@ -75,6 +75,7 @@ class TimeStepper(object):
         Populate the FDTD grid with an appropriate source distribution, initialize DFT cells for
         tabulating frequency-domain fields, then execute FDTD timestepping until the output quantities
         converges and return those quantities.   
+
     """ 
 
     #########################################################
@@ -82,7 +83,8 @@ class TimeStepper(object):
     #########################################################
     def __init__(self, obj_func, dft_cells, basis, sim, fwd_sources):
         """
- "       Parameters
+        
+        Parameters
         ----------
         
         obj_func : ObjectiveFunction
@@ -117,7 +119,6 @@ class TimeStepper(object):
 
     def __update__(self, job):
         """
-
         Recompute output quantities using most recent values of frequency-domain fields.
            
         This is an internal helper method for run() that computes
@@ -205,7 +206,7 @@ class TimeStepper(object):
 
         # now continue timestepping with intermittent convergence checks until
         # we converge or timeout
-        stage, max_rel_delta = 0, 1.0e9;
+        stage, max_rel_delta = 0, 1.0e9
         while max_rel_delta>reltol and self.sim.round_time() < max_time:
 
             #check_time = self.sim.round_time() + check_interval
@@ -236,16 +237,17 @@ class TimeStepper(object):
     ##############################################################
     ##############################################################
     def prepare(self, job='forward'):
-        """Prepare simulation for timestepping by adding sources and DFT cells.
+        """
+        Prepare simulation for timestepping by adding sources and DFT cells.
+        
+        Parameters
+        ----------
+        job (str): The type of timestepping run to prepare:
+            1. If job=='forward', prepare forward run to compute objective function value.
+            2. If job=='adjoint', prepare adjoint run to compute objective function gradient.
+            3. If job is the name of an objective quantity, prepare adjoint run to compute
+               the gradient of that quantity.
 
-        Parameters:
-          job (str): The type of timestepping run to prepare:
-             1. If job=='forward', prepare forward run to compute objective function value.
-             2. If job=='adjoint', prepare adjoint run to compute objective function gradient.
-             3. If job is the name of an objective quantity, prepare adjoint run to compute
-                the gradient of that quantity.
-
-        Return value: None
         """
         target_state = job + '.prepared'
         if self.state == target_state: return
@@ -277,6 +279,8 @@ class TimeStepper(object):
     ##############################################################
     def get_adjoint_sources(self, qname=None):
         """
+        Construct adjoint source distribution.
+    
         Return a list of mp.Source structures describing the distribution of sources
         appropriate for adjoint-method evaluation of the objective-function gradient
         df/deps.
@@ -333,6 +337,6 @@ class TimeStepper(object):
 
 
 def rel_diff(a,b):
-    """ returns value in range [0,2] quantifying error relative to magnitude"""
+    """Returns value in range [0,2] quantifying error relative to magnitude."""
     diff, scale = np.abs(a-b), np.amax([np.abs(a),np.abs(b)])
     return 2. if np.isinf(scale) else 0. if scale==0. else diff/scale
