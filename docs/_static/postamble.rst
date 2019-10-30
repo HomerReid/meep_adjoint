@@ -56,6 +56,7 @@
 .. _Source:          		https://meep.readthedocs.io/en/latest/Python_User_Interface/#source
 .. _GeometricObject: 		https://meep.readthedocs.io/en/latest/Python_User_Interface/#geometricobject
 .. _GaussianSource: 		https://meep.readthedocs.io/en/latest/Python_User_Interface/#gaussiansource
+.. _ModeDecomposition:          https://meep.readthedocs.io/en/latest/Mode_Decomposition/ 
 
 .. _MatPlotLib:			http://matplotlib.org
 

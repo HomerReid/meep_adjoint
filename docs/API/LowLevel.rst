@@ -1,5 +1,5 @@
 ***********************************************************************************************
-Low-level (private) API: Classes and functions intended for use within :obj: `meep_adjoint`
+Low-level (private) API: Classes and functions intended for use within :obj:`meep_adjoint`
 ***********************************************************************************************
 
 ============================================================================================================

@@ -1,17 +1,17 @@
 .. module:: meep_adjoint
 
 ***********************************************************************************
-:obj:`meep_adjoint`: A python module for adjoint sensitivity analysis in MEEP
+:obj:`meep_adjoint`: A python package for adjoint sensitivity analysis in MEEP
 ***********************************************************************************
 This is the root of the documentation tree for :obj:`meep_adjoint`.
-Jump directly to the module-wide :ref:`TableOfContents` below,
+Jump directly to the package-wide :ref:`TableOfContents` below,
 or read on for a quick-start summary.
 
-=========================
-What does this module do?
-=========================
+============================
+What does this package do?
+============================
 You'll find a longer answer in the :doc:`Overview <overview/index>`
-(and a more succinct one in the :doc:`API Reference <API/index>`),
+(and a more succinct one in the :doc:`API Reference <API/HighLevel>`),
 but, in a nutshell: It extends the computational capabilities of the
 core |meep| solver in a particular way that facilitates interaction
 with `numerical optimization algorithms`_, opening the door to
@@ -19,7 +19,7 @@ intelligent design tools that automatically design devices to meet
 given performance specifications.
 
 
-.. admonition:: Wait, *what* exactly does the module do again?
+.. admonition:: Wait, *what* exactly does the package do again?
 
         If that was a bit vague, we can be more specific about precisely what
         :obj:`meep_adjoint` does. Consider a typical design problem
@@ -36,6 +36,9 @@ given performance specifications.
         with zero leakage power emitted from the **South** and
         **East** ports:
 
+
+        **Mathematical formulation of design-optimization problems**
+
         To formulate this problem mathematically so we can
         hand it off to a numerical optimizer, we might begin by
         expressing the unknown design function as an expansion
@@ -47,11 +50,50 @@ given performance specifications.
 
         Then each possible design configuration corresponds to a :math:`D`-dimensional vector of
         coefficient values :math:`\boldsymbol{\beta}=\{\beta_1,\cdots,\beta_D\}`, while the metric
-        defining the performance of
-        a design---the quantity we are trying to
-        optimize---is a (real-valued, scalar) function of a
-        vector-valued argument, the `objective function`
-        :math:`f^\text{obj}(\boldsymbol{\beta}).` For our
+        defining the performance of a design---the quantity we are trying to
+        optimize---is a (real-valued, scalar) function of a vector-valued argument,
+        the *objective function* :math:`f^\text{obj}(\boldsymbol{\beta}).` For the
+        right-angle router with fixed input power entering the **West** port,
+        we could define our objective to be simply to maximize output power from 
+        the **North** port, i.e.
+
+
+        .. math::
+
+
+            f^\text{obj}(\boldsymbol{\beta}) = S_\text{North} \tag{1}
+
+
+        where :math:`S_\text{North}` denotes the outgoing power flux
+        (integral of normal Poynting vector) through the **North** flux monitor.
+        Alternatively, assuming the input power is delivered in its entirety
+        by a single mode---call it mode :math:`m`--- of the **West** waveguide (as 
+        would be the case if we excited our FDTD simulations with an |MeepEigenmodeSource|
+        tuned to mode :math:`m`),
+        we could optimize for maximal output power carried by mode :math:`m` of the
+        **North** waveguide, or equivalently for maximal magnitude of the
+        forward-traveling b`mode-expansion coefficient`_ 
+        evaluated at the **North** flux monitor, in which case we would instead have
+
+
+        .. math::
+
+            f^\text{obj}(\boldsymbol{\beta}) = |P^m_\text{North}|^2 \tag{2}
+
+        where :py:`P^m_\text{North}` denotes the coefficient
+        of the `math`:$m$th forward-traveling waveguide mode at the **North**
+        flux monitor. 
+        (The use of symbols :math:`S` and :math:`P^m` respectively for Poynting flux
+        and forward-traveling mode-expansion coefficient is part of the
+        `meep_adjoint` rules for labeling objective quantities.)
+
+        
+
+        **Mathematical formulation of design-optimization problems**
+        
+
+        
+        For our
         in the router problem
         a real-valued scalar
         device given by a
@@ -135,20 +177,16 @@ given performance specifications.
         :math:`f = (S_1(\omega_3) - S_2(\omega_3))^2`
         to maximize the *difference* between two fluxes, etc.
 
-        For any given trial design function :math:`\epsilon(\mathbf x)`
-        we can use :obj:`pymeep` to evaluate
-        we create a ``Simulation``_ with $\epsilon^{\text{trial}}$
-
-        What :obj:`meep_adjoint` does is to add a
 
 
 
 .. admonition:: The scope of :program:`meep_adjoint`
 
 
-         **Q.** Does this mean that the module *only* computes objective-function gradients? That is, it doesn't actually do any optimization?
+         **Q.** Does this mean that the package *only* computes objective-function gradients? That is, it doesn't actually do any optimization?
 
-         **A.** The *primary* mission of :obj:`meep_adjoint` is to compute objective-function gradients. This is the task the module guarantees to execute efficiently and accurately, and it's one that's self-contained, unambiguous, and easily *testable.* [#]_
+         **A.** The *primary* mission of :obj:`meep_adjoint` is to compute objective-function gradients. This is the task the package guarantees to execute efficiently and accurately,
+                and it's one that's self-contained, unambiguous, and easily *testable.* [#]_
 
          The larger question of how best to *use* gradient information for
          design automation---which involves questions such as which of the
@@ -156,7 +194,7 @@ given performance specifications.
          and how to configure its tunable parameters---is officially beyond the
          purview of :obj:`meep_adjoint`, and indeed is much too broad
          a problem to be treated with anything approaching comprehensiveness
-         by any single module. We hope :obj:`meep_adjoint` will be
+         by any single package. We hope :obj:`meep_adjoint` will be
          helpful to :obj:`meep` users as they navigate this
          vast domain.
 
@@ -189,7 +227,7 @@ quick rundown:
 You begin by creating an instance of :class:`optimization_problem`
 This is the top-level python class exported by :obj:`meep_adjoint`,
 analogous to the |simulation|
-class in the core :obj:`meep` module; it stores all data and state
+class in the core |pymeep|; it stores all data and state
 relevant to the progress of a design optimization, and
 you will access most :obj:`meep_adjoint` functionality
 via its class methods.
@@ -255,8 +293,8 @@ Table of Contents
    :maxdepth: 3
    :caption: API Reference
 
-    High-level (public) API <API/high_level>
-    Low-level (internal) API <API/low_level>
+    High-level (public) API <API/HighLevel>
+    Low-level (internal) API <API/LowLevel>
 
 
 
@@ -275,6 +313,8 @@ Indices and tables
 ..######################################################################
 
 .. _numerical optimization algorithms: https://en.wikipedia.org/wiki/Category:Optimization_algorithms_and_methods
+
+.. _mode-expansion coefficient: https://meep.readthedocs.io/en/latest/Mode_Decomposition/
 
 .. _myriad available gradient-based optimization algorithms: https://en.wikipedia.org/wiki/Category:Optimization_algorithms_and_methods
 

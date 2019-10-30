@@ -294,7 +294,7 @@ the presence of defect from external detection.
 
 Now, for a given a candidate design :math:`\epsilon^{\text{trial}}(\mathbf{x})`,
 it's clear that we can use :mod:`meep`---*core*:py:mod:`meep`,
-that is, no fancy new modules required---to evaluate
+that is, no fancy new packages required---to evaluate
 the objective function and assess the candidate's performance: we simply
 **(1)** create a :mod:`meep` geometry with `GeometricObjects` for
 the waveguides and a `Block` with :math:`\epsilon\sup{trial}` as a

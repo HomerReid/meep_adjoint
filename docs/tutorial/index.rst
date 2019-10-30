@@ -356,17 +356,84 @@ and returns a new instance of
 referring both to `router.py`-specific command-line arguments
 and `meep_adjoint`-wide
 :doc:`configuration options </configuration/index>`
-for various pieces of information.
+for various pieces of information. In this section of the tutorial
+we walk through the `init_problem` routine, 
 
-script contains a function
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Fetch values for local (script-specific) and global (`meep-adjoint`-wide) configurable options 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-We begin by parsing command-line arguments to `router.py`,
-and also 
+.. ############################################################
+.. ############################################################
+.. ############################################################
+The function begins by parsing command-line arguments
+to `router.py`:
 
-Determine dimensions for the computational cell:
-referring both to script-specific command-line arguments
-and :obj:`meep_adjoint` 
-:doc:`configuration options </configuration/index>`::
+.. code-block:: python
+   :lineno-start: 43
+
+    parser = argparse.ArgumentParser()
+
+    # options affecting the geometry of the router
+    parser.add_argument('--w_east',   type=float, default=1.5,  help='width of EAST waveguide stub')
+    parser.add_argument('--w_west',   type=float, default=1.5,  help='width of WEST waveguide stub')
+    parser.add_argument('--w_north',  type=float, default=1.5,  help='width of NORTH waveguide stub')
+    parser.add_argument('--w_south',  type=float, default=1.5,  help='width of SOUTH waveguide stub')
+    parser.add_argument('--l_stub',   type=float, default=3.0,  help='waveguide stub length')
+    parser.add_argument('--l_design', type=float, default=4.0,  help='design region side length')
+    parser.add_argument('--h',        type=float, default=0.0,  help='thickness in z-direction')
+    parser.add_argument('--eps_wvg',  type=float, default=6.0,  help='waveguide permittivity')
+
+    # options affecting the type of device to design
+    parser.add_argument('--splitter', action='store_true', help='design equal splitter instead of right-angle router')
+
+    args = parser.parse_args()
+
+.. ############################################################
+.. ############################################################
+.. ############################################################
+
+We also fetch the current values of some `meep_adjoint`
+:doc:`configuration options </customization/index>`: 
+
+.. ############################################################
+.. ############################################################
+.. ############################################################
+.. code-block:: python
+   :lineno-start: 69
+
+
+    fcen = adj_opt('fcen')   # center source frequency
+    dpml = adj_opt('dpml')   # width of PML layers
+    dair = adj_opt('dair')   # width of air gaps
+
+
+(As discussed in more detail :doc:`here </customization/index>`, values
+for `meep_adjoint` configuration options may be specified via command-line
+arguments like `--fcen 1.3`---which are automatically processed and removed 
+from `sys.argv` when `meep_adjoint` is imported---or by lines like
+`fcen=1.3` in configuration files, or in other ways.)
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Set up the computational geometry
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The next steps are standard initialization procedures familiar to anyone
+who has ever initialized a |simulation|. First we det
+
+do a little arithmetic to
+compute the dimensions of the computational cell
+valuesh 
+First we fetch the current values
+to compute the dimensions of the computational cell based on the current
+values of various geometric parameters, some of which
+
+on the current values of 
+, referring both to script-specific and
+`meep_adjoint`-global :doc:`configuration options </configuration/index>`:
+
+.. code-block:: python
+   :lineno-start: 81
 
    lcen          = 1.0/fcen
    dpml          = 0.5*lcen if dpml==-1.0 else dpml
@@ -374,15 +441,32 @@ and :obj:`meep_adjoint`
    sx = sy       = dpml + args.l_stub + design_length + args.l_stub + dpml
    sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
    cell_size     = [sx, sy, sz]
-        
+
+Next we construct a list of |MeepGeometricObject| structures to describe the fixed
+portion of the material geometry---*not* including the design region, for which an
+appropriate object is created internally by `meep_adjoint`. For the router
+problem the fixed geometry consists of just the 4 waveguide port stubs:
+
 
 .. _Phase2:
 
 ==================================================
 Phase 2: Interactive exploration
 ==================================================
+As discussed above, the primary goal of the interactive phase is
+to kick the tires of the `OptimizationProblem` created in the
+previous step, bot h
 
-As discussed above, the 
+
+.. code-block:: python
+   :lineno-start: 81
+
+   lcen          = 1.0/fcen
+   dpml          = 0.5*lcen if dpml==-1.0 else dpml
+   design_length = args.l_design
+   sx = sy       = dpml + args.l_stub + design_length + args.l_stub + dpml
+   sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
+   cell_size     = [sx, sy, sz]
 
 
 .. _Phase3:

@@ -86,4 +86,3 @@
             state = self.line_search(state)
 
         return self.annals
-

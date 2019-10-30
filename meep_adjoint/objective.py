@@ -40,7 +40,7 @@ def make_qrule(qname):
         Rule for computing the quantity.
 
     """
-    tokens = re.sub(r'([A-Za-z]+)([\d]*)_([\w]+)', r'\1 \2 \3',hqname).split()
+    tokens = re.sub(r'([A-Za-z]+)([\d]*)_([\w]+)', r'\1 \2 \3',qname).split()
     if len(tokens)==3:
         code, mode, cellstr = tokens
         mode = int(mode)
@@ -86,28 +86,34 @@ class ObjectiveFunction(object):
     """
     Multivariate scalar-valued function defined by string expression.
 
-    An ObjectiveFunction is a scalar function :math:`f({q_n})`
+    An `ObjectiveFunction` is a scalar function
+    :math:`f^\text{obj}({q_n})`
     of :math:`N` scalar variables :math:`\{ q_0, q_1, ..., q_{N-1}\}`,
     where the :math:`{q_n}` are complex-valued in general and
-    f may be real- or complex-valued.
+    :math:`f^\text{obj}` may be real- or complex-valued
+    (only the real part is referenced for optimization purposes).
 
-    An instance of ObjectiveFunction is specified by a
-    character string (the fstr input to the constructor)
-    that, upon parsing by sympy.sympify, is identified as
+    An instance of `ObjectiveFunction` is specified by a
+    character string (the `fstr` input to the constructor)
+    that, upon parsing by `sympy.sympify`, is identified as
     a mathematical expression depending on :math:`N` unknown
     variables (which we call "objective quantities").
-    The strings identified by numpy as the names of the variables
-    should obey meep_adjoint syntax rules for the naming
-    of objective quantities (in particular, they should
-    be parsable by `make_qrule` to yield a valid qrule).
+    The strings identified by `sympy` as the names of the
+    variables should obey `meep_adjoint` naming conventions for
+    objective quantities (in particular, they should
+    be parsable by `make_qrule` to yield a valid `qrule`).
 
     Class instances store the following data:
 
-    fexpr: sympy expression constructed from fstr
+        :`fexpr`:
 
-    qsyms: list of sympy.Symbols identified by sympy
-           as the objective quantities, i.e. the inputs
-           on which f depends
+            sympy expression constructed from fstr:
+
+        :`qsyms`:
+
+            list of `sympy.Symbol` identified by sympy
+            as the objective quantities, i.e. the inputs
+            on which f depends
 
     qnames: list of strs giving the names of the objective
             quantitiesrs giving the names of the objective

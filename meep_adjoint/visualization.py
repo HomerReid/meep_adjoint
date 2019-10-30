@@ -140,6 +140,8 @@ def plot_eps(sim, fig=None, plot3D=False, options={}):
     method, contours, cb_shrink, cb_pad   = vals[4:8]
     cmin, cmax, zbar_min, zbar_max        = vals[8:12]
     fontsize, latex, linewidth, linecolor = vals[12:16]
+    import ipdb; ipdb.set_trace()
+
 
     #--------------------------------------------------
     #- fetch epsilon array and clip values if requested

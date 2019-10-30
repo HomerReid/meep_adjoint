@@ -63,7 +63,7 @@ rst_epilog = """
 ######################################################################
 # pygments
 ######################################################################
-pygments_style = 'friendly'
+pygments_style = 'cobalt2'
 # pygments_style = 'breeze'
 #pygments_style = 'solarizedlight'
 #pygments_style = 'sphinx'

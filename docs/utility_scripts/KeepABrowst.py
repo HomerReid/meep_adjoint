@@ -45,7 +45,10 @@ NAPTIME_FILE='/tmp/KeepABrowst.naptime'
 os.chdir(DIR)
 init_log(filename='/tmp/KeepABrowst.log',console=True)
 backtics('make clean ',logging=True)
-backtics('make html',logging=True)
+make_output = '\n'.join(backtics('make html',logging=True))
+with open('/tmp/sphinx.out','w') as f:
+    f.write(make_output)
+
 build_refresh_time = time.time()
 
 ##################################################
@@ -55,8 +58,13 @@ try:
     driver.refresh()
 except:
     env['GDK_SCALE']='1.0'
+#    options = webdriver.ChromeOptions()
+#    options.add_argument('--force-device-scale-factor=1')
+#    options.add_argument('--high-dpi-support=1')
+#    driver = webdriver.Chrome(options)
     driver = webdriver.Chrome()
     driver.get(INITIAL_URL)
+
 browser_refresh_time = time.time()
 
 ##################################################
@@ -83,12 +91,13 @@ while True:
     ######################################################################
     # check for updated source files and rebuild docs if necessary
     ######################################################################
+    WATCHED_FILES = [ r'.*.rst$', r'.*.css$', r'.*.py$' ]
     source_refresh_time, newest_source_file = 0.0, ''
     for root, dirs, files in os.walk(DIR):
         if '_build' in root:
             continue
         for file in files:
-            if file.endswith('.rst') or file.endswith('.css'):
+            if np.any( [ re.match(pattern, file) for pattern in WATCHED_FILES ]):
                 filepath = root + '/' + file
                 t = os.path.getmtime(filepath)
                 if t > source_refresh_time:
