@@ -71,13 +71,23 @@
 .. |MeepSource| replace:: ``Source``
 .. _MeepSource: https://meep.readthedocs.io/en/latest/Python_User_Interface/#source
 
-
 .. |MeepVolume| replace:: ``Volume``
 .. _MeepVolume: https://meep.readthedocs.io/en/latest/Python_User_Interface/#volume
 
 .. |MeepFluxRegion| replace:: ``FluxRegion``
 .. _MeepFluxRegion: https://meep.readthedocs.io/en/latest/Python_User_Interface/#fluxregion
 
+.. |MeepModeRegion| replace:: ``ModeRegion``
+.. _MeepModeRegion: https://meep.readthedocs.io/en/latest/Python_User_Interface/#mode-decomposition
+
+.. |MeepFieldRegion| replace:: ``FieldRegion``
+.. _MeepFieldRegion: https://meep.readthedocs.io/en/latest/Python_User_Interface/#field-computations
+
+.. |MeepForceRegion| replace:: ``ForceRegion``
+.. _MeepForceRegion: https://meep.readthedocs.io/en/latest/Python_User_Interface/#force-spectra
+
+.. |MeepEnergyRegion| replace:: ``EnergyRegion``
+.. _MeepEnergyRegion: https://meep.readthedocs.io/en/latest/Python_User_Interface/#energy-density-spectra
 
 .. |MeepEnergySpectra| replace:: ``EnergySpectra``
 .. _MeepEnergySpectra: https://meep.readthedocs.io/en/latest/Python_User_Interface/#energy-density-spectra

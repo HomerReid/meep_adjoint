@@ -6,7 +6,6 @@ import numpy as np
 import meep as mp
 
 import meep_adjoint
-
 from meep_adjoint import get_adjoint_option as adj_opt
 from meep_adjoint import get_visualization_option as vis_opt
 
@@ -84,22 +83,20 @@ def init_problem():
     lcen          = 1.0/fcen
     dpml          = 0.5*lcen if dpml==-1.0 else dpml
     sx = sy       = dpml + l_stub + l_design + l_stub + dpml
-    sz            = 0.0 if h==0.0 else dpml + dair + h + dair + dpml
-    cell_size     = [sx, sy, sz]
-
+    sz            = 0.0 if h==0.0 else (dpml + dair + h + dair + dpml)
     d_flux        = 0.5*(l_design + l_stub)     # distance from origin to NSEW flux monitors
     d_flx2        = d_flux + l_stub/3.0         # distance from origin to west2 flux monitor
     d_source      = d_flux + l_stub/6.0         # distance from origin to source
-
+    cell_size     = [sx, sy, sz]
 
     #----------------------------------------------------------------------
     #- geometric objects (material bodies), not including the design object
     #----------------------------------------------------------------------
-    wvg_mat    = mp.Medium(epsilon=args.eps_wvg)
-    east_wvg   = mp.Block(center=V3(ORIGIN+0.25*sx*XHAT), material=wvg_mat, size=V3(0.5*sx, args.w_east,  args.h) )
-    west_wvg   = mp.Block(center=V3(ORIGIN-0.25*sx*XHAT), material=wvg_mat, size=V3(0.5*sx, args.w_west,  args.h) )
-    north_wvg  = mp.Block(center=V3(ORIGIN+0.25*sy*YHAT), material=wvg_mat, size=V3(args.w_north, 0.5*sy, args.h) )
-    south_wvg  = mp.Block(center=V3(ORIGIN-0.25*sy*YHAT), material=wvg_mat, size=V3(args.w_south, 0.5*sy, args.h) )
+    wvg_mat    = mp.Medium(epsilon=eps_wvg)
+    east_wvg   = mp.Block(center=V3(ORIGIN+0.25*sx*XHAT), material=wvg_mat, size=V3(0.5*sx, w_east,  h) )
+    west_wvg   = mp.Block(center=V3(ORIGIN-0.25*sx*XHAT), material=wvg_mat, size=V3(0.5*sx, w_west,  h) )
+    north_wvg  = mp.Block(center=V3(ORIGIN+0.25*sy*YHAT), material=wvg_mat, size=V3(w_north, 0.5*sy, h) )
+    south_wvg  = mp.Block(center=V3(ORIGIN-0.25*sy*YHAT), material=wvg_mat, size=V3(w_south, 0.5*sy, h) )
 
     background_geometry = [ east_wvg, west_wvg, north_wvg, south_wvg ]
 
@@ -111,10 +108,10 @@ def init_problem():
     source_region  = Subregion(center=source_center, size=source_size, name=mp.X)
 
     #----------------------------------------------------------------------
-    #- design region, expansion basis
+    #- design region
     #----------------------------------------------------------------------
     design_center = ORIGIN
-    design_size   = [args.l_design, args.l_design, args.h]
+    design_size   = [l_design, l_design, h]
     design_region = Subregion(name='design', center=design_center, size=design_size)
 
     #----------------------------------------------------------------------
@@ -126,11 +123,11 @@ def init_problem():
     w1_center  = ORIGIN - d_flux*XHAT
     w2_center  = w1_center - (l_stub/3.0)*XHAT
 
-    north      = Subregion(center=n_center,  size=2.0*args.w_north*XHAT, dir=mp.Y,  name='north')
-    south      = Subregion(center=s_center,  size=2.0*args.w_south*XHAT, dir=mp.Y,  name='south')
-    east       = Subregion(center=e_center,  size=2.0*args.w_east*YHAT,  dir=mp.X,  name='east')
-    west1      = Subregion(center=w1_center, size=2.0*args.w_west*YHAT,  dir=mp.X,  name='west1')
-    west2      = Subregion(center=w2_center, size=2.0*args.w_west*YHAT,  dir=mp.X,  name='west2')
+    north      = Subregion(center=n_center,  size=2.0*w_north*XHAT, dir=mp.Y,  name='north')
+    south      = Subregion(center=s_center,  size=2.0*w_south*XHAT, dir=mp.Y,  name='south')
+    east       = Subregion(center=e_center,  size=2.0*w_east*YHAT,  dir=mp.X,  name='east')
+    west1      = Subregion(center=w1_center, size=2.0*w_west*YHAT,  dir=mp.X,  name='west1')
+    west2      = Subregion(center=w2_center, size=2.0*w_west*YHAT,  dir=mp.X,  name='west2')
 
     objective_regions = [north, south, east, west1, west2]
 
@@ -139,7 +136,7 @@ def init_problem():
     #----------------------------------------------------------------------
     router_objective = 'Abs(P1_north)**2'
     splitter_objective = '( Abs(P1_north) - Abs(P1_east) )**2 + ( Abs(P1_east) - Abs(M1_south) )**2'
-    objective = splitter_objective if args.splitter else router_objective
+    objective = splitter_objective if splitter else router_objective
     extra_quantities = ['S_north', 'S_south', 'S_east', 'S_west1', 'S_west2']
 
     #----------------------------------------------------------------------

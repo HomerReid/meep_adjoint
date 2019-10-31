@@ -50,9 +50,9 @@ on two particular design tasks:
       output power, but rather maximal *uniformity* of power
       emissions from the three output ports.
 
-======================================================================
++++++++++++++++++++++++++++++++++++++
 The driver script: :mod:`router.py`
-======================================================================
++++++++++++++++++++++++++++++++++++++
 
 The driver script for this problem is :mod:`router.py`,
 which lives in the `examples` subdirectory of the `meep_adjoint`
@@ -366,11 +366,9 @@ Fetch values for local (script-specific) and global (`meep-adjoint`-wide) config
 .. ############################################################
 .. ############################################################
 .. ############################################################
-The function begins by parsing command-line arguments
-to `router.py`:
+The function begins by parsing command-line arguments to `router.py`:
 
 .. code-block:: python
-   :lineno-start: 43
 
     parser = argparse.ArgumentParser()
 
@@ -389,19 +387,30 @@ to `router.py`:
 
     args = parser.parse_args()
 
+    w_east   = args.w_east
+    w_west   = args.w_west
+    w_north  = args.w_north
+    w_south  = args.w_south
+    l_stub   = args.l_stub
+    l_design = args.l_design
+    h        = args.h
+    eps_wvg  = args.eps_wvg
+    splitter = args.splitter
+
 .. ############################################################
 .. ############################################################
 .. ############################################################
 
 We also fetch the current values of some `meep_adjoint`
-:doc:`configuration options </customization/index>`: 
+:doc:`configuration options </customization/index>` whose
+values we will need to initialize the geometry:
 
 .. ############################################################
 .. ############################################################
 .. ############################################################
 .. code-block:: python
-   :lineno-start: 69
 
+    from meep_adjoint import get_adjoint_option as adj_opt
 
     fcen = adj_opt('fcen')   # center source frequency
     dpml = adj_opt('dpml')   # width of PML layers
@@ -419,18 +428,11 @@ Set up the computational geometry
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The next steps are standard initialization procedures familiar to anyone
-who has ever initialized a |simulation|. First we det
-
-do a little arithmetic to
-compute the dimensions of the computational cell
-valuesh 
-First we fetch the current values
+who has ever initialized a |simulation|. First we do a little arithmetic
 to compute the dimensions of the computational cell based on the current
-values of various geometric parameters, some of which
-
-on the current values of 
-, referring both to script-specific and
-`meep_adjoint`-global :doc:`configuration options </configuration/index>`:
+values of user-configurable geometric parameters like
+``design_length`` (the side length of the central square hub region we are
+trying to design) and ``dpml`` (thickness of PML layers):
 
 .. code-block:: python
    :lineno-start: 81
@@ -442,20 +444,82 @@ on the current values of
    sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
    cell_size     = [sx, sy, sz]
 
-Next we construct a list of |MeepGeometricObject| structures to describe the fixed
-portion of the material geometry---*not* including the design region, for which an
-appropriate object is created internally by `meep_adjoint`. For the router
-problem the fixed geometry consists of just the 4 waveguide port stubs:
 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Define the fixed material geometry
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Next we construct a list of |MeepGeometricObject| structures to describe the fixed
+portion of the material geometry. This is just like the list of objects
+one constructs and passes as the ``geometry`` parameter to the |simulation|
+constructor in the core |pymeep|, **except** that in forming this list we need only
+account for material bodies lying *outside* the design region;
+the material geometry *inside* the design region is handled entirely
+internally within `meep_adjoint`.  Excluding the hub region from the
+router geometry leaves just the four waveguide stubs:
+
+.. code-block:: python
+
+   #----------------------------------------------------------------------
+   #- geometric objects (material bodies), not including the design object
+   #----------------------------------------------------------------------
+   wvg_mat    = mp.Medium(epsilon=eps_wvg)
+   east_wvg   = mp.Block(center=V3(ORIGIN+0.25*sx*XHAT), material=wvg_mat, size=V3(0.5*sx, w_east,  h) )
+   west_wvg   = mp.Block(center=V3(ORIGIN-0.25*sx*XHAT), material=wvg_mat, size=V3(0.5*sx, w_west,  h) )
+   north_wvg  = mp.Block(center=V3(ORIGIN+0.25*sy*YHAT), material=wvg_mat, size=V3(w_north, 0.5*sy, h) )
+   south_wvg  = mp.Block(center=V3(ORIGIN-0.25*sy*YHAT), material=wvg_mat, size=V3(w_south, 0.5*sy, h) )
+
+   background_geometry = [ east_wvg, west_wvg, north_wvg, south_wvg ]
+
+
+We will pass this list as the `background_geometry` parameter to the `OptimizationProblem`
+constructor.
+
+
+    .. admonition:: Background and foreground geometries
+
+        The label `background_geometry` for this list of objects refers to the fact that,
+        in the full list of `geometric_object` structures that eventually gets
+        passed to |meep|, they *precede* (lie beneath) the object describing the design region;
+        thus, any portions of these objects that extend into the design region 
+        are covered by the design object and don't show up in the computational
+        geometry.
+        For geometries in which portions of the fixed geometry lie logically
+        *above* the design object, the optional constructor argument
+        `foreground_geometry` may be used to specify a list of `geometric_objects`
+        to come after the design-region object in the global list.
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Sources, design region, objective regions
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Next we will delineate various subregions of the computational cell as being of particular significance.
+Again, this step will be familiar to anyone who has ever defined a
+|MeepFluxRegion| (or |MeepFieldRegion| or |MeepForceRegion| or
+|MeepEnergyRegion| or |MeepModeRegion| or ...) with the slight twist that
+the full zoo of distinct, specialized data structures for spatial regions
+in core |meep| (which includes the five just mentioned, plus some others)
+is replaced in ``meep_adjoint`` by the single new class ``Subregion``. A
+``Subregion`` is
 
 .. _Phase2:
 
 ==================================================
 Phase 2: Interactive exploration
 ==================================================
-As discussed above, the primary goal of the interactive phase is
-to kick the tires of the `OptimizationProblem` created in the
-previous step, bot h
+As discussed above, the goals of the interactive phase are
+
+    + to sanity-check our work in the previous phase
+      by investigating the `OptimizationProblem` we constructed
+      and confirming that it correctly describes the design problem
+      we want to solve, and
+
+    + to get a sense of the computational cost of evaluating the
+      objective function and the practical feasibility of achieving
+      our desired performance targets, which will help us in the
+      following phase to make reasonable choices for various parameters
+      controlling the automated design iteration.
 
 
 .. code-block:: python
@@ -468,9 +532,12 @@ previous step, bot h
    sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
    cell_size     = [sx, sy, sz]
 
+----------------------------------------------------------------------
+Visualizing the geometry
+----------------------------------------------------------------------
+
 
 .. _Phase3:
-
 ==================================================
 Phase 3: Automated optimization
 ==================================================
