@@ -455,8 +455,13 @@ one constructs and passes as the ``geometry`` parameter to the |simulation|
 constructor in the core |pymeep|, **except** that in forming this list we need only
 account for material bodies lying *outside* the design region;
 the material geometry *inside* the design region is handled entirely
-internally within `meep_adjoint`.  Excluding the hub region from the
-router geometry leaves just the four waveguide stubs:
+internally within `meep_adjoint`, and our only responsibility is to
+tell the `OptimizationProblem` constructor where the design region *is*
+via the `design_region` parameter (see below). 
+
+For the router problem, the design region is the square-shaped region
+outlined by the dashed green line in the figure above, and the fixed material
+geometry consists of just the four waveguide stubs emanating from it:
 
 .. code-block:: python
 
@@ -480,8 +485,7 @@ constructor.
 
         The label `background_geometry` for this list of objects refers to the fact that,
         in the full list of `geometric_object` structures that eventually gets
-        passed to |meep|, they *precede* (lie beneath) the object describing the design region;
-        thus, any portions of these objects that extend into the design region 
+        passed to |meep|, they *precede* (lie beneath) the object describing the design region; thus, any portions of these objects that extend into the design region 
         are covered by the design object and don't show up in the computational
         geometry.
         For geometries in which portions of the fixed geometry lie logically
@@ -491,7 +495,7 @@ constructor.
 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Sources, design region, objective regions
+Delineate functional subregions
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Next we will delineate various subregions of the computational cell as being of particular significance.
@@ -500,8 +504,51 @@ Again, this step will be familiar to anyone who has ever defined a
 |MeepEnergyRegion| or |MeepModeRegion| or ...) with the slight twist that
 the full zoo of distinct, specialized data structures for spatial regions
 in core |meep| (which includes the five just mentioned, plus some others)
-is replaced in ``meep_adjoint`` by the single new class ``Subregion``. A
-``Subregion`` is
+is replaced in ``meep_adjoint`` by the single new class
+:class:`Subregion <meep_adjoint.Subregion>`. 
+
+    .. admonition:: Subregions in :mod:`meep_adjoint`
+
+      A subregion is simply
+      a hyperrectangular region of space lying within the boundaries of
+      the FDTD grid. A subregion may be of codimension 1 (i.e. a line in a 2D
+      geometry or a plane in a 3D geometry), in which case it has a well-defined
+      normal direction. Alternatively, subregions may be of codimension 0 [i.e.
+      have the full dimensionality of the ambient space: a rectangle (2D) or box (3D)]
+      or of dimension 0 (i.e. a set of discrete spatial points); in these cases the
+      normal direction is undefined.
+      Whereas the core |meep| solver treats each of these possibilities as distinct
+      entities described by separate data structures (and further differentiates
+      even among subregions of identical dimensionality based on the purpose for
+      which the subregion is used in an FDTD calculation), `meep_adjoint` considers
+      spatial regions of all (co-)dimensionalities and functional significance
+      to be subcases of a common general entity, described by the single
+      python class `Subregion.` 
+      
+      A further distinction is that each `Subregion`
+      in `meep_adjoint` has a *name*---a unique character-string identifier
+      that may be chosen arbitrarily by users, or is assigned automatically
+      if left unspecified. (The assignment of unique names to subregions is 
+      something that would probably be fairly useful even in core |meep|, but
+      is essential in `meep_adjoint` to yield a natural scheme by which
+      physical quantities like Poynting fluxes and energy densities
+      may be associated with a canonical variable name 
+      for use in objective-function expressions.)
+
+      Notwithstanding these differences, the instantiation of `Subregion`s
+      in `meep_adjoint` python scripts is syntactically almost identical
+      to the instantiation of e.g. |MeepFluxRegion| or |MeepFieldRegion|
+      structures in core |meep| scripts, as the examples below illustrate.
+
+
+We will create `Subregions` for three 
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Delineate subregions
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 
 .. _Phase2:
 
@@ -516,7 +563,7 @@ As discussed above, the goals of the interactive phase are
       we want to solve, and
 
     + to get a sense of the computational cost of evaluating the
-      objective function and the practical feasibility of achieving
+      objective function and the practical feasibility of achieving 
       our desired performance targets, which will help us in the
       following phase to make reasonable choices for various parameters
       controlling the automated design iteration.

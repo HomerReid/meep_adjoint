@@ -31,7 +31,7 @@ Low-level (private) API: Classes and functions intended for use within :obj:`mee
    :inherited-members:
 
 ============================================================================================================
-:class:`Subregion`: Streamlined handling of computational grid subregions
+:class:`Subregion`: Rationalized, unified handling of spatial subregions
 ============================================================================================================
 .. _TheSubregionClass:
 
