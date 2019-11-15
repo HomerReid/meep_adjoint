@@ -440,9 +440,30 @@ trying to design) and ``dpml`` (thickness of PML layers):
    lcen          = 1.0/fcen
    dpml          = 0.5*lcen if dpml==-1.0 else dpml
    design_length = args.l_design
-   sx = sy       = dpml + args.l_stub + design_length + args.l_stub + dpml
-   sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
+   sx = sy       = dpml + l_stub + design_length + l_stub + dpml
+   sz            = 0.0 if h==0.0 else dpml + dair + h + dair + dpml
    cell_size     = [sx, sy, sz]
+
+
+.. _SpecificVsPackageWide:
+
+
+   .. admonition:: Problem-specific vs. package-wide configuration options
+
+         Note that some of the user-configurable geometric parameters we
+         reference here---such as ``design_length`` and ``l_stub`` (length
+         of stub waveguide sections)---are ``router.py``-specific command-line options,
+         while others---such as ``dpml`` and ``dair`` (length of air gaps
+         between device outer perimeter and PML layers) are ``meep_adjoint``
+         configuration options. This is not because PML thicknesses or air gaps
+         play particularly special roles in adjoint calculations, but simply
+         because pretty much every conceivable FDTD project will
+         want to define user-configurable options for these quantities, so
+         ``meep_adjoint`` just defines them once and for all at the package
+         level, obviating the need for users to define e.g. a ``dpml`` parameter
+         in every ``meep_adjoint`` script they write.
+         
+
 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -456,7 +477,7 @@ constructor in the core |pymeep|, **except** that in forming this list we need o
 account for material bodies lying *outside* the design region;
 the material geometry *inside* the design region is handled entirely
 internally within `meep_adjoint`, and our only responsibility is to
-tell the `OptimizationProblem` constructor where the design region *is*
+tell the `OptimizationProblem` constructor where the design region **is**
 via the `design_region` parameter (see below). 
 
 For the router problem, the design region is the square-shaped region
@@ -502,14 +523,14 @@ Next we will delineate various subregions of the computational cell as being of 
 Again, this step will be familiar to anyone who has ever defined a
 |MeepFluxRegion| (or |MeepFieldRegion| or |MeepForceRegion| or
 |MeepEnergyRegion| or |MeepModeRegion| or ...) with the slight twist that
-the full zoo of distinct, specialized data structures for spatial regions
+the full panoply of distinct, specialized data structures for spatial regions
 in core |meep| (which includes the five just mentioned, plus some others)
 is replaced in ``meep_adjoint`` by the single new class
 :class:`Subregion <meep_adjoint.Subregion>`. 
 
     .. admonition:: Subregions in :mod:`meep_adjoint`
 
-      A subregion is simply
+      A *subregion* in `meep_adjoint` is simply
       a hyperrectangular region of space lying within the boundaries of
       the FDTD grid. A subregion may be of codimension 1 (i.e. a line in a 2D
       geometry or a plane in a 3D geometry), in which case it has a well-defined
@@ -518,34 +539,136 @@ is replaced in ``meep_adjoint`` by the single new class
       or of dimension 0 (i.e. a set of discrete spatial points); in these cases the
       normal direction is undefined.
       Whereas the core |meep| solver treats each of these possibilities as distinct
-      entities described by separate data structures (and further differentiates
+      entities described by separate data structures---and further differentiates
       even among subregions of identical dimensionality based on the purpose for
-      which the subregion is used in an FDTD calculation), `meep_adjoint` considers
+      which the subregion is used in an FDTD calculation---`meep_adjoint` considers
       spatial regions of all (co-)dimensionalities and functional significance
       to be subcases of a common general entity, described by the single
-      python class `Subregion.` 
+      python class :class:`Subregion <meep_adjoint.Subregion>`.
       
-      A further distinction is that each `Subregion`
+      A further distinction is that each :class:`Subregion <meep_adjoint.Subregion>`.
       in `meep_adjoint` has a *name*---a unique character-string identifier
       that may be chosen arbitrarily by users, or is assigned automatically
       if left unspecified. (The assignment of unique names to subregions is 
       something that would probably be fairly useful even in core |meep|, but
-      is essential in `meep_adjoint` to yield a natural scheme by which
-      physical quantities like Poynting fluxes and energy densities
-      may be associated with a canonical variable name 
-      for use in objective-function expressions.)
+      is essential in `meep_adjoint` to yield a :ref:`natural, canonical naming
+      convention for physical quantities like Poynting fluxes and energy densities
+      <defining_the_objective_function>`)
 
-      Notwithstanding these differences, the instantiation of `Subregion`s
-      in `meep_adjoint` python scripts is syntactically almost identical
+      Notwithstanding these differences, the instantiation of `Subregions`
+      is syntactically almost identical
       to the instantiation of e.g. |MeepFluxRegion| or |MeepFieldRegion|
       structures in core |meep| scripts, as the examples below illustrate.
 
 
-We will create `Subregions` for three 
+The initialization phase of a typical  `meep_adjoint` problem
+involves defining three distinct functional categories of
+`Subregion`---two of which will be familiar to anyone who has ever
+created a |Simulation|, while the third is optimization-specific
+and has no analogue in core |meep|---and communicating
+these to to `meep_adjoint` via input parameters to the 
+`OptimizationProblem` constructor:
 
+    .. glossary::
+
+
+        1. `source_region`: Location of excitation sources
+
+            When creating an `OptimizationProblem` for a simulation model in
+            which the FDTD excitation source is relatively simple---namely,
+            a single |MeepEigenmodeSource| or constant-amplitude volume source 
+            confined to a single `Subregion`---it suffices to pass that
+            `Subregion` as the `source_region` constructor parameter;
+            then it will be used, together with package-wide configuration options 
+            like `fcen` and `source_component` or `source_mode`, internally
+            within `meep_adjoint` to construct appropriate |MeepSource| structures
+            for forward FDTD simulations.
+
+            The use of `source_region` together with global configuration variables
+            to define sources is actually a convenience option provided as a
+            shortcut for simple source configurations; the more general
+            way to define forward sources for your problem is to instantiate a
+            list of `MeepSource` structures and pass it as the
+            `sources` parameter to the `OptimizationProblem` constructor, in
+            which case you would `not` specify `source_region`.
+
+
+        2. `objective_regions`: *Declaring sites at which we want frequency-domain fields and associated physical quantities*
+
+           Next we specify all the subregions over which we will ask the FDTD solver to tabulate
+           frequency-domain fields. This is another step that will be familiar to anybody who has
+           ever written a core |meep| script, but again with slightly different--simpler!--mechanics. In a core
+           |meep| script, for each subregion of interest we would execute a two-step procedure:
+
+
+               1. We would first define the subregion of interest by creating object like |MeepFluxRegion| or |MeepFieldRegion| or |MeepEnergyRegion|,
+                  depending on the functional objective we have in mind.
+
+               2. Then we would pass this object as a parameter to an API method like `Simulation.add_flux` 
+                  or `Simulation.add_energy` to request computation of frequency-domain Poynting fluxes or energy densities
+                  for the given region.
+
+
+           `meep_adjoint` simplifies this by **(a)** collapsing all of the distinct
+           data structures for physical subregions in step 1 to the single class `Subregion`, and
+           **(b)** eliminating step 2. Thus, the *only* thing you need to do to declare
+           your interest in frequency-domain fields in a given region of the computational cell 
+           is to create a `Subregion` and add it to the list passed as the `objective_regions`
+           parameter to the `OptimizationProblem` constructor.
+
+           For the router problem, the frequency-domain quantities
+           we want are just the fluxes into or out of each port,
+           so we create codimension-1 `Subregions` for each of the 
+           waveguide stubs::
+
+                #----------------------------------------------------------------------
+                #- objective regions
+                #----------------------------------------------------------------------
+                n_center   = ORIGIN + d_flux*YHAT
+                s_center   = ORIGIN - d_flux*YHAT
+                e_center   = ORIGIN + d_flux*XHAT
+                w1_center  = ORIGIN - d_flux*XHAT
+                w2_center  = w1_center - (l_stub/3.0)*XHAT
+
+                north      = Subregion(center=n_center,  size=2.0*w_north*XHAT, dir=mp.Y,  name='north')
+                south      = Subregion(center=s_center,  size=2.0*w_south*XHAT, dir=mp.Y,  name='south')
+                east       = Subregion(center=e_center,  size=2.0*w_east*YHAT,  dir=mp.X,  name='east')
+                west1      = Subregion(center=w1_center, size=2.0*w_west*YHAT,  dir=mp.X,  name='west1')
+                west2      = Subregion(center=w2_center, size=2.0*w_west*YHAT,  dir=mp.X,  name='west2')
+
+                objective_regions = [north, south, east, west1, west2]
+                                   
+
+
+        3. `design_region`: *Informing `meep_adjoint` where it is allowed to vary the permittivity*
+
+
+           As noted above, we don't need to create any `GeometricObjects`
+           for the tweakable region of the device geometry, but we **do** need
+           to define the bounding box of this region via the `Subregion`-valued 
+           constructor parameter `design_region`. For the router geometry, 
+           the design region is a square of side length `l_design` centered
+           at the origin::
+
+             #----------------------------------------------------------------------
+             #- design region
+             #----------------------------------------------------------------------
+             design_center = ORIGIN
+             design_size   = [l_design, l_design, h]
+             design_region = Subregion(name='design', center=design_center, size=design_size)
+
+
+           Just as `source_region`is a convenience shortcut for the more general
+           `sources`, `design_region` is a convenience shortcut for the more general
+           `basis`.
+
+
+
+
+.. _defining_the_objective_function:
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Delineate subregions
+Define the objective function
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
@@ -582,6 +705,7 @@ As discussed above, the goals of the interactive phase are
 ----------------------------------------------------------------------
 Visualizing the geometry
 ----------------------------------------------------------------------
+Howdage foryaf! Time to write this section.
 
 
 .. _Phase3:

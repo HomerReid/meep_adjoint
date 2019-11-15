@@ -14,9 +14,16 @@ an infinite loop in which we
 import os
 from os import environ as env
 from os.path import expanduser
+import sys
+
+HRPY = expanduser('~/hacking/hrpy')
+if HRPY not in sys.path:
+    sys.path.insert(0,HRPY)
+from hrpyutil import backtics, init_log
+import pygments
+
 from bs4 import BeautifulSoup
 import requests
-import sys
 import re
 import importlib
 import warnings
@@ -30,8 +37,6 @@ import watchdog
 
 import selenium
 from selenium import webdriver
-
-from hrpyutil import backtics, init_log
 
 DIR='/home/homer/work/Simpetus/meep_adjoint/docs'
 INITIAL_URL = 'file://' + DIR + '/_build/html/index.html'
