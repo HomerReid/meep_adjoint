@@ -59,4 +59,12 @@ I will post a script that mostly automates the :codename:`meep` build-from-sourc
 2. Install `meep_adjoint`
 --------------------------------------------------
 
+Assuming you have created and activated a conda environment named `py37_for_meep_adjoint`
+with all necessary dependencies, you can now go like this:
 
+
+    .. code-block:: bash
+
+        (py37_for_meep_adjoint) $ git clone https://github.com/HomerReid/meep-adjoint
+        (py37_for_meep_adjoint) $ cd meep-adjoint
+        (py37_for_meep_adjoint) $ python setup.py install
