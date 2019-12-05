@@ -1,16 +1,19 @@
 #!/bin/bash
 
-######################################################################
-######################################################################
-######################################################################
-MSG="script should be run from documentation root directory"
-test -f _build      && { echo ${MSG}; exit 1; }
-test -f _build/html && { echo ${MSG}; exit 1; }
+. $HOME/.bashrc
+. $HOME/.bashutils.rc
 
 ######################################################################
 ######################################################################
 ######################################################################
-cd _build/html
+BASEDIR=${MPAD}
+test -d ${BASEDIR} || ErrExit "directory ${BASEDIR} not found"
+
+HTMLDIR=${BASEDIR}/_build/html
+mkdir -p ${HTMLDIR}
+cd ${HTMLDIR}
+test "x${PWD}" == "x${HTMLDIR}" || ErrExit "could not cd to ${HTMLDIR}"
+
 git add --all .
 git commit -a -m"updates"
 git push origin gh-pages

@@ -81,7 +81,6 @@ def make_qrule(qname):
 #     def __call__(self, nf=0):
 #         return self.cell(self.code,mode=self.mode, nf=nf)
 
-
 class ObjectiveFunction(object):
     """
     Multivariate scalar-valued function defined by string expression.
@@ -150,9 +149,14 @@ class ObjectiveFunction(object):
             would be written within `fstr` like this: 'Abs(q_i)**2'
     """
     def __init__(self, fstr='S_0', extra_quantities=[]):
+
+        def _parse_absval_bars(s):
+            """preprocess sympy input to replace '|...|' with 'Abs(...)' """
+            return re.sub(r'[|]([^|]*)[|]',r'Abs(\1)',s)
+
         # try to parse the function string to yield a sympy expression
         try:
-            fexpr = sympy.sympify(fstr)
+            fexpr = sympy.sympify( _parse_absval_bars(fstr) )
         except:
             raise ValueError("failed to parse function {}".format(fstr))
 

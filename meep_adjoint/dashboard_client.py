@@ -28,7 +28,14 @@ dashboard_socket, dashboard_process, dbserver_process = None, None, None
 
 
 def launch_dashboard(name=None):
-    """ try to launch GUI dashboard """
+    """ Attempt to launch GUI dashboard.
+
+    Parameters
+    ----------
+    name: str
+        Optional label to appear in the dashboard GUI window title.
+
+    """
 
     # skip if dashboard already running or disabled by configuration options
     global dashboard_socket, dashboard_process, dbserver_process
@@ -50,10 +57,7 @@ def launch_dashboard(name=None):
             get_exception_info(msg='failed to fork dashboard process',warning=True)
         return
 
-
-    # otherwise, we try to establish a TCP connection to a server listening on
-    # the given port
-
+    # if port!=0, try connecting to a TCP server at that port on the host
     if host=='localhost':
         fork_dashboard_server()
 
@@ -73,8 +77,10 @@ def launch_dashboard(name=None):
 def update_dashboard(updates):
     """Update data fields or overall appearance of GUI dashboard.
 
-    Args:
-        updates (str or list of str): update commands
+    Parameters
+    ----------
+        updates: str or list of str
+            command lines to be piped into the dashboard
     """
     global dashboard_socket, dashboard_process, dbserver_process
     if not dashboard_socket:

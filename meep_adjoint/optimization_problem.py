@@ -7,7 +7,7 @@ import meep as mp
 
 from . import (DFTCell, ObjectiveFunction, TimeStepper, ConsoleManager,
                FiniteElementBasis, rescale_sources, E_CPTS, v3, V3,
-               init_log, log, dft_cell_names, launch_dashboard, update_dashboard)
+               init_log, launch_dashboard, ConsoleManager)
 
 from . import visualize_sim
 
@@ -30,32 +30,50 @@ class OptimizationProblem(object):
     This is done by the __call__ method. The actual computations
     are delegated to a hierarchy of lower-level classes, of which
     the uppermost is TimeStepper.
+
     """
 
-    def __init__(self, objective_regions=[], objective=None,
-                       basis=None, design_region=None,
-                       cell_size=None, background_geometry=[], foreground_geometry=[],
+    def __init__(self, cell_size=None, background_geometry=[], foreground_geometry=[],
                        sources=None, source_region=[],
-                       extra_quantities=[], extra_regions=[]):
+                       objective_regions=[],
+                       basis=None, design_region=None,
+                       extra_regions=[],
+                       objective_function=None,
+                       extra_quantities=[]):
         """
         Parameters:
+        -----------
 
-          objective regions (list of Subregion):
-              subregions of the computational cell over which frequency-domain
-              fields are tabulated and used to compute objective quantities
+        cell_size: array-like
+        background_geometry: list of meep.GeometricObject
+        foreground_geometry: list of meep.GeometricObject
 
-          objective (str):
-              definition of the quantity to be maximized. This should be
-              a mathematical expression in which the names of one or more
-              objective quantities appear, and which should evaluate to
-              a real number when numerical values are substituted for the
-              names of all objective quantities.
+              Size of computational cell and lists of GeometricObjects
+              that {precede,follow} the design object in the overall geometry.
 
+        sources: list of meep.Source
+        source_region: Subregion
+            (*either* `sources` **or** `source_region` should be non-None)
+            Specification of forward source distribution, i.e. the source excitation(s) that
+            produce the fields from which the objective function is computed.
 
-          basis (Basis):
-          design_region (Subregion):
-              (precisely one of these should be non-None) Specification
-              of function space for the design permittivity.
+            In general, sources will be an arbitrary caller-created list of Source
+            objects, in which case source_region, source_component are ignored.
+
+            As an alternative convenience convention, the caller may omit
+            sources and instead specify source_region; in this case, a
+            source distribution over the given region is automatically
+            created based on the values of the module-wide configuration
+            options fcen, df, source_component, source_mode.
+
+        objective regions: list of Subregion
+             subregions of the computational cell over which frequency-domain
+             fields are tabulated and used to compute objective quantities
+
+        basis: (Basis)
+        design_region: (Subregion)
+              (*either* `basis` **or** `design_region` should be non-None)
+              Specification of function space for the design permittivity.
 
               In general, basis will be a caller-created instance of
               some subclass of meep.adjoint.Basis. Then the spatial
@@ -71,40 +89,20 @@ class OptimizationProblem(object):
               only available for box-shaped (hyperrectangular)
               design regions.
 
+        extra_regions: list of Subregion
+            Optional list of additional subregions over which to tabulate frequency-domain
+            fields.
 
-          cell_size (Vector3)
-          background_geometry (list of GeometricObject)
-          foreground_geometry (list of GeometricObject)
+        objective_function: str
+            definition of the quantity to be maximized. This should be
+            a mathematical expression in which the names of one or more
+            objective quantities appear, and which should evaluate to
+            a real number when numerical values are substituted for the
+            names of all objective quantities.
 
-              Size of computational cell and lists of GeometricObjects
-              that {precede,follow} the design object in the overall geometry.
-
-
-          sources (list of Source)
-          source_region (Subregion)
-              (Specify either sources OR source_region) Specification
-              of forward source distribution, i.e. the source excitation(s) that
-              produce the fields from which the objective function is computed.
-
-              In general, sources will be an arbitrary caller-created list of Source
-              objects, in which case source_region, source_component are ignored.
-
-              As an alternative convenience convention, the caller may omit
-              sources and instead specify source_region; in this case, a
-              source distribution over the given region is automatically
-              created based on the values of the module-wide configuration
-              options fcen, df, source_component, source_mode.
-
-
-          extra_quantities  (list of str)
-          extra_regions (list of Subregion)
-              By default, the module will compute only those DFT fields and
-              objective quantities needed to evaluate the specified objective
-              function. These arguments may be used to specify lists of ancillary
-              quantities and/or ancillary DFT cells (where 'ancillary' means
-              'not needed to compute the objective function value) to be computed
-              and reported/plotted as well.
-
+        extra_quantities: list of str
+            Optional list of additional objective quantities to be computed and reported
+            together with the objective function.
         """
 
         #-----------------------------------------------------------------------
@@ -140,7 +138,7 @@ class OptimizationProblem(object):
         dft_cells       = objective_cells + extra_cells + [design_cell]
 
         # ObjectiveFunction
-        obj_func        = ObjectiveFunction(fstr=objective,
+        obj_func        = ObjectiveFunction(fstr=objective_function,
                                             extra_quantities=extra_quantities)
 
         # initial values of (a) design variables, (b) the spatially-varying
@@ -182,57 +180,122 @@ class OptimizationProblem(object):
     # The basic task of an OptimizationProblem: Given a candidate design
     # function, compute the objective function value and (optionally) gradient.
     ######################################################################
-    def __call__(self, design=None, beta_vector=None, need_gradient=False):
-        """Evaluate value and (optionally) gradient of objective function.
+    def __call__(self, beta_vector=None, design=None,
+                       need_value=True, need_gradient=True):
+        """Evaluate value and/or gradient of objective function.
 
-        Args:
-            design:
-                candidate design function
-            beta_vector (np.array):
-                vector of design variables
-            need_gradient (bool):
-                whether or not the forward run to compute the objective-function
-                value will be followed by an adjoint run to compute the gradient.
+        Parameters
+        ----------
+        beta_vector: np.array
+                new vector of design variables
 
-        Returns: 2-tuple (fq, gradf), where
+        design: function-like
+                alternative to beta_vector: function that will be projected
+                onto the basis to obtain the new vector of design variables
+
+        need_value: boolean
+                if False, the forward run to compute the objective-function
+                value will be omitted. This is only useful if the forward run
+                has already been done (for the current design function) e.g.
+                by a previous call with need_gradient = False.
+
+        need_gradient: boolean
+                if False, the adjoint run to compute the objective-function
+                gradient will be omitted.
+
+
+        Returns
+        -------
+        2-tuple (fq, gradf), where
 
             fq = np.array([f q1 q2 ... qN])
                = values of objective function & objective quantities
 
             gradf = np.array([df/dbeta_1 ... df/dbeta_D]), i.e. vector of partial
-                    f derivatives w.r.t. each design variable (if need_gradient==True),
-                  = None (need_gradient==False)
+                    f derivatives w.r.t. each design variable (if need_gradient==True)
+
+            If need_value or need_gradient is False, then fq or gradf in the return
+            tuple will be None.
         """
-        if design or beta_vector:
-            self.update_design(design=design, beta_vector=beta_vector)
+        if beta_vector or design:
+            self.update_design(beta_vector=beta_vector, design=design)
+
+        #######################################################################
+        # sanity check: if they are asking for an adjoint calculation with no
+        #               forward calculation, make sure we previously completed
+        #               a forward calculation for the current design function
+        #######################################################################
+        if need_value == False and self.stepper.state == 'reset':
+            warnings.warn('forward run not yet run for this design; ignoring request to omit')
+            need_value = True
 
         if self.dashboard_state is None:
             launch_dashboard(name=adj_opt('filebase'))
             self.dashboard_state = 'launched'
 
-        fq    = self.stepper.run('forward')
-        import ipdb; ipdb.set_trace()
-        gradf = self.stepper.run('adjoint') if need_gradient else None
+        with ConsoleManager() as cm:
+            fq    = self.stepper.run('forward') if need_value else None
+            gradf = self.stepper.run('adjoint') if need_gradient else None
 
         return fq, gradf
+
+
+    def get_fdf_funcs(self):
+        """construct callable functions for objective function value and gradient
+
+        Returns
+        -------
+        2-tuple (f_func, df_func) of standalone (non-class-method) callables, where
+            f_func(beta) = objective function value for design variables beta
+           df_func(beta) = objective function gradient for design variables beta
+        """
+
+        def _f(x=None):
+            (fq, _) = self.__call__(beta_vector = x, need_gradient = False)
+            return fq[0]
+
+        def _df(x=None):
+            (_, df) = self.__call__(need_value = False)
+            return df
+
+        return _f, _df
 
 
     #####################################################################
     # ancillary API methods #############################################
     #####################################################################
-    def update_design(self, design=None, beta_vector=None):
+    def update_design(self, beta_vector=None, design=None):
         """Update the design permittivity function.
 
-        Args:
-            design (float, string, or callable):
-                specification of new permittivity function
-            beta_vector:
-                basis expansion coefficients for new permittivity function
+           Precisely one of (beta_vector, design) should be specified.
 
-        Returns:
-               None
+           If beta_vector is specified, it simply replaces the old
+           beta_vector wholesale.
+
+           If design is specified, the function it describes is projected
+           onto the basis set to yield the new beta_vector.
+
+           In either case, before accepting the new coefficient vector
+           we apply a componentwise clipping operation to ensure that
+           all coefficients lie in the range [beta_min, beta_max]
+           (where beta_{min,max} are configurable options). For
+           finite-element bases this simple constraint form suffices to
+           ensure physicality of the permittivity, but for other basis
+           sets the physicality constraint will be more complicated to
+           implement, and we should probably introduce a mechanism for
+           building the constraints into the Basis class and subclasses.
+
+
+        Parameters
+        ----------
+        beta_vector: np.array
+            basis expansion coefficients for new permittivity function
+
+        design: function-like
+            new permittivity function
         """
         self.beta_vector = self.basis.project(design) if design else beta_vector
+        self.beta_vector.clip(adj_opt('beta_min'), adj_opt('beta_max'))
         self.design_function.set_coefficients(self.beta_vector)
         self.stepper.state='reset'
 
@@ -258,3 +321,4 @@ class OptimizationProblem(object):
         elif self.stepper.state == 'forward.complete':
             visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, fig=fig, options=options)
         #else self.stepper.state == 'adjoint.complete':
+        #            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, fig=fig, options=options)

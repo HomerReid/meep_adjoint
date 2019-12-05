@@ -51,7 +51,7 @@ def visualize_sim(sim, dft_cells, mesh=None, fig=None, plot3D=None,
         plt.gcf().tight_layout()
 
     if vis_opt('show', overrides=options):
-        if mesh is not None:
+        if mesh is not None and not plot3D:
             plot_mesh(mesh, options)
         plt.show(block = False)
         plt.draw()
@@ -140,7 +140,6 @@ def plot_eps(sim, fig=None, plot3D=False, options={}):
     method, contours, cb_shrink, cb_pad   = vals[4:8]
     cmin, cmax, zbar_min, zbar_max        = vals[8:12]
     fontsize, latex, linewidth, linecolor = vals[12:16]
-    import ipdb; ipdb.set_trace()
 
 
     #--------------------------------------------------
@@ -184,18 +183,13 @@ def plot_eps(sim, fig=None, plot3D=False, options={}):
     #--------------------------------------------------
     #- label axes and colorbars
     #--------------------------------------------------
-    if latex:
-        plt.rc('text', usetex=True)
-        xlabel, ylabel, epslabel = r'$x$', r'$y$', r'$\epsilon$'
-    else:
-        plt.rc('text', usetex=False)
-        xlabel, ylabel, epslabel = 'x', 'y', 'hello'
-
-    ax.set_xlabel(xlabel, fontsize=fontsize, labelpad=0.50*fontsize)
-    ax.set_ylabel(ylabel, fontsize=fontsize, labelpad=fontsize, rotation=0)
+    plt.rc('text', usetex=latex)
+    xstr, ystr, estr = [r'$x$', r'$y$', r'$\epsilon$'] if latex else ['x', 'y' ,'epsilon']
+    ax.set_xlabel(xstr, fontsize=fontsize, labelpad=0.50*fontsize)
+    ax.set_ylabel(ystr, fontsize=fontsize, labelpad=fontsize, rotation=0)
     ax.tick_params(axis='both', labelsize=0.75*fontsize)
     cb = cb or fig.colorbar(img)
-    cb.ax.set_xlabel(epslabel,fontsize=1.5*fontsize,rotation=0,labelpad=0.5*fontsize)
+    cb.ax.set_xlabel(estr,fontsize=1.5*fontsize,rotation=0,labelpad=0.5*fontsize)
     cb.ax.tick_params(labelsize=0.75*fontsize)
     cb.locator = ticker.MaxNLocator(nbins=5)
     cb.update_ticks()

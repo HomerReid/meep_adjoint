@@ -197,6 +197,10 @@ h3 {
     display: inline-block;
     background-color: #3C9A9A;
     color: #FFFFFF;
+/*
+    color: #3C9A9A;
+    background-color: #FFFFFF;
+*/
     margin: 30px 0px 10px 0px;
     padding: 5px 0 5px 10px;
 }
@@ -270,4 +274,11 @@ h4, h5, h6 {
 
 .default-hidden {
     display: none;
+}
+
+/***************************************************/
+/* strike-through text  ****************************/
+/***************************************************/
+.strike {
+  text-decoration: line-through;
 }

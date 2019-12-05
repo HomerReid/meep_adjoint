@@ -13,6 +13,8 @@ from datetime import datetime as dt2
 from . import (ObjectiveFunction, Basis, v3, V3, E_CPTS, log, update_dashboard)
 from . import get_adjoint_option as adj_opt
 
+from .console_manager import CODEWORD as CONSOLE_CODEWORD
+from .console_manager import termsty
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -42,41 +44,41 @@ def dashboard_sf(sim):
 class TimeStepper(object):
     """
     Abstraction of low-level FDTD engine.
-    
+
     TimeStepper is a class that knows how to invoke an FDTD solver
-    to execute a time-domain calculation to obtain frequency-domain 
-    (DFT) field components in objective regions, from which may be 
+    to execute a time-domain calculation to obtain frequency-domain
+    (DFT) field components in objective regions, from which may be
     computed (a) the values of objective quantities and objective functions,
     or (b) permittivity derivatives of the objective function, from which
-    may be computed the objective-function gradient. 
-    
+    may be computed the objective-function gradient.
+
     This class lies between the top-level `OptimizationProblem` session-manager class
     and lower-level classes like `ObjectiveFunction`. It exports a single method
     (``__call__``) which prepares and executes one complete FDTD timestepping run to
-    compute frequency-domain fields, returning numerical quantities of interest 
-    computed from these fields. ``__call__`` accepts one `str`-valued argument `job`, 
-    for which the recognized values are `forward` or `adjoint`. For `job`==`forward`, the 
+    compute frequency-domain fields, returning numerical quantities of interest
+    computed from these fields. ``__call__`` accepts one `str`-valued argument `job`,
+    for which the recognized values are `forward` or `adjoint`. For `job`==`forward`, the
     excitation sources for the FDTD problem are the user-defined sources passed to the
-    `OptimizationProblem` constructor and the result of the calculation is the 
+    `OptimizationProblem` constructor and the result of the calculation is the
     objective-function value (plus the values of any additional requested objective quantities).
-    For `job`==`adjoint`, the excitation sources are automatically determined internally 
+    For `job`==`adjoint`, the excitation sources are automatically determined internally
     and the result of the calculation is the objective-function gradient.
-        
-    `TimeStepper` automatically determines when to terminate a timestepping run by 
+
+    `TimeStepper` automatically determines when to terminate a timestepping run by
     monitoring the numerical convergence of the output quantities. The details of this process
     may be customized using configuration options. `TimeStepper` does not itself know how
-    to evaluate its output quantities, but rather outsources these calculations to public 
+    to evaluate its output quantities, but rather outsources these calculations to public
     methods of `ObjectiveFunction` and other low-level classes.
-    
-    
+
+
     Methods
     -------
     __call__(job):
         Populate the FDTD grid with an appropriate source distribution, initialize DFT cells for
         tabulating frequency-domain fields, then execute FDTD timestepping until the output quantities
-        converges and return those quantities.   
+        converges and return those quantities.
 
-    """ 
+    """
 
     #########################################################
     #########################################################
@@ -86,15 +88,15 @@ class TimeStepper(object):
         Constructor.
 
         Parameters
-        ----------      
+        ----------
         obj_func : ObjectiveFunction
             The function whose value or gradient we compute (copied from OptimizationProblem)
         dft_cells : list of `DFTCell`"
-            List of `DFTCell` structures, assumed to be ordered with objective cells *first* and the 
+            List of `DFTCell` structures, assumed to be ordered with objective cells *first* and the
             design cell *last* (so any `extra` cells are in the interior of the list).
         basis : Basis
-            Function space (copied from OptimizationProblem). 
-            Logically this is not a necessary input for this calculation---it is used only in a 
+            Function space (copied from OptimizationProblem).
+            Logically this is not a necessary input for this calculation---it is used only in a
             post-processing step to compute the objective-function gradient by projecting df/dEps
             onto the function space. It might make more sense to define the output of TimeStepper
             to be the raw df/dEps matrix, with the projection step done at a higher level, in which
@@ -120,7 +122,7 @@ class TimeStepper(object):
     def __update__(self, job):
         """
         Recompute output quantities using most recent values of frequency-domain fields.
-           
+
         This is an internal helper method for run() that computes
         the objective function value (forward run) or gradient (adjoint run)
         using the latest values of the frequency-domain fields
@@ -129,7 +131,7 @@ class TimeStepper(object):
         sources have died down.
 
         Parameters
-        ----------      
+        ----------
         job : str
             'forward' or 'adjoint'
 
@@ -165,7 +167,14 @@ class TimeStepper(object):
     # relevant output quantity has converged
     #########################################################
     def run(self, job):
-        """Execute a forward or adjoint FDTD timestepping run and return results."""
+        """Execute a forward or adjoint FDTD timestepping run and return results.
+
+        Parameters
+        ----------
+        job: str
+            'forward' or 'adjoint'
+
+        """
         self.prepare(job)
 
         last_source_time = self.fwd_sources[0].src.swigobj.last_time()
@@ -181,18 +190,22 @@ class TimeStepper(object):
 #            ivl=0.5
 #            step_funcs = [ AFEClient(self.sim, clist, interval=ivl) ]
 
-        # start by timestepping without interruption until the sources are extinguished
+        # phase 1: timestepping without interruption until the sources are extinguished
+        prefix = CONSOLE_CODEWORD if adj_opt('silence_meep') else ''
         log("Beginning {} timestepping run...".format(job))
 
         update_dashboard(['run {}'.format(job)])
         global mt0, wt0, wtdb, wtcpu, proc
         dummy = proc.cpu_percent()
 
-        mta, mtb = 0, last_source_time
-        update_dashboard(['stage sources',
+        stage, mta, mtb = 'SOURCES', 0, last_source_time
+        update_dashboard(['stage {}'.format(stage),
                           'progress range {} {}'.format(int(mta),int(mtb))])
         log('stepping from {} to {}'.format(mta,mtb))
-        sys.stdout.write('\n**\n**stepping from {} to {}\n**\n'.format(mta,mtb))
+#        sys.stdout.write(prefix + '**stepping from {} to {}\n'.format(mta,mtb))
+        sys.stdout.write(prefix + termsty(job,'1')   + '  '   \
+                                + termsty(stage,'2') + '  '   \
+                                + termsty('{:5.1f} -> t -> {:5.1f}'.format(mta,mtb),'3'))
         mt0, wt0 = mta, time.time()
         wtdb, wtcpu, dt = wt0, wt0, (mtb-mta)/100.0
 
@@ -210,7 +223,11 @@ class TimeStepper(object):
             update_dashboard(['stage conv {}'.format(stage),
                               'progress range {} {}'.format(int(mta),int(mtb))])
             log('stepping from {} to {}'.format(mta,mtb))
-            sys.stdout.write('\n**\n**stepping from {} to {}\n**\n'.format(mta,mtb))
+#            sys.stdout.write(prefix + '**stepping from {} to {}\n'.format(mta,mtb))
+            sys.stdout.write(prefix + termsty(job,'1')                                      \
+                             + '  ' + termsty('CONV {:<2d}'.format(stage),'2')              \
+                             + '  ' + termsty('[{:5.1f} -> t -> {:5.1f}]'.format(mta,mtb),'3')  \
+                             + '  ' + termsty('delta {:.2e}'.format(max_rel_delta),'4'))
             mt0, wt0 = mta, time.time()
             wtdb, wtcpu, dt = wt0, wt0, (mtb-mta)/100.0
             self.sim.run(mp.at_every(dt, dashboard_sf), until=mtb)
@@ -232,9 +249,8 @@ class TimeStepper(object):
     ##############################################################
     ##############################################################
     def prepare(self, job='forward'):
-        """
-        Prepare simulation for timestepping by adding sources and DFT cells.
-        
+        """ Prepare simulation for timestepping by adding sources and DFT cells.
+
         Parameters
         ----------
         job (str): The type of timestepping run to prepare:
@@ -242,7 +258,6 @@ class TimeStepper(object):
             2. If job=='adjoint', prepare adjoint run to compute objective function gradient.
             3. If job is the name of an objective quantity, prepare adjoint run to compute
                the gradient of that quantity.
-
         """
         target_state = job + '.prepared'
         if self.state == target_state: return
@@ -250,18 +265,27 @@ class TimeStepper(object):
         # get lists of sources and DFT cells to register
         if job=='forward':
             sources = self.fwd_sources
-            cells   = self.dft_cells  # all cells needed for forward calculations
+            cells   = self.dft_cells  # for forward runs we must tabulate DFT fields in all DFT cells...
             cmplx   = adj_opt('complex_fields')
         elif job=='adjoint' or job in self.obj_func.qnames:
             sources = self.get_adjoint_sources ( qname = job )
-            cells   = [self.design_cell]  # only design cell needed for adjoint calculations
+            cells   = [self.design_cell]  # ...for adjoint runs we only need DFT fields in the design region
             cmplx   = True
         else:
             raise ValueError('unknown job {} in TimeStepper.prepare'.format(job))
 
         # place sources, register cells, initialize fields
-        self.sim.reset_meep()
-        self.sim.change_sources(sources)
+        reuse_simulation = False
+        if adj_opt('reuse_simulation'):
+            self.sim.reset_meep()
+            self.sim.change_sources(sources)
+        else:
+            cell_size, geometry = self.sim.cell_size, self.sim.geometry
+            self.sim = mp.Simulation(resolution=self.sim.resolution,
+                                     boundary_layers=self.sim.boundary_layers,
+                                     cell_size=self.sim.cell_size,
+                                     geometry=self.sim.geometry,
+                                     sources=sources)
         self.force_complex_fields = cmplx
         self.sim.init_sim()
         for cell in cells:
@@ -275,7 +299,7 @@ class TimeStepper(object):
     def get_adjoint_sources(self, qname=None):
         """
         Construct adjoint source distribution.
-    
+
         Return a list of mp.Source structures describing the distribution of sources
         appropriate for adjoint-method evaluation of the objective-function gradient
         df/deps.

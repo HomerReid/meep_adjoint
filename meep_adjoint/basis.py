@@ -41,11 +41,16 @@ class GridFunc(object):
        of several possible forms), return a scalar function of a
        single integer GridFunc(n) defined by GridFunc(n) == f(x_n).
 
-    Args:
-        f:    specification of function f(x)
-        grid: grid of points {x_n} for integers n=0,1,...,
+    Arguments
+    ---------
+        f: function-like
+           specification of function f(x)
 
-    Return value:
+        grid: array-like
+           grid of points {x_n} for integers n=0,1,...,
+
+    Returns
+    -------
         GridFunc (callable) satisfying GridFunc(n)==f(x_n).
     """
 
@@ -69,7 +74,7 @@ class GridFunc(object):
 
 
 ######################################################################
-# invoke python's 'abstract base class' formalism in a version-agnostic way
+#invoke python's 'abstract base class' formalism in a version-agnostic way
 ######################################################################
 from abc import ABCMeta, abstractmethod
 ABC = ABCMeta('ABC', (object,), {'__slots__': ()}) # compatible with Python 2 and 3

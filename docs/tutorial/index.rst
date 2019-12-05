@@ -360,7 +360,7 @@ for various pieces of information. In this section of the tutorial
 we walk through the `init_problem` routine, 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Fetch values for local (script-specific) and global (`meep-adjoint`-wide) configurable options 
+1A. Fetch values for local (script-specific) and global (`meep-adjoint`-wide) configurable options 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. ############################################################
@@ -424,7 +424,7 @@ from `sys.argv` when `meep_adjoint` is imported---or by lines like
 `fcen=1.3` in configuration files, or in other ways.)
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Set up the computational geometry
+1B. Set up the computational geometry
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The next steps are standard initialization procedures familiar to anyone
@@ -467,7 +467,7 @@ trying to design) and ``dpml`` (thickness of PML layers):
 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Define the fixed material geometry
+1C. Define the fixed material geometry
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Next we construct a list of |MeepGeometricObject| structures to describe the fixed
@@ -516,7 +516,7 @@ constructor.
 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Delineate functional subregions
+1D. Delineate functional subregions
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Next we will delineate various subregions of the computational cell as being of particular significance.
@@ -563,11 +563,13 @@ is replaced in ``meep_adjoint`` by the single new class
 
 The initialization phase of a typical  `meep_adjoint` problem
 involves defining three distinct functional categories of
-`Subregion`---two of which will be familiar to anyone who has ever
+`Subregion`: source regions, objective regions, and the design
+region. The first two of these will be familiar to anyone who has ever
 created a |Simulation|, while the third is optimization-specific
-and has no analogue in core |meep|---and communicating
-these to to `meep_adjoint` via input parameters to the 
-`OptimizationProblem` constructor:
+and has no analogue in core |meep|. (As an optional fourth category,
+you can also provide a list of "extra" subregions belonging to none
+of the above categories).
+
 
     .. glossary::
 
@@ -582,27 +584,31 @@ these to to `meep_adjoint` via input parameters to the
             then it will be used, together with package-wide configuration options 
             like `fcen` and `source_component` or `source_mode`, internally
             within `meep_adjoint` to construct appropriate |MeepSource| structures
-            for forward FDTD simulations.
+            for forward FDTD simulations.        
 
-            The use of `source_region` together with global configuration variables
-            to define sources is actually a convenience option provided as a
-            shortcut for simple source configurations; the more general
-            way to define forward sources for your problem is to instantiate a
-            list of `MeepSource` structures and pass it as the
-            `sources` parameter to the `OptimizationProblem` constructor, in
-            which case you would `not` specify `source_region`.
 
+    
+            .. admonition:: `source_region` is a convenience shortcut for `sources`
+
+                    The use of `source_region` together with global configuration variables
+                    to define sources is actually a convenience option provided as a
+                    shortcut for simple source configurations.[#f3]_
+                    The more general way to define forward sources for your problem is
+                    to instantiate a list of `MeepSource` structures and pass it as the
+                    `sources` parameter to the `OptimizationProblem` constructor, in
+                    which case you would `not` specify `source_region`.
+                   
 
         2. `objective_regions`: *Declaring sites at which we want frequency-domain fields and associated physical quantities*
 
            Next we specify all the subregions over which we will ask the FDTD solver to tabulate
            frequency-domain fields. This is another step that will be familiar to anybody who has
-           ever written a core |meep| script, but again with slightly different--simpler!--mechanics. In a core
+           ever written a core |meep| script, but again with slightly different (simpler!) mechanics. In a core
            |meep| script, for each subregion of interest we would execute a two-step procedure:
 
 
-               1. We would first define the subregion of interest by creating object like |MeepFluxRegion| or |MeepFieldRegion| or |MeepEnergyRegion|,
-                  depending on the functional objective we have in mind.
+               1. We would first define the subregion of interest by creating a |MeepFluxRegion| or |MeepFieldRegion|
+                  or |MeepEnergyRegion| (or other specialized subregion class) depending on the functional objective we have in mind.
 
                2. Then we would pass this object as a parameter to an API method like `Simulation.add_flux` 
                   or `Simulation.add_energy` to request computation of frequency-domain Poynting fluxes or energy densities
@@ -650,6 +656,7 @@ these to to `meep_adjoint` via input parameters to the
            the design region is a square of side length `l_design` centered
            at the origin::
 
+
              #----------------------------------------------------------------------
              #- design region
              #----------------------------------------------------------------------
@@ -657,19 +664,84 @@ these to to `meep_adjoint` via input parameters to the
              design_size   = [l_design, l_design, h]
              design_region = Subregion(name='design', center=design_center, size=design_size)
 
+    
+           .. admonition:: `design_region` is a convenience shortcut for `basis`
 
-           Just as `source_region`is a convenience shortcut for the more general
-           `sources`, `design_region` is a convenience shortcut for the more general
-           `basis`.
+               Just as `source_region` is a convenience shortcut for the more general
+               `sources`, `design_region` is a convenience shortcut for the more general
+               `basis` parameter to the `OptimizationProblem` constructor. If `design_region`
+               is specified, it is used together with the `meep_adjoint` configuration
+               options `element_type` and `element_length` to construct a
+               :class:`FiniteElementBasis` for the given region with elements of the
+               given type and length. If you have a non-rectangular design region and/or 
+               non-finite-element basis set, just instantiate your own instance of `Basis`
+               and pass it as the `basis` parameter to the `OptimizationProblem` constructor.
 
+
+        4. `extra_regions`: Additional subregions not covered by the above
+
+            In some cases you may want to specify additional subregions of the
+            computational cell, not covered by any of the above categories,
+            for which to request computation of frequency-domain fields.
+            The optional `extra_regions` parameter may be used to pass a list
+            of such regions. (**API Note:** This is technically superfluous, as
+            extra subregions could just be tacked on to the `objective_regions`
+            list, but maybe retaining `extra_regions` will make codes easier to 
+            read and understand?)
 
 
 
 .. _defining_the_objective_function:
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Define the objective function
+1E. Define the objective function
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+The last item to specify is the objective function that we are trying to maximize. This is just
+a character string, passed as the `f_obj` parameter to the `OptimizationProblem` constructor,
+defining a mathematical function in which one or more 
+:ref:`objective quantities <objective_quantities>` appear as variables. [#f4]_
+(As discussed 
+:ref:`here <objective_quantities>`, objective quantities have canonical names like
+`S_North` or `UE_Box` formed by pairing a physical-quantity code--such as `S` for Poynting flux or
+`UE` for electric-field energy---with the name of a subregion as specified by the `--name` 
+parameter to the :class:`Subregion <meep_adjoint.dft_cell.Subregion>` constructor.)
+
+For the right-angle router, our goal is simply to maximize power outflux through the **North**
+waveguide port, so we could take the objective function to be just the Poynting flux measured
+at the objective region we named **North**, i.e.::
+
+    objective = 'S_North'
+
+This is about as simple as an objective function can possibly get, and attempts at automated
+optimization with this objective do in fact produce somewhat improved designs. However, as
+it happens, there is an alternative way to define an objective function  for this problem
+that yields *significantly* better final outcomes: instead of optimizing for maximal power
+outflux, we optimize for maximal overlap with the forward-traveling eigenmode of the
+**North** waveguide, taking the objective function to be the 
+squared modulus of the eigenmode expansion coefficient::
+
+    objective = 'Abs(P1_North)**2'
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+1F. Instantiate the `OptimizationProblem`
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+The final step is to invoke the `OptimizationProblem` constructor with the various
+parameter values initialized above. In `router.py` this is done at the end of the `init_problem`
+routine, which returns the new class instance::
+
+    return OptimizationProblem(
+     cell_size=cell_size,
+     background_geometry=background_geometry,
+     source_region=source_region,
+     objective_regions=objective_regions,
+     design_region=design_region,
+     extra_regions=[full_region]
+     objective=objective,
+     extra_quantities=extra_quantities,
+    )
+
+
 
 
 
@@ -692,20 +764,67 @@ As discussed above, the goals of the interactive phase are
       controlling the automated design iteration.
 
 
+We begin the interactive phase by invoking the `init_problem`
+routine in the `router.py` script, which executes the initialization
+procedure detailed above and returns a new instance of 
+:class:`OptimizationProblem <meep_adjoint.OptimizationProblem>`::
+
+    >>> import router
+    >>> prob = router.init_problem()
+
+Now our python session contains a new
+:class:`OptimizationProblem <meep_adjoint:OptimizationProblem>` named `prob`.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2A. Visualizing the geometry
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The most basic sanity check is to inspect a graphical visualization
+of the problem geometry to make sure the problem we specified is the
+one we wanted. For this purpose, the `meep_adjoint` package contains
+a built-in :doc:`visualization module <../visualization/index>` that
+reduces the task of visualizing a geometry to a one-liner::
+
+   >>> prob.visualize()
+
+
+This should produce an image like the following:
+
+
+    .. admonition:: Customizing the visualization
+
+        .. code-block:: python
+
+            prob.visualize()
+
+
+----------------------------------------------------------------------
+2B. Updating the design function
+----------------------------------------------------------------------
+
 .. code-block:: python
-   :lineno-start: 81
 
-   lcen          = 1.0/fcen
-   dpml          = 0.5*lcen if dpml==-1.0 else dpml
-   design_length = args.l_design
-   sx = sy       = dpml + args.l_stub + design_length + args.l_stub + dpml
-   sz            = 0.0 if args.h==0.0 else dpml + dair + args.h + dair + dpml
-   cell_size     = [sx, sy, sz]
+   prob.update_design(design='2 + cos(3*x)*sin(2*y)')
+   prob.visualize()
+
 
 ----------------------------------------------------------------------
-Visualizing the geometry
+2C. Compute objective function value and gradient   
 ----------------------------------------------------------------------
-Howdage foryaf! Time to write this section.
+
+
+.. code-block:: python
+
+   fq, _ = prob(need_gradient = False)
+
+
+.. code-block:: python
+
+   _ , gradf = prob(need_value = False)
+
+-------------------------------------------------------------------------------------------------
+2D. Displace design variables in direction of gradient and check that objective function improves
+-------------------------------------------------------------------------------------------------
 
 
 .. _Phase3:
@@ -726,3 +845,14 @@ Phase 3: Automated optimization
          Otherwise (i.e. `source_mode==0`), the source is an ordinary
          |MeepSource| with component determined by the value of
          `source_component` (which should be a string like ``Ex`` or ``Hy``).
+
+.. [#f3] Specifically, eigenmode sources---or volume sources with spatially
+         uniform amplitude---lying within a single `SubRegion` and having
+         Gaussian temporal envelope.
+
+.. [#f4] It is perfectly legal to define objective functions that don't
+         depend on any objective quantities, but then the objective-function
+         value would be independent of the design variables and the optimization
+         problem would be trivial.
+
+

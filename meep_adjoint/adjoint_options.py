@@ -10,6 +10,8 @@
 
 """
 
+import numpy as np
+
 from .option_almanac import OptionTemplate, OptionAlmanac
 
 _adjoint_options = None
@@ -87,10 +89,13 @@ adjoint_option_templates= [
     OptionTemplate('dft_timeout',      10.0,   'max runtime in units of last_source_time'),
     OptionTemplate('dft_interval',     0.25,   'meep time between DFT convergence checks in units of last_source_time'),
     OptionTemplate('complex_fields',  False,   'use complex fields in forward calculation'),
+    OptionTemplate('reuse_simulation',False,   'reuse (do not reallocate) simulation data structure'),
 
     #--------------------------------------------------
-    #- options affecting finite-element basis sets
+    #- options affecting basis-set expansions
     #--------------------------------------------------
+    OptionTemplate('beta_min',        0.0,    'lower bound on basis expansion coefficient'),
+    OptionTemplate('beta_max',     np.inf,    'upper bound on basis expansion coefficient'),
     OptionTemplate('element_type',   'CG 1',  'finite-element family and degree'),
     OptionTemplate('element_length',  0.0,    'finite-element discretization length'),
 
@@ -111,6 +116,7 @@ adjoint_option_templates= [
     OptionTemplate('silence_meep',           True,        'suppress MEEP console messages when timestepping'),
     OptionTemplate('loglevel',               'info',      "['info'|'debug']"),
     OptionTemplate('visualization',          'auto',      "['on'|'off'|'auto'] to enable/disable/automate graphical visualization"),
+    OptionTemplate('termcolors',              True,       "output colorized terminal text"),
     OptionTemplate('dashboard',              'auto',      "['on'|'off'|'auto'] to enable/disable/automate GUI dashboard"),
     OptionTemplate('dashboard_size',         0.5,         'GUI dashboard size relative to screen size'),
     OptionTemplate('dashboard_position',     'top right', 'GUI dashboard position'),

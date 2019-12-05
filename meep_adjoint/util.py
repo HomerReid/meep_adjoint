@@ -66,3 +66,43 @@ def get_exception_info(msg=None,warning=False):
     traceback.print_tb(exc_info[2],limit=None,file=errmsg)
     dummy = warn(errmsg.getvalue()) if warning else log(errmsg.getvalue())
     return errmsg.getvalue()
+
+
+
+#_term = 'initialize_me'
+#
+#def termsty(sty):
+#    """context-aware generation of terminal escape codes
+#
+#    usage example:
+#        print( termsty('red') + 'red text' + termsty() )
+#
+#    Parameters
+#    ----------
+#    sty: str
+#        text style indicator:
+#           (a) 'red', 'white', ...
+#           (b) 'on_red', 'on_white', ...
+#           (c) '1',  '2',  ...
+#           (d) 'on_1', 'on_2', ...
+#           (e) 'bold', 'italic', etc.
+#           (f) '' for normal text
+#
+#    Returns
+#    -------
+#    code: str
+#        terminal escape sequence
+#    """
+#    global _term
+#    if isinstance(_term,'str'):
+#        try:
+#            import blessings
+#            _term = blessings.Terminal()
+#        except:
+#            _term = None
+#
+#    if not _term:
+#        return ''
+#
+#    if msty(sty):
+#        stage, mta, mtb = 'SOURCES', 0, last_source_time

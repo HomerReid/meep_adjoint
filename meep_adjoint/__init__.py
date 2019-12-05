@@ -38,6 +38,8 @@ from .visualization_options import (get_visualization_option,
 
 from .visualization import visualize_sim
 
+from .console_manager import ConsoleManager, termsty
+
 from .optimization_problem import OptimizationProblem
 
 ######################################################################

@@ -438,19 +438,19 @@ class DFTCell(object):
              self.subtract_incident_fields(EH,nf)
         if quantity=='S':
             return np.real(np.sum(w*( np.conj(EH[0])*EH[3] - np.conj(EH[1])*EH[2]) ))
-        if quantity.upper() in 'PM':
+        if quantity.upper() in 'PFMB':
             eh = self.get_eigenmode_slices(mode, nf)  # EHList of eigenmode fields
             eH = np.sum( w*(np.conj(eh[0])*EH[3] - np.conj(eh[1])*EH[2]) )
             hE = np.sum( w*(np.conj(eh[3])*EH[0] - np.conj(eh[2])*EH[1]) )
-            sign=1.0 if qcode=='P' else -1.0
+            sign=1.0 if qcode in ['P','F'] else -1.0
             return (eH + sign*hE)/4.0
-        if quantity in ['UE','UH','UT']:
+        if quantity in ['UE', 'UH', 'UM', 'UEH', 'UEM', 'UT']:
            q=0.0
-           if quantity in ['UE', 'UT']:
+           if quantity in ['UE', 'UEH', 'UEM', 'UT']:
                eps = self.sim.get_dft_array(self.dft_obj, mp.Dielectric, nf)
                E2  = np.sum( [np.conj(EH[nc])*EH[nc] for nc,c in enumerate(self.components) if c in E_CPTS], axis=0 )
                q  += 0.5*np.sum(w*eps*E2)
-           if quantity in ['UH', 'UT']:
+           if quantity in ['UH', 'UM', 'UEH', 'UEM', 'UT']:
                mu  = self.sim.get_dft_array(self.dft_obj, mp.Permeability, nf)
                H2  = np.sum( [np.conj(EH[nc])*EH[nc] for nc,c in enumerate(self.components) if c in H_CPTS], axis=0 )
                q  += 0.5*np.sum(w*mu*H2)

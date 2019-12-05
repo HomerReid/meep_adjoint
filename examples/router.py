@@ -13,16 +13,6 @@ from meep_adjoint import ( OptimizationProblem, Subregion,
                            ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, v3, V3)
 
 ######################################################################
-# override default settings for some meep_adjoint configuration options
-######################################################################
-meep_adjoint.set_option_defaults( { 'fcen': 0.5, 'df': 0.2,
-                                    'dpml': 1.0, 'dair': 0.5,
-                                    'eps_func': 6.0,
-                                    'flux_region_fontsize': 15,
-                                    'latex': True,
-                                   })
-
-######################################################################
 # subroutine that initializes and returns an OptimizationProblem
 # structure for the router geometry
 ######################################################################
@@ -35,6 +25,19 @@ def init_problem():
     Returns:
         New instance of meep_adjoint.OptimizationProblem()
     """
+
+    ######################################################################
+    # set custom defaults for meep_adjoint package-wide options, then
+    # fetch values for a few such options we will need in this routine
+    ######################################################################
+    meep_adjoint.set_option_defaults( { 'fcen': 0.5, 'df': 0.2,
+                                        'dpml': 1.0, 'dair': 0.5,
+                                        'eps_design': 6.0
+                                      })
+    fcen = adj_opt('fcen')
+    dpml = adj_opt('dpml')
+    dair = adj_opt('dair')
+
 
     ######################################################################
     # process script-specific command-line arguments...
@@ -65,13 +68,6 @@ def init_problem():
     h        = args.h
     eps_wvg  = args.eps_wvg
     splitter = args.splitter
-
-    ######################################################################
-    # ... and fetch values of some meep_adjoint options we will use
-    ######################################################################
-    fcen = adj_opt('fcen')
-    dpml = adj_opt('dpml')
-    dair = adj_opt('dair')
 
     ##################################################
     # set up optimization problem
@@ -134,9 +130,9 @@ def init_problem():
     #----------------------------------------------------------------------
     # objective function and extra objective quantities -------------------
     #----------------------------------------------------------------------
-    router_objective = 'Abs(P1_north)**2'
-    splitter_objective = '( Abs(P1_north) - Abs(P1_east) )**2 + ( Abs(P1_east) - Abs(M1_south) )**2'
-    objective = splitter_objective if splitter else router_objective
+    fobj_router   = '|P1_north|^2'
+    fobj_splitter = '( |P1_north| - |P1_east| )^2 + ( |P1_east| - |M1_south| )^2'
+    objective_function = fobj_splitter if splitter else fobj_router
     extra_quantities = ['S_north', 'S_south', 'S_east', 'S_west1', 'S_west2']
 
     #----------------------------------------------------------------------
@@ -151,11 +147,11 @@ def init_problem():
      cell_size=cell_size,
      background_geometry=background_geometry,
      source_region=source_region,
-     objective=objective,
      objective_regions=objective_regions,
-     extra_quantities=extra_quantities,
      design_region=design_region,
-     extra_regions=[full_region]
+     extra_regions=[full_region],
+     objective_function=objective_function,
+     extra_quantities=extra_quantities
     )
 
 
