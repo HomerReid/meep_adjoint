@@ -8,52 +8,55 @@ is essentially instantaneous, **assuming** all prerequisite packages have been
 installed on your system.
 
 :strike:`The only potential source of difficulty here is that getting the prerequisites
-to play nicely with each other is somewhat tricky.` **Update:** Previously there was 
-some difficulty
-in creating a Conda environment containing both the :codename:`fenics` and |meep|
-packages, which was evaded by building |meep| from source. This approach is
-discussed in Section 1**(b)** below. However, as of recently (November 2019) the conda
-difficulties seem to have gone away, and the easier approach of Section 1**(a)**
-seems to be working generally. 
+to play nicely with each other is somewhat tricky.` **Update, November 2019:** Previously
+there was some difficulty in creating a Conda environment containing both the |fenics|
+and |meep| packages, which was evaded by building |meep| from source. This approach is
+discussed in :ref:`Section 1(b) <Section1B>` below. However, as of recently 
+the conda difficulties seem to have gone away, and the easier approach of
+:ref:`Section 1(a) <Section1A>` seems to be working generally. 
 
 --------------------------------------------------
 1. Install required packages
 --------------------------------------------------
 
+.. _Section1A: 
+
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 1A. Create a conda environment containing both :codename:`fenics` and :codename:`meep`
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-The simplest way to proceed here is to create a :codename:`conda`_ environment containing all dependencies.
+The simplest way to proceed here is to create a |conda| environment containing all dependencies.
 (If you aren't a condaficionado, `this backgrounder`_ in the |meep| documentation is helpful.)
-For example, on my linux system running :codename:`conda` version 4.8.0rc0, the following commands
+For example, on my linux system running |conda| version 4.8.0rc0, the following commands
 suffice to create and activate a new environment named `py37_for_meep_adjoint` (of course you can
 use any name you like):
 
     .. code-block:: bash
+
         $ conda create -n py37_for_meep_adjoint -c conda-canary -c conda-forge python=3.7 mpich fenics pymeep psutil
         $ conda activate py37_for_meep_adjoint
         (py37_for_meep_adjoint) $
 
-.. _conda: https://conda.io/docs
+
 .. _this backgrounder: https://meep.readthedocs.io/en/latest/Installation/
 
+.. _Section1B: 
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-1B. Create a conda environment containing :codename:`fenics` and build :codename:`meep` from source
+1B. Create a conda environment containing :codename:`fenics`, then build :codename:`meep` from source
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 At one point in the not-so-distant past, the conda-packaged versions of :codename:`fenics` and :codename:`meep` were
 incompatible and could not be present simultaneously in the same conda environment. The solution was to
-remove :codename:`meep` from the conda environment  (retaining :codename:`fenics`), then fetch the source
-distributions for 
-:codename:`meep` and its required support packages (:codename:`libctl` and :codename:`mpb`) and build from source
-This is not too hard, but it requires installing a few extra :codename:`conda` packages to support the build from
+remove |meep| from the conda environment  (retaining |fenics|) then fetch the source
+distributions for |meep| and its required support packages (|libctl| and |mpb|) and build from source.
+This is not too hard, but it requires installing a few extra |conda| packages to support the build from
 source, without which one tends to get errors arising from the compiler/linker suite attempting to use some headers/libraries
 from the conda installation and others from the system installation. The particular constellation of conda packages that
 needed to be in place to prevent this seemed to vary with time and could only be determined by an annoying trial-and-error
 process (try to build from source, get failure message, scrutinize log files to pinpoint missing conda packages,
 install, repeat). Hopefully this is now obviated by the apparent success of the method discussed above. If not,
-I will post a script that mostly automates the :codename:`meep` build-from-source process.
+I will post a script that mostly automates the |meep| build-from-source process.
 
 --------------------------------------------------
 2. Install `meep_adjoint`
@@ -65,6 +68,14 @@ with all necessary dependencies, you can now go like this:
 
     .. code-block:: bash
 
-        (py37_for_meep_adjoint) $ git clone https://github.com/HomerReid/meep-adjoint
-        (py37_for_meep_adjoint) $ cd meep-adjoint
+        (py37_for_meep_adjoint) $ git clone https://github.com/HomerReid/meep_adjoint
+        (py37_for_meep_adjoint) $ cd meep_adjoint
         (py37_for_meep_adjoint) $ python setup.py install
+
+
+--------------------------------------------------
+3. Installation on windows
+--------------------------------------------------
+
+Anybody who cares about this is almost certainly better situated than I to figure it out,
+but if there's interest I'll look into it.

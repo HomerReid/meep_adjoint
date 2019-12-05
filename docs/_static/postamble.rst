@@ -11,6 +11,19 @@
    <font style="font-variant: small-caps; font-size: 100%">meep</font>
    </a>
 
+.. |libctl| raw:: html
+
+   <a href="https://github.com/NanoComp/libctl"> 
+   <font style="font-variant: small-caps; font-size: 100%">libctl</font>
+   </a>
+
+
+.. |mpb| raw:: html
+
+   <a href="https://github.com/NanoComp/mpb"> 
+   <font style="font-variant: small-caps; font-size: 100%">mpb</font>
+   </a>
+
 
 .. |pymeep| raw:: html
 
@@ -30,6 +43,20 @@
 .. |simulation| raw:: html
 
    <a href="https://meep.readthedocs.io/en/latest/Python_User_Interface/#the-simulation-class"> <code>Simulation</code> </a>
+
+.. |fenics| raw:: html
+
+   <a href="https://fenicsproject.org"> 
+   <font style="font-variant: small-caps; font-size: 100%">fenics</font>
+   </a>
+
+
+.. |conda| raw:: html
+
+   <a href="https://conda.io/docs"> 
+   <font style="font-variant: small-caps; font-size: 100%">conda</font>
+   </a>
+
 
 
 .. |br| raw:: html

@@ -31,8 +31,72 @@ class OptimizationProblem(object):
     are delegated to a hierarchy of lower-level classes, of which
     the uppermost is TimeStepper.
 
-    """
+    Parameters:
+    -----------
+    cell_size : array_like
+        Dimensions of computational cell
 
+    background_geometry, foreground_geometry : list of meep.GeometricObject
+        Size of computational cell and lists of GeometricObjects
+        that {precede,follow} the design object in the overall geometry.
+
+    source_region : meep.Subregion
+        source region bounding box (to be used in lieu of `sources`)
+
+    sources : list of meep.Source
+        (*either* `sources` **or** `source_region` should be non-None)
+        Specification of forward source distribution, i.e. the source excitation(s) that
+        produce the fields from which the objective function is computed.
+
+        In general, sources will be an arbitrary caller-created list of Source
+        objects, in which case source_region, source_component are ignored.
+
+        As an alternative convenience convention, the caller may omit
+        sources and instead specify source_region; in this case, a
+        source distribution over the given region is automatically
+        created based on the values of the module-wide configuration
+        options fcen, df, source_component, source_mode.
+
+    objective regions : list of Subregion
+        subregions of the computational cell over which frequency-domain
+        fields are tabulated and used to compute objective quantities
+
+    design_region : meep_adjoint.Subregion
+        design region bounding box (to be used in lieu of `basis`)
+
+    basis : meep_adjoint.Basis
+        (*either* `basis` **or** `design_region` should be non-None)
+        Specification of function space for the design permittivity.
+
+        In general, basis will be a caller-created instance of
+        some subclass of meep.adjoint.Basis. Then the spatial
+        extent of the design region is determined by basis and
+        the design_region argument is ignored.
+
+        As an alternative convenience convention, the caller
+        may omit basis and set design_region; in this case,
+        an appropriate basis for the given design_region is
+        automatically created based on the values of various
+        module-wide adj_opt such as 'element_type' and
+        'element_length'. This convenience convention is
+        only available for box-shaped (hyperrectangular)
+        design regions.
+
+    extra_regions : list of Subregion
+        Optional list of additional subregions over which to tabulate frequency-domain
+        fields.
+
+    objective_function : str
+        definition of the quantity to be maximized. This should be
+        a mathematical expression in which the names of one or more
+        objective quantities appear, and which should evaluate to
+        a real number when numerical values are substituted for the
+        names of all objective quantities.
+
+    extra_quantities : list of str
+        Optional list of additional objective quantities to be computed and reported
+        together with the objective function.
+    """
     def __init__(self, cell_size=None, background_geometry=[], foreground_geometry=[],
                        sources=None, source_region=[],
                        objective_regions=[],
@@ -40,71 +104,6 @@ class OptimizationProblem(object):
                        extra_regions=[],
                        objective_function=None,
                        extra_quantities=[]):
-        """
-        Parameters:
-        -----------
-
-        cell_size: array-like
-        background_geometry: list of meep.GeometricObject
-        foreground_geometry: list of meep.GeometricObject
-
-              Size of computational cell and lists of GeometricObjects
-              that {precede,follow} the design object in the overall geometry.
-
-        sources: list of meep.Source
-        source_region: Subregion
-            (*either* `sources` **or** `source_region` should be non-None)
-            Specification of forward source distribution, i.e. the source excitation(s) that
-            produce the fields from which the objective function is computed.
-
-            In general, sources will be an arbitrary caller-created list of Source
-            objects, in which case source_region, source_component are ignored.
-
-            As an alternative convenience convention, the caller may omit
-            sources and instead specify source_region; in this case, a
-            source distribution over the given region is automatically
-            created based on the values of the module-wide configuration
-            options fcen, df, source_component, source_mode.
-
-        objective regions: list of Subregion
-             subregions of the computational cell over which frequency-domain
-             fields are tabulated and used to compute objective quantities
-
-        basis: (Basis)
-        design_region: (Subregion)
-              (*either* `basis` **or** `design_region` should be non-None)
-              Specification of function space for the design permittivity.
-
-              In general, basis will be a caller-created instance of
-              some subclass of meep.adjoint.Basis. Then the spatial
-              extent of the design region is determined by basis and
-              the design_region argument is ignored.
-
-              As an alternative convenience convention, the caller
-              may omit basis and set design_region; in this case,
-              an appropriate basis for the given design_region is
-              automatically created based on the values of various
-              module-wide adj_opt such as 'element_type' and
-              'element_length'. This convenience convention is
-              only available for box-shaped (hyperrectangular)
-              design regions.
-
-        extra_regions: list of Subregion
-            Optional list of additional subregions over which to tabulate frequency-domain
-            fields.
-
-        objective_function: str
-            definition of the quantity to be maximized. This should be
-            a mathematical expression in which the names of one or more
-            objective quantities appear, and which should evaluate to
-            a real number when numerical values are substituted for the
-            names of all objective quantities.
-
-        extra_quantities: list of str
-            Optional list of additional objective quantities to be computed and reported
-            together with the objective function.
-        """
-
         #-----------------------------------------------------------------------
         # process convenience arguments:
         #  (a) if no basis was specified, create one using the given design
