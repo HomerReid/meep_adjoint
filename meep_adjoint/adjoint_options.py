@@ -13,6 +13,7 @@
 import numpy as np
 
 from .option_almanac import OptionTemplate, OptionAlmanac
+from itertools import chain
 
 _adjoint_options = None
 """ module-wide database of adjoint-related options, referenced only in this file"""
@@ -21,7 +22,7 @@ _adjoint_options = None
 def _init_adjoint_options(custom_defaults={}, search_env=True):
     """internal routine for just-in-time options processing"""
     global _adjoint_options
-    _adjoint_options = OptionAlmanac(adjoint_option_templates,
+    _adjoint_options = OptionAlmanac(option_templates,
                                      custom_defaults=custom_defaults,
                                      filename='meep_adjoint.rc',
                                      search_env=search_env)
@@ -67,15 +68,15 @@ def set_adjoint_options(options):
 
 
 ######################################################################
-# The rest of the file just defines the available options.
+# The rest of the file just defines the available options. (The
+# separation into categories is for documentation purposes only.)
 ######################################################################
 
-""" definition of adjoint-related configuration options """
-adjoint_option_templates= [
-
-    #--------------------------------------------------
-    #- options affecting FDTD geometries/calculations
-    #--------------------------------------------------
+option_categories={}
+#--------------------------------------------------
+#- options affecting FDTD geometries/calculations
+#--------------------------------------------------
+option_categories['Options affecting FDTD geometries/computation'] = [
     OptionTemplate('res',              20.0,   'Yee grid resolution'),
     OptionTemplate('fcen',              0.0,   'source center frequency'),
     OptionTemplate('df',                0.0,   'source frequency width'),
@@ -89,29 +90,35 @@ adjoint_option_templates= [
     OptionTemplate('dft_timeout',      10.0,   'max runtime in units of last_source_time'),
     OptionTemplate('dft_interval',     0.25,   'meep time between DFT convergence checks in units of last_source_time'),
     OptionTemplate('complex_fields',  False,   'use complex fields in forward calculation'),
-    OptionTemplate('reuse_simulation',False,   'reuse (do not reallocate) simulation data structure'),
+    OptionTemplate('reuse_simulation',False,   'reuse (do not reallocate) simulation data structure')
+ ]
 
     #--------------------------------------------------
     #- options affecting basis-set expansions
     #--------------------------------------------------
+option_categories['Options affecting basis-set expansions'] = [
     OptionTemplate('beta_min',        0.0,    'lower bound on basis expansion coefficient'),
     OptionTemplate('beta_max',     np.inf,    'upper bound on basis expansion coefficient'),
     OptionTemplate('element_type',   'CG 1',  'finite-element family and degree'),
-    OptionTemplate('element_length',  0.0,    'finite-element discretization length'),
+    OptionTemplate('element_length',  0.0,    'finite-element discretization length')
+]
 
     #--------------------------------------------------
     #- options affecting gradient-descent optimizer
     #--------------------------------------------------
+option_categories['Options affecting gradient-duhscent optimizer'] = [
     OptionTemplate('alpha',          1.0,     'initial value of alpha (update relaxation parameter)'),
     OptionTemplate('alpha_min',      1.0e-3,  'minimum value of alpha'),
     OptionTemplate('alpha_max',      10.0,    'maximum value of alpha'),
     OptionTemplate('boldness',       1.25,    'sometimes you just gotta live a little (explain me)'),
     OptionTemplate('timidity',       0.75,    'can\'t be too cautious in this dangerous world (explain me)'),
     OptionTemplate('max_iters',      100,     'max number of optimization iterations'),
+]
 
     #--------------------------------------------------
     # output files, logging, console, visualization, dashboard
     #--------------------------------------------------
+option_categories['Options affecting console/file/GUI output'] = [
     OptionTemplate('filebase',                '',         'base name of output files'),
     OptionTemplate('silence_meep',           True,        'suppress MEEP console messages when timestepping'),
     OptionTemplate('loglevel',               'info',      "['info'|'debug']"),
@@ -126,5 +133,7 @@ adjoint_option_templates= [
     OptionTemplate('dashboard_cpu_interval', 2000,        'GUI dashboard CPU usage update interval (ms)'),
     OptionTemplate('dashboard_host',         'localhost', 'GUI dashboard server hostname'),
     OptionTemplate('dashboard_port',         37673,       'GUI dashboard server port'),
-    OptionTemplate('dashboard_loglevel',     'info',      "''info' | 'debug'")
+    OptionTemplate('dashboard_loglevel',     'info',      "'info' | 'debug'")
 ]
+
+option_templates = list(chain.from_iterable( [templates for (description,templates) in option_categories.items()] ))

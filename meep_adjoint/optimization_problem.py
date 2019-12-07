@@ -302,7 +302,7 @@ class OptimizationProblem(object):
     #####################################################################
     #####################################################################
     #####################################################################
-    def visualize(self, id=None, options={}):
+    def visualize(self, fig_id=None, options={}):
         """Produce a graphical visualization of the geometry and/or fields,
            as appropriately autodetermined based on the current state of
            progress.
@@ -313,11 +313,9 @@ class OptimizationProblem(object):
         bs = self.basis
         mesh = bs.fs.mesh() if (hasattr(bs,'fs') and hasattr(bs.fs,'mesh')) else None
 
-        fig = plt.figure(num=id) if id else None
-
         if self.stepper.state.endswith('.prepared'):
-            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, fig=fig, options=options)
+            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, fig_id=fig_id, options=options)
         elif self.stepper.state == 'forward.complete':
-            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, fig=fig, options=options)
+            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, fig_id=fig_id, options=options)
         #else self.stepper.state == 'adjoint.complete':
         #            visualize_sim(self.stepper.sim, self.stepper.dft_cells, mesh=mesh, fig=fig, options=options)

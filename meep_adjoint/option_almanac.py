@@ -184,3 +184,20 @@ def uq(s):
     if s and isinstance(s,str) and s[0]==s[-1] and s[0] in ["'",'"']:
         return s[1:-1]
     return s
+
+
+#########################################################################
+# this routine is used to implement autodocumentation of OptionAlmanacs:
+# it is invoked during a sphinx build and returns a chunk of text that
+# may be  written directly into a .rst file to yield a table with one
+# row for each option.
+#########################################################################
+def document_options(title, templates):
+    hdr  = '.. csv-table:: {}\n'.format(title)
+    hdr += '   :header: "Option", "Default", "Description"\n\n'
+    lines = ['   `{}`, {}, "{}"'.format(t[0],t[1],ddq(t[2])) for t in templates]
+    return hdr + '\n'.join(lines)
+
+def ddq(s):
+    """double double-quotes 'Say "foo", bar!' --> 'Say ""foo"", bar!'"""
+    return s.replace('"','""')

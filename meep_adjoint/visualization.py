@@ -27,8 +27,10 @@ from . import fix_array_metadata, v3
 ######################################################################
 ######################################################################
 ######################################################################
-def visualize_sim(sim, dft_cells, mesh=None, fig=None, plot3D=None,
+def visualize_sim(sim, dft_cells, mesh=None, fig_id=None, plot3D=None,
                   src_labels=[], options={}):
+
+    fig = plt.figure(num=fig_id) if fig_id else None
 
     # if plot3D not specified, set it automatically: false
     # if we are plotting only the geometry (at the beginning

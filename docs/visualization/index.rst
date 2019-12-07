@@ -1,11 +1,19 @@
 **********************************************************************
-Visualization module 
+Visualization module
 **********************************************************************
 
 The :mod:`meep_adjoint` package ships with a built-in visualization
-module to facilitate graphical inspection of geometries and
-computational results in `meep_adjoint` geometries. (A similar
-module was later added to core meep.) 
+module to facilitate graphical inspection of material geometries and
+functional subregions (solver inputs) as well as EM field
+configurations and design-function gradients (solver outputs).
+
+
+A first goal of this module is to provide a go-to visualization facility
+for designers to have "under their fingertips", easily remembered and
+invoked at any stage of the design process to lend visual insight
+into what's going on at that moment. This is realized by the `visualize`
+
+https://meep.readthedocs.io/en/latest/Python_User_Interface/#data-visualization
 
 More specifically,
 the visualization module knows how to produce three types of plots:

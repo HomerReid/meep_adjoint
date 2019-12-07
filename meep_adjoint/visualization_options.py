@@ -22,13 +22,13 @@ def _init_visualization_options(custom_defaults={}, search_env=True):
     def _sectopts(s): return _init_section_options(s, custom_defaults, search_env)
 
     global _visualization_sections
-    _visualization_sections = { s : _sectopts(s) for s in VISUALIZATION_SECTIONS }
+    _visualization_sections = { s : _sectopts(s) for s in section_names }
 
 
 def _init_section_options(section, custom_defaults, search_env):
-    custom_section_defaults = dict( VISUALIZATION_SECTIONS.get(section,{}) )
+    custom_section_defaults = dict( section_defaults.get(section,{}) )
     custom_section_defaults.update(_subdict(custom_defaults,section))
-    return OptionAlmanac(VISUALIZATION_OPTION_TEMPLATES,
+    return OptionAlmanac(sectioned_templates,
                          custom_defaults=custom_section_defaults,
                          section=section, filename=RCFILE, search_env=search_env,
                          prepend_section = (section != 'default'))
@@ -78,8 +78,8 @@ def get_visualization_options(opts, section='default', overrides={}):
         warn('unknown options section {} (skipping)'.format(section))
         return None
 
-    for opt in [o.lower() for o in opts if o.lower() not in VISUALIZATION_OPTIONS]:
-        if np.any( [ opt.startswith(sect + '_') for sect in VISUALIZATION_SECTIONS] ):
+    for opt in [o.lower() for o in opts if o.lower() not in sectioned_opts]:
+        if np.any( [ opt.startswith(sect + '_') for sect in section_names] ):
             warnings.warn('Option \'{}\': section-prefix semantics not available in get_visualization_options;'.format(opt))
             warnings.warn('use the \'section\' parameter instead')
         else:
@@ -101,7 +101,7 @@ def get_visualization_option(option, section='default', overrides={}):
     """
     if section=='default' and '_' in option:
         prefix = option.split('_')[0].lower()
-        if prefix in VISUALIZATION_SECTIONS:
+        if prefix in section_names:
             section, option = prefix, option[1+len(prefix) : ]
 
     return get_visualization_options([option],section,overrides)[0]
@@ -110,8 +110,8 @@ def get_visualization_option(option, section='default', overrides={}):
 ######################################################################
 # Definitions of options and section-specific default values
 #####################################################################
-""" names, default values, descriptions of visualization options """
-VISUALIZATION_OPTION_TEMPLATES= [
+""" templates for sectioned visualization options """
+sectioned_templates = [
     OptionTemplate('cmap',         'plasma',        'default colormap'),
     OptionTemplate('alpha',         1.0,            'default transparency'),
     OptionTemplate('fontsize',      25,             'font size for labels and titles'),
@@ -131,14 +131,14 @@ VISUALIZATION_OPTION_TEMPLATES= [
     OptionTemplate('cb_shrink',    0.60,            'colorbar shrink factor'),
     OptionTemplate('latex',        True,            'LaTeX text formatting'),
     OptionTemplate('show',         True,            'display plots on screen'),
- ]
+]
 
 """base option names, to which we prepend a prefix like 'eps_' to get section-specific options"""
-VISUALIZATION_OPTIONS = [ t.name for t in VISUALIZATION_OPTION_TEMPLATES ]
+sectioned_opts = [ t.name for t in sectioned_templates ]
 
 
 """ section-specific overrides of default option values """
-VISUALIZATION_SECTIONS = {
+section_defaults = {
 
     'default': {},
 
@@ -202,3 +202,9 @@ VISUALIZATION_SECTIONS = {
 #---------------------------------------------------------------------
     'mesh': { 'linecolor': '#ff0000', 'linewidth': 1.0 }
 }
+
+section_names = [ s for s in section_defaults ]
+
+other_templates = [
+  OptionTemplate('backend',       'wx',           'matplotlib backend')
+]

@@ -38,7 +38,6 @@ def init_problem():
     dpml = adj_opt('dpml')
     dair = adj_opt('dair')
 
-
     ######################################################################
     # process script-specific command-line arguments...
     ######################################################################
@@ -53,6 +52,8 @@ def init_problem():
     parser.add_argument('--l_design', type=float, default=4.0,  help='design region side length')
     parser.add_argument('--h',        type=float, default=0.0,  help='thickness in z-direction')
     parser.add_argument('--eps_wvg',  type=float, default=6.0,  help='waveguide permittivity')
+
+    parser.add_argument('--full_dft', action='store_true', help='tabulate and plot fields over full computational cell')
 
     # options affecting the type of device to design
     parser.add_argument('--splitter', action='store_true', help='design equal splitter instead of right-angle router')
@@ -139,6 +140,7 @@ def init_problem():
     #- optional extra regions for visualization
     #----------------------------------------------------------------------
     full_region = Subregion(name='full', center=ORIGIN, size=cell_size)
+    extra_regions = [full_region] if args.full_dft else []
 
     #----------------------------------------------------------------------
     #----------------------------------------------------------------------
@@ -149,7 +151,7 @@ def init_problem():
      source_region=source_region,
      objective_regions=objective_regions,
      design_region=design_region,
-     extra_regions=[full_region],
+     extra_regions=extra_regions,
      objective_function=objective_function,
      extra_quantities=extra_quantities
     )

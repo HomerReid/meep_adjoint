@@ -37,13 +37,13 @@ sector of :mod:`meep_adjoint` behavior they affect:
     :Options governing console and file output:
 
         + ``filebase``:     base name of output files
+
         + ``silence_meep``: suppress :codename:meep console messages
                             during timestepping
 
 
     :Options governing graphical visualization:
-        + ``latex``:        Use :math:`LaTeX` formatting for
-                            graph axes and titles
+        + ``latex``:        Use math:`\LaTeX` formatting for graph axes and titles
 
         + ``linecolor``:    Color of lines and curves (default)
 
@@ -54,156 +54,141 @@ sector of :mod:`meep_adjoint` behavior they affect:
         + ``flux_data_linecolor``:  Color of lines and curves in plots of flux data
 
 
+============================================================================
+How do I fetch current option settings from `meep_adjoint` driver scripts?
+============================================================================
+
+By calling `meep_adjoint.get_adjoint_option` or
+`meep_adjoint.get_visualization_option`::
+
+    from meep_adjoint import get_adjoint_option as adj_opt
+    from meep_adjoint import get_visualization_option as vis_opt
+
+    fcen = adj_opt('fcen')
+
+    src_lc = vis_opt('src_region_linecolor')
+
+    foo = adj_opt('bar')
+
+    if foo is None:
+        print('Whoops! There is no option named --bar.')
+
+
+.. admonition:: Visualization options and adjoint options
+
+    Internally, the package distinguishes two categories
+    of configuration options: 
+
+        + options that control the behavior of the
+          :ref:`visualization module </visualization/index.rst>`,
+          and
+
+        + everything else.
+          
+    We refer to these respectively as **visualization options** 
+    and **adjoint options.**
+
+    One reason for the distinction is that, for visualization options
+    but not adjoint options, there is a further subdivision
+    into **sectioned** vs. non-sectioned options, as discussed below.
+
+.. comment::
+    Internally, the module maintains two separate databases of option
+    settings: one for options that specifically affect the appearance of
+    visualization plots, and a second for all other options. [This is
+    done both **(1)** to facilitate a possible future refactoring of the adjoint
+    and visualization modules into separate standalone packages, and
+    **(2)** because the visualization module handles option settings in a
+    slightly more complicated way than does the adjoint module, as
+    discussed below.] 
+    Both databases are instances of the simple
+    class :class:`OptionAlmanac`, which combines the functionality
+    of the `configparser_` and `argparse_` modules in the python standard
+    library.
+    
+
 ======================================================================
-How do I set option values?
+How does `meep_adjoint` determine settings for configuration options?
 ======================================================================
 
-For each configuration option, :mod:`meep_adjoint` consults
-the following fixed sequence of
+:mod:`meep_adjoint` begins by setting each option to the
+hard-coded default value provided as part of the option's
+definition (see below), then looks for updates in each of 
+the following places, in the following sequence, with
+each update overriding the previous setting.
+
+    :2. Script-level defaults:
+
+        The python script you write to drive `meep_adjoint` may call `meep_adjoint.set_option_defaults`
+        to specify problem-specific default values for certain options.
 
 
-    :1. Package-level default settings:
+    :3. User-level defaults\: Global configuration files:
 
-        Each option is assigned a (non-`None`)
-
-
-    :2. Default Driver script
-
-        The python script you write to drive your :mod:`meep_adjoint` study may optionally
-        override
-        custom defaults
-        override the package-level option defaults
-
-
-    :3. User-level defaults: Global configuration files:
-
-
-    :4. Project-level defaults: Local configuration files:
+        The global configuration files are
+        :file:`~/.meep_adjoint.rc`, :file:`~/.meep_visualization.rc`.
+        Typically this would be for options on which you have a personal
+        preference that differs from the `meep_adjoint` default
+        and which you want to configure once and for all and have it
+        be generally  active in all your `meep_adjoint` sessions,
+        except where overruled by a setting from a higher-priority
+        source like command-line. Example: If you love chartreuse and
+        hate cyan, you will want to change the default colors used
+        by the :ref:`visualization module<visualization/index.rst>`
+        to draw Poynting-flux monitors, and you'll want this change
+        to be generally in effect in all your sessions unless 
+        specifically overridden.
 
 
-    :5. Session-level settings: Environment variables:
+    :4. Project-level defaults\: Local configuration files:
+
+        The local configuration files are
+        :file:`meep_adjoint.rc`, :file:`meep_visualization.rc`
+        in the current working directory. These are 
+        for updates that you want to be in effect for
+        all work on a particular project.
 
 
-    :6. Run-level settings: Command-line arguments:
+    :5. Session-level settings\: Environment variables:
 
 
-    :7. Function-level settings: The optional ``options``
-        parameter in API routines
+    :6. Run-level settings\: Command-line arguments:
 
 
-======================================================================
-API routines for querying current values of configuration options
-======================================================================
-
-======================================================================
-Implementation
-======================================================================
-
-======================================================================
-Options
-======================================================================
-
-======================================================================
-
-======================================================================
-
-********************
-General overview
-********************
-
-Internally, the module maintains two separate databases of option
-settings: one for options that specifically affect the appearance of
-visualization plots, and a second for all other options. [This is
-done both **(1)** to facilitate a possible future refactoring of the adjoint
-and visualization modules into separate standalone packages, and
-**(2)** because the visualization module handles option settings in a
-slightly more complicated way than does the adjoint module, as
-discussed below.] Both databases are instances of the simple
-class :class:`OptionAlmanac`, which combines the functionality
-of the `configparser_` and `argparse_` modules in the python standard
-library.
+    :7. Console-level / function-call level settings:
 
 
 .. _argparse: https://docs.python.org/3/library/argparse.html#module-argparse
 .. _configparser: https://docs.python.org/3/library/configparser.html?highlight=configparser#module-configparser
 
-
-The hierarchy of sources for option settings
-==============================================
-
-As noted above, the module consults multiple sources---in a specific
-order---for user-specified option settings; any conflicts are adjudicated in favor
-of the later-encountered source, i.e. new option settings always overwrite
-existing settings [1]_.
-
-.. [1] An exception is the case in which the *type* of an option setting
-is incompatible with the type of the existing option value; in this case
-the new setting is ignored with a warning and the previous option value
-retained.
-
-More specifically, the value stored in the
-internal database for a given configuration option is initialized
-and then updated according to the following sequence:
-
-1. The original default value hard-coded in the `meep_adjoint` source distribution.
-
-2. The updated default value specified by a call to
-   `meep_adjoint::set_adjoint_option_defaults()` from a user script.
-
-3. The value specified in the `global configuration file`_, if any.
-
-4. The value specified in the `local configuration file`_, if any.
-
-5. The value of the option as an environment variable, if set.
-
-6. The value of the option as a command-line argument, if specified.
-
 .. _`global configuration file`:
-
-    `local configuration file`_
 
 
 .. _`local configuration file`:
 
 
-Global and local configuration files
---------------------------------------------------
 
-The configuration files parsed for adjoint and visualization options are as follows.
-
-    * **Global**:    :file:`~/.meep_adjoint.rc`, :file:`~/.meep_visualization.rc`
-
-    * **Local**:    :file:`./meep_adjoint.rc`, :file:`./meep_visualization.rc`
-
-Note that global files lie in the user's home directory and are "dotfiles", i.e.
-have filenames that begin with a period.
-Local files lie in the current working directory and have the same filename
-as their global counterparts, minus the leading period.
-
-
-Configuration-related API routines
-==============================================
-
-
-********************
+.. _adjoint options:
+====================================================================================
 Adjoint options
-********************
+====================================================================================
 
---------------------------------------------------
-Options affecting :codename:meep geometries
---------------------------------------------------
+.. include:: adj_opt_docs.rst
 
-**************************************************
-Trying csv tables...
-**************************************************
 
-.. csv-table:: Frozen Delights!
-   :header: "Treat", "Quantity", "Description"
-   :widths: 15, 10, 30
+.. _visualization options:
+====================================================================================
+Visualization options
+====================================================================================
 
-   "Albatross", 2.99, "On a stick!"
-   "Popcorn", 1.99, "Straight from the oven"
+++++++++++++++++++++++++++++++++++++++++++++++++++
+Sectioned visualization options
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. warning::
+.. include:: sec_vis_opt_docs.rst
 
-    This is really a very painful process.
+++++++++++++++++++++++++++++++++++++++++++++++++++
+Other visualization options
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. include:: oth_vis_opt_docs.rst

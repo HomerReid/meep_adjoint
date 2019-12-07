@@ -294,16 +294,31 @@ to expand/collapse content):
     .. container:: default-hidden
         :name: parms2
 
-        :`objective`:
-
-            Character string specifying a mathematical expression
-            involving one or more objective quantities.
-
-
         :`objective_regions`:
 
-            List of :class:`Subregion` structures for all
-            objective regions.
+            List of :class:`Subregion <meep_adjoint.Subregion>`
+            structures for all objective region. (A `Subregion` 
+            in `meep_adjoint` is basically just
+            what would be a |MeepFluxRegion| or |MeepEnergyRegion|
+            or another similar structure in |meep|,
+            except that each `Subregion` has a unique *name*,
+            such as `north` or `east` for flux monitors
+            on the various I/O ports of the router geometry.)
+             
+
+        :`objective_function`:
+
+            Character string specifying a mathematical expression
+            involving one or more
+            :ref:`objective quantities <objective_quantities>`.
+
+        :`extra_quantities`:
+
+            An optional list of additional objective quantities
+            for which to compute and report values in addition
+            to the objective function and the objective quantities
+            needed to compute it.
+            
 
 
 .. |Parms2| raw:: html
@@ -356,19 +371,88 @@ and returns a new instance of
 referring both to `router.py`-specific command-line arguments
 and `meep_adjoint`-wide
 :doc:`configuration options </configuration/index>`
-for various pieces of information. In this section of the tutorial
-we walk through the `init_problem` routine, 
+for various pieces of information. What follows is a detailed
+walk through this routine with a blow-by-blow analysis of the
+various initialization tasks it handles.
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-1A. Fetch values for local (script-specific) and global (`meep-adjoint`-wide) configurable options 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+1A. Fetch values for global (`meep-adjoint`-wide) and local (script-specific) and configurable options 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. ############################################################
 .. ############################################################
 .. ############################################################
-The function begins by parsing command-line arguments to `router.py`:
+Like most `meep_adjoint` driver scripts, `router.py` makes use
+of user-configured settings for both 
+general-purpose (problem-independent)
+:doc:`configuration options </configuration/index>`
+defined by `meep_adjoint`
+and problem-specific options defined by `router.py`.
+
+Examples of the former include the options `fcen`
+(center frequency of forward sources), `dpml` (thickness
+of PML layers), and `dair` (thickness of air gaps between
+material bodies and PML layers)
+In lines 37-39 below we query `meep_adjoint` for its
+current values of those options (note that `adj_opt` is
+short for `meep_adjoint.get_adjoint_option`).
+
+Just before this, in lines 33-36, we call `set_option_defaults`
+to update some of the hard-coded default option values in 
+`meep_adjoint` to values that make more sense for the router
+problem. Note that this step only affects the *default* option
+settings, which are still overridden by command-line arguments
+or configuration files. For more on this, see the
+:doc:`configuration section </configuration/index>` of this
+documentation tree.
 
 .. code-block:: python
+   :lineno-start: 6
+
+        import meep as mp
+        import meep_adjoint
+        from meep_adjoint import get_adjoint_option as adj_opt
+        from meep_adjoint import get_visualization_option as vis_opt
+
+        from meep_adjoint import ( OptimizationProblem, Subregion,
+                                   ORIGIN, XHAT, YHAT, ZHAT, E_CPTS, H_CPTS, v3, V3)
+
+        ######################################################################
+        # subroutine that initializes and returns an OptimizationProblem
+        # structure for the router geometry
+        ######################################################################
+        def init_problem():
+            """ Initialize four-way router optimization problem.
+
+            Args:
+                None (reads command-line options from sys.argv).
+
+            Returns:
+                New instance of meep_adjoint.OptimizationProblem()
+            """
+
+            ######################################################################
+            # set custom defaults for meep_adjoint package-wide options, then
+            # fetch values for a few such options we will need in this routine
+            ######################################################################
+            meep_adjoint.set_option_defaults( { 'fcen': 0.5, 'df': 0.2,
+                                                'dpml': 1.0, 'dair': 0.5,
+                                                'eps_design': 6.0
+                                              })
+            fcen = adj_opt('fcen')
+            dpml = adj_opt('dpml')
+            dair = adj_opt('dair')
+
+
+
+Then (lines 45-71) we follow the usual `argparse` procedure to
+define a number of options specific to the router geometry---such 
+as the widths or permittivity of the waveguides---and parse
+`router.py` command-line arguments for their settings.
+
+
+.. code-block:: python
+   :lineno-start: 45
 
     parser = argparse.ArgumentParser()
 
@@ -397,34 +481,33 @@ The function begins by parsing command-line arguments to `router.py`:
     eps_wvg  = args.eps_wvg
     splitter = args.splitter
 
-.. ############################################################
-.. ############################################################
-.. ############################################################
 
-We also fetch the current values of some `meep_adjoint`
-:doc:`configuration options </customization/index>` whose
-values we will need to initialize the geometry:
+.. admonition:: Mining command-line options for global and local options
 
-.. ############################################################
-.. ############################################################
-.. ############################################################
-.. code-block:: python
+    Note that the command-line options to `router.py` may be used to specify
+    values for both `meep_adjoint` options (like `fcen`) and for
+    `router.py` options (like `w_south`). How do the two sets of options,
+    parsed at different times by separate parsers in distinct modules,
+    coexist on the `router.py` command line?
 
-    from meep_adjoint import get_adjoint_option as adj_opt
+    Answer: `meep_adjoint` takes a first crack at `sys.argv`, handling and removing
+    all arguments it understands, and leaving arguments it doesn't recognize 
+    untouched in their original sequence within `sys.argv`. (It uses
+    `Argparser.parse_known_args` instead of `parse_args`)
+    This happens when
+    `meep_adjoint` initializes its databases of user-configurable options,
+    which it does on a just-in-time basis the first time an option value is queried;
+    in the present case, that happens on line 36, well before `router.py` takes
+    its own crack at `sys.argv` (on line 60).
 
-    fcen = adj_opt('fcen')   # center source frequency
-    dpml = adj_opt('dpml')   # width of PML layers
-    dair = adj_opt('dair')   # width of air gaps
+    One difference between `meep_adjoint` configuration options and `router.py`
+    commmand-line options is that the former may also be set in configuration files.
+    See the :doc:`customization section of this documentation </customization/index>`
+    for more information.
 
-
-(As discussed in more detail :doc:`here </customization/index>`, values
-for `meep_adjoint` configuration options may be specified via command-line
-arguments like `--fcen 1.3`---which are automatically processed and removed 
-from `sys.argv` when `meep_adjoint` is imported---or by lines like
-`fcen=1.3` in configuration files, or in other ways.)
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-1B. Set up the computational geometry
+1B. Set up the computational cell and the fixed geometry
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The next steps are standard initialization procedures familiar to anyone
@@ -464,14 +547,10 @@ trying to design) and ``dpml`` (thickness of PML layers):
          in every ``meep_adjoint`` script they write.
          
 
-
-
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-1C. Define the fixed material geometry
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 Next we construct a list of |MeepGeometricObject| structures to describe the fixed
-portion of the material geometry. This is just like the list of objects
+portion of the material geometry---that is, everything except for the design region
+in which we are allowed to tweak the permittivity
+This is just like the list of objects
 one constructs and passes as the ``geometry`` parameter to the |simulation|
 constructor in the core |pymeep|, **except** that in forming this list we need only
 account for material bodies lying *outside* the design region;
@@ -516,7 +595,7 @@ constructor.
 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-1D. Delineate functional subregions
+1C. Delineate functional subregions
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Next we will delineate various subregions of the computational cell as being of particular significance.
@@ -694,7 +773,7 @@ of the above categories).
 .. _defining_the_objective_function:
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-1E. Define the objective function
+1D. Define the objective function
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 The last item to specify is the objective function that we are trying to maximize. This is just
 a character string, passed as the `f_obj` parameter to the `OptimizationProblem` constructor,
@@ -707,10 +786,13 @@ defining a mathematical function in which one or more
 parameter to the :class:`Subregion <meep_adjoint.dft_cell.Subregion>` constructor.)
 
 For the right-angle router, our goal is simply to maximize power outflux through the **North**
-waveguide port, so we could take the objective function to be just the Poynting flux measured
+waveguide port, so we could take the objective function to be just the Poynting flux 
+(:ref:`objective quantity code<ObjectiveQuantityCodes>`: `S`) measured
 at the objective region we named **North**, i.e.::
 
-    objective = 'S_North'
+
+    fobj_router = 'S_North'
+
 
 This is about as simple as an objective function can possibly get, and attempts at automated
 optimization with this objective do in fact produce somewhat improved designs. However, as
@@ -718,13 +800,36 @@ it happens, there is an alternative way to define an objective function  for thi
 that yields *significantly* better final outcomes: instead of optimizing for maximal power
 outflux, we optimize for maximal overlap with the forward-traveling eigenmode of the
 **North** waveguide, taking the objective function to be the 
-squared modulus of the eigenmode expansion coefficient::
+squared modulus of the eigenmode expansion coefficient for forward-traveling mode 1
+(:ref:`objective quantity code<ObjectiveQuantityCodes>`: `P1` or `F1`)::
 
-    objective = 'Abs(P1_North)**2'
+
+    fobj_router = '|P1_North|^2'
+
+
+So these are the objective functions to choose if we want our optimized design
+to be a right-angle router. On the other hand, if instead we want a three-way
+symmetric *splitter* with maximal equality of output power from north, south,
+and east, then we need an objective function that penalizes discrepancies
+in outgoing flux---something like::
+
+
+    fobj_splitter = '-( S_north - S_east )^2  -( S_east - S_south )^2 - (S_south - S_north)^2 
+
+or::
+
+    fobj_splitter = '-( |P1_north| - |P1_east| )^2  -( |P1_east| - |M1_south| )^2 -(|M1_south| - |P1_north|)^2'
+
+
+In `router.py` we select one or another of these objective functions depending on
+command-line arguments::
+
+
+    objective_function = fobj_splitter if args.splitter else fobj_router
 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-1F. Instantiate the `OptimizationProblem`
+1E. Instantiate the `OptimizationProblem`
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 The final step is to invoke the `OptimizationProblem` constructor with the various
 parameter values initialized above. In `router.py` this is done at the end of the `init_problem`
@@ -737,8 +842,8 @@ routine, which returns the new class instance::
      objective_regions=objective_regions,
      design_region=design_region,
      extra_regions=[full_region]
-     objective=objective,
-     extra_quantities=extra_quantities,
+     objective_problem=objective,
+     extra_quantities=extra_quantities
     )
 
 
@@ -790,6 +895,10 @@ reduces the task of visualizing a geometry to a one-liner::
 
 This should produce an image like the following:
 
+.. image:: RouterGeometry0.png
+
+
+This 
 
     .. admonition:: Customizing the visualization
 

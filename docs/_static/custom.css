@@ -286,3 +286,11 @@ h4, h5, h6 {
 .strike {
   text-decoration: line-through;
 }
+
+/***************************************************/
+/* the default font size for sphinx table titles   */
+/* is too small                                    */
+/***************************************************/
+ .rst-content table.docutils caption {
+  font-size: 150%;
+}
